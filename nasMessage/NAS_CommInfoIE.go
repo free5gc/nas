@@ -265,3 +265,62 @@ const (
 	SessionAMBRUnit64Pbps  uint8 = 0x18
 	SessionAMBRUnit256Pbps uint8 = 0x19
 )
+
+//TS 24.008 10.5.6.3
+const (
+	PCSCFIPv6AddressRequestUL                                  uint16 = 0x0001
+	IMCNSubsystemSignalingFlagUL                               uint16 = 0x0002
+	DNSServerIPv6AddressRequestUL                              uint16 = 0x0003
+	NotSupportedUL                                             uint16 = 0x0004
+	MSSupportOfNetworkRequestedBearerControlIndicatorUL        uint16 = 0x0005
+	DSMIPv6HomeAgentAddressRequestUL                           uint16 = 0x0007
+	DSMIPv6HomeNetworkPrefixRequestUL                          uint16 = 0x0008
+	DSMIPv6IPv4HomeAgentAddressRequestUL                       uint16 = 0x0009
+	IPAddressAllocationViaNASSignallingUL                      uint16 = 0x000a
+	IPv4AddressAllocationViaDHCPv4UL                           uint16 = 0x000b
+	PCSCFIPv4AddressRequestUL                                  uint16 = 0x000c
+	DNSServerIPv4AddressRequestUL                              uint16 = 0x000d
+	MSISDNRequestUL                                            uint16 = 0x000e
+	IFOMSupportRequestUL                                       uint16 = 0x000f
+	IPv4LinkMTURequestUL                                       uint16 = 0x0010
+	MSSupportOfLocalAddressInTFTIndicatorUL                    uint16 = 0x0011
+	PCSCFReSelectionSupportUL                                  uint16 = 0x0012
+	NBIFOMRequestIndicatorUL                                   uint16 = 0x0013
+	NBIFOMModeUL                                               uint16 = 0x0014
+	NonIPLinkMTURequestUL                                      uint16 = 0x0015
+	APNRateControlSupportIndicatorUL                           uint16 = 0x0016
+	UEStatus3GPPPSDataOffUL                                    uint16 = 0x0017
+	ReliableDataServiceRequestIndicatorUL                      uint16 = 0x0018
+	AdditionalAPNRateControlForExceptionDataSupportIndicatorUL uint16 = 0x0019
+	PDUSessionIDUL                                             uint16 = 0x001a
+)
+
+//TS 24.008 10.5.6.3
+
+const (
+	PCSCFIPv6AddressDL                                   uint16 = 0x0001
+	IMCNSubsystemSignalingFlagDL                         uint16 = 0x0002
+	DNSServerIPv6AddressDL                               uint16 = 0x0003
+	PolicyControlRejectionCodeDL                         uint16 = 0x0004
+	SelectedBearerControlModeDL                          uint16 = 0x0005
+	DSMIPv6HomeAgentAddressDL                            uint16 = 0x0007
+	DSMIPv6HomeNetworkPrefixDL                           uint16 = 0x0008
+	DSMIPv6IPv4HomeAgentAddressDL                        uint16 = 0x0009
+	PCSCFIPv4AddressDL                                   uint16 = 0x000c
+	DNSServerIPv4AddressDL                               uint16 = 0x000d
+	MSISDNDL                                             uint16 = 0x000e
+	IFOMSupportDL                                        uint16 = 0x000f
+	IPv4LinkMTUDL                                        uint16 = 0x0010
+	NetworkSupportOfLocaladdressInTFTIndicatorDL         uint16 = 0x0011
+	NBIFOMAcceptedIndicatorDL                            uint16 = 0x0013
+	NBIFOMModeDL                                         uint16 = 0x0014
+	NonIPLinkMTUDL                                       uint16 = 0x0015
+	APNRateControlParametersDL                           uint16 = 0x0016
+	Indication3GPPPSDataOffSupportDL                     uint16 = 0x0017
+	ReliableDataServiceAcceptedIndicatorDL               uint16 = 0x0018
+	AdditionalAPNRateControlForExceptionDataParametersDL uint16 = 0x0019
+	SNSSAIDL                                             uint16 = 0x001b
+	QoSRulesDL                                           uint16 = 0x001c
+	SessionAMBRDL                                        uint16 = 0x001d
+	PDUSessionAddressLifetimeDL                          uint16 = 0x001e
+)

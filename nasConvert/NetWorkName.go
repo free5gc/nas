@@ -19,7 +19,8 @@ func FullNetworkNameToNas(name string) (fullNetworkName nasType.FullNameForNetwo
 			buf[i-1] = (buf[i-1] & nasType.GetBitMask(idx+1, 0)) + uint8(char<<idx)
 			buf = append(buf, char>>(8-idx))
 			idx--
-			if idx < 0 {
+			// if idx overflow, it will round to max(uint8) == 255 == ^uint8(0)
+			if idx == ^uint8(0) {
 				idx = 7
 			}
 		}
@@ -48,7 +49,8 @@ func ShortNetworkNameToNas(name string) (shortNetworkName nasType.ShortNameForNe
 			buf[i-1] = (buf[i-1] & nasType.GetBitMask(idx+1, 0)) + uint8(char<<idx)
 			buf = append(buf, char>>(8-idx))
 			idx--
-			if idx < 0 {
+			// if idx overflow, it will round to max(uint8) == 255 == ^uint8(0)
+			if idx == ^uint8(0) {
 				idx = 7
 			}
 		}

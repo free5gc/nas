@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"free5gc/lib/nas"
+	"free5gc/lib/nas/nasConvert"
 	"free5gc/lib/nas/nasMessage"
 	"free5gc/lib/nas/nasType"
 	"free5gc/lib/openapi/models"
@@ -58,7 +59,7 @@ func GetRegistrationRequest(registrationType uint8, mobileIdentity nasType.Mobil
 	return
 }
 
-func GetRegistrationRequestWith5GMM(registrationType uint8, mobileIdentity nasType.MobileIdentity5GS, requestedNSSAI *nasType.RequestedNSSAI, uplinkDataStatus *nasType.UplinkDataStatus) (nasPdu []byte) {
+func GetRegistrationRequestWith5GMM(registrationType uint8, mobileIdentity nasType.MobileIdentity5GS, requestedNSSAI *nasType.RequestedNSSAI, uplinkDataStatus *nasType.UplinkDataStatus, ueSecurityCapability *nasType.UESecurityCapability) (nasPdu []byte) {
 	m := nas.NewMessage()
 	m.GmmMessage = nas.NewGmmMessage()
 	m.GmmHeader.SetMessageType(nas.MsgTypeRegistrationRequest)
@@ -77,11 +78,7 @@ func GetRegistrationRequestWith5GMM(registrationType uint8, mobileIdentity nasTy
 		Len:   1,
 		Octet: [13]uint8{0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 	}
-	registrationRequest.UESecurityCapability = &nasType.UESecurityCapability{
-		Iei:    nasMessage.RegistrationRequestUESecurityCapabilityType,
-		Len:    8,
-		Buffer: []uint8{0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00},
-	}
+	registrationRequest.UESecurityCapability = ueSecurityCapability
 	registrationRequest.RequestedNSSAI = requestedNSSAI
 	registrationRequest.UplinkDataStatus = uplinkDataStatus
 
@@ -115,6 +112,16 @@ func GetPduSessionEstablishmentRequest(pduSessionId uint8) (nasPdu []byte) {
 
 	pduSessionEstablishmentRequest.PDUSessionType = nasType.NewPDUSessionType(nasMessage.PDUSessionEstablishmentRequestPDUSessionTypeType)
 	pduSessionEstablishmentRequest.PDUSessionType.SetPDUSessionTypeValue(uint8(0x01)) //IPv4 type
+
+	pduSessionEstablishmentRequest.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(nasMessage.PDUSessionEstablishmentRequestExtendedProtocolConfigurationOptionsType)
+	protocolConfigurationOptions := nasConvert.NewProtocolConfigurationOptions()
+	protocolConfigurationOptions.AddIPAddressAllocationViaNASSignallingUL()
+	protocolConfigurationOptions.AddDNSServerIPv4AddressRequest()
+	protocolConfigurationOptions.AddDNSServerIPv6AddressRequest()
+	pcoContents := protocolConfigurationOptions.Marshal()
+	pcoContentsLength := len(pcoContents)
+	pduSessionEstablishmentRequest.ExtendedProtocolConfigurationOptions.SetLen(uint16(pcoContentsLength))
+	pduSessionEstablishmentRequest.ExtendedProtocolConfigurationOptions.SetExtendedProtocolConfigurationOptionsContents(pcoContents)
 
 	m.GsmMessage.PDUSessionEstablishmentRequest = pduSessionEstablishmentRequest
 
