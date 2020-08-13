@@ -19,13 +19,13 @@ func ModelsToSessionAMBR(ambr *models.Ambr) (sessAmbr nasType.SessionAMBR) {
 
 	uplink := strings.Split(ambr.Uplink, " ")
 	bitRate, _ = strconv.ParseInt(uplink[0], 10, 16)
-	binary.LittleEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
+	binary.BigEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
 	sessAmbr.SetSessionAMBRForUplink(bitRateBytes)
 	sessAmbr.SetUnitForSessionAMBRForUplink(strToAMBRUnit(uplink[1]))
 
 	downlink := strings.Split(ambr.Downlink, " ")
 	bitRate, _ = strconv.ParseInt(downlink[0], 10, 16)
-	binary.LittleEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
+	binary.BigEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
 	sessAmbr.SetSessionAMBRForDownlink(bitRateBytes)
 	sessAmbr.SetUnitForSessionAMBRForDownlink(strToAMBRUnit(downlink[1]))
 	return
