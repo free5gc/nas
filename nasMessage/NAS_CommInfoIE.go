@@ -268,31 +268,40 @@ const (
 
 //TS 24.008 10.5.6.3
 const (
-	PCSCFIPv6AddressRequestUL                                  uint16 = 0x0001
-	IMCNSubsystemSignalingFlagUL                               uint16 = 0x0002
-	DNSServerIPv6AddressRequestUL                              uint16 = 0x0003
-	NotSupportedUL                                             uint16 = 0x0004
-	MSSupportOfNetworkRequestedBearerControlIndicatorUL        uint16 = 0x0005
-	DSMIPv6HomeAgentAddressRequestUL                           uint16 = 0x0007
-	DSMIPv6HomeNetworkPrefixRequestUL                          uint16 = 0x0008
-	DSMIPv6IPv4HomeAgentAddressRequestUL                       uint16 = 0x0009
-	IPAddressAllocationViaNASSignallingUL                      uint16 = 0x000a
-	IPv4AddressAllocationViaDHCPv4UL                           uint16 = 0x000b
-	PCSCFIPv4AddressRequestUL                                  uint16 = 0x000c
-	DNSServerIPv4AddressRequestUL                              uint16 = 0x000d
-	MSISDNRequestUL                                            uint16 = 0x000e
-	IFOMSupportRequestUL                                       uint16 = 0x000f
-	IPv4LinkMTURequestUL                                       uint16 = 0x0010
-	MSSupportOfLocalAddressInTFTIndicatorUL                    uint16 = 0x0011
-	PCSCFReSelectionSupportUL                                  uint16 = 0x0012
-	NBIFOMRequestIndicatorUL                                   uint16 = 0x0013
-	NBIFOMModeUL                                               uint16 = 0x0014
-	NonIPLinkMTURequestUL                                      uint16 = 0x0015
-	APNRateControlSupportIndicatorUL                           uint16 = 0x0016
-	UEStatus3GPPPSDataOffUL                                    uint16 = 0x0017
-	ReliableDataServiceRequestIndicatorUL                      uint16 = 0x0018
-	AdditionalAPNRateControlForExceptionDataSupportIndicatorUL uint16 = 0x0019
-	PDUSessionIDUL                                             uint16 = 0x001a
+	PCSCFIPv6AddressRequestUL                                     uint16 = 0x0001
+	IMCNSubsystemSignalingFlagUL                                  uint16 = 0x0002
+	DNSServerIPv6AddressRequestUL                                 uint16 = 0x0003
+	NotSupportedUL                                                uint16 = 0x0004
+	MSSupportOfNetworkRequestedBearerControlIndicatorUL           uint16 = 0x0005
+	DSMIPv6HomeAgentAddressRequestUL                              uint16 = 0x0007
+	DSMIPv6HomeNetworkPrefixRequestUL                             uint16 = 0x0008
+	DSMIPv6IPv4HomeAgentAddressRequestUL                          uint16 = 0x0009
+	IPAddressAllocationViaNASSignallingUL                         uint16 = 0x000a
+	IPv4AddressAllocationViaDHCPv4UL                              uint16 = 0x000b
+	PCSCFIPv4AddressRequestUL                                     uint16 = 0x000c
+	DNSServerIPv4AddressRequestUL                                 uint16 = 0x000d
+	MSISDNRequestUL                                               uint16 = 0x000e
+	IFOMSupportRequestUL                                          uint16 = 0x000f
+	IPv4LinkMTURequestUL                                          uint16 = 0x0010
+	MSSupportOfLocalAddressInTFTIndicatorUL                       uint16 = 0x0011
+	PCSCFReSelectionSupportUL                                     uint16 = 0x0012
+	NBIFOMRequestIndicatorUL                                      uint16 = 0x0013
+	NBIFOMModeUL                                                  uint16 = 0x0014
+	NonIPLinkMTURequestUL                                         uint16 = 0x0015
+	APNRateControlSupportIndicatorUL                              uint16 = 0x0016
+	UEStatus3GPPPSDataOffUL                                       uint16 = 0x0017
+	ReliableDataServiceRequestIndicatorUL                         uint16 = 0x0018
+	AdditionalAPNRateControlForExceptionDataSupportIndicatorUL    uint16 = 0x0019
+	PDUSessionIDUL                                                uint16 = 0x001a
+	EthernetFramePayloadMTURequestUL                              uint16 = 0x0020
+	UnstructuredLinkMTURequestUL                                  uint16 = 0x0021
+	I5GSMCauseValueUL                                             uint16 = 0x0022 // 5GSMCauseValueUL
+	QoSRulesWithTheLengthOfTwoOctetsSupportIndicatorUL            uint16 = 0x0023
+	QoSFlowDescriptionsWithTheLengthOfTwoOctetsSupportIndicatorUL uint16 = 0x0024
+	LinkControlProtocolUL                                         uint16 = 0xc021
+	PushAccessControlProtocolUL                                   uint16 = 0xc023
+	ChallengeHandshakeAuthenticationProtocolUL                    uint16 = 0xc223
+	InternetProtocolControlProtocolUL                             uint16 = 0x8021
 )
 
 //TS 24.008 10.5.6.3
@@ -323,4 +332,9 @@ const (
 	QoSRulesDL                                           uint16 = 0x001c
 	SessionAMBRDL                                        uint16 = 0x001d
 	PDUSessionAddressLifetimeDL                          uint16 = 0x001e
+	QoSFlowDescriptions                                  uint16 = 0x001f
+	EthernetFramePayloadMTU                              uint16 = 0x0020
+	UnstructuredLinkMTU                                  uint16 = 0x0021
+	QoSRulesWithTheLengthOfTwoOctets                     uint16 = 0x0023
+	QoSFlowDescriptionsWithTheLengthOfTwoOctets          uint16 = 0x0024
 )
