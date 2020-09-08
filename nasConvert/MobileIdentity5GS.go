@@ -112,6 +112,7 @@ func GutiToNas(guti string) nasType.GUTI5G {
 
 	gutiNas.SetLen(11)
 	gutiNas.SetSpare(0)
+	gutiNas.SetSpare2(15)
 	gutiNas.SetTypeOfIdentity(nasMessage.MobileIdentity5GSType5gGuti)
 
 	var mcc1, mcc2, mcc3, mnc1, mnc2, mnc3 int

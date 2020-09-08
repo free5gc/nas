@@ -1,6 +1,7 @@
 package nasType
 
 // GUTI5G 9.11.3.4
+// Spare2 Row, sBit, len = [0, 0], 8 , 4
 // Spare Row, sBit, len = [0, 0], 4 , 1
 // TypeOfIdentity Row, sBit, len = [0, 0], 3 , 3
 // MCCDigit2 Row, sBit, len = [1, 1], 8 , 4
@@ -47,6 +48,18 @@ func (a *GUTI5G) GetLen() (len uint16) {
 // Len Row, sBit, len = [], 8, 16
 func (a *GUTI5G) SetLen(len uint16) {
 	a.Len = len
+}
+
+// GUTI5G 9.11.3.4
+// Spare2 Row, sBit, len = [0, 0], 8 , 4
+func (a *GUTI5G) GetSpare2() (spare uint8) {
+	return a.Octet[0] & GetBitMask(8, 4) >> (4)
+}
+
+// GUTI5G 9.11.3.4
+// Spare2 Row, sBit, len = [0, 0], 8 , 4
+func (a *GUTI5G) SetSpare2(spare uint8) {
+	a.Octet[0] = (a.Octet[0] & 15) + ((spare & 15) << 4)
 }
 
 // GUTI5G 9.11.3.4
