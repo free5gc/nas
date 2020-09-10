@@ -4,7 +4,7 @@ package nasType
 // QoSRules Row, sBit, len = [0, 0], 8 , INF
 type RequestedQosRules struct {
 	Iei    uint8
-	Len    uint8
+	Len    uint16
 	Buffer []uint8
 }
 
@@ -28,13 +28,13 @@ func (a *RequestedQosRules) SetIei(iei uint8) {
 
 // RequestedQosRules 9.11.4.13
 // Len Row, sBit, len = [], 8, 8
-func (a *RequestedQosRules) GetLen() (len uint8) {
+func (a *RequestedQosRules) GetLen() (len uint16) {
 	return a.Len
 }
 
 // RequestedQosRules 9.11.4.13
 // Len Row, sBit, len = [], 8, 8
-func (a *RequestedQosRules) SetLen(len uint8) {
+func (a *RequestedQosRules) SetLen(len uint16) {
 	a.Len = len
 	a.Buffer = make([]uint8, a.Len)
 }
