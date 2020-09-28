@@ -3,24 +3,39 @@ package nasConvert
 import (
 	"encoding/hex"
 	"fmt"
+
+	"free5gc/lib/nas/logger"
 	"free5gc/lib/openapi/models"
 )
 
-//  subclause 9.11.3.53A in 3GPP TS 24.501
-func UpuInfoToNas(upuInfo models.UpuInfo) (buf []uint8) {
+//  subclause 9.11.3.53A in 3GPP TS 24.501.
+func UpuInfoToNas(upuInfo models.UpuInfo) []uint8 {
+	var buf []uint8
+
 	// set upu Header
 	buf = append(buf, upuInfoGetHeader(upuInfo.UpuRegInd, upuInfo.UpuAckInd))
 	// Set UPU-MAC-IAUSF
-	byteArray, _ := hex.DecodeString(upuInfo.UpuMacIausf)
-	buf = append(buf, byteArray...)
-	// Set Counter UPU
-	byteArray, _ = hex.DecodeString(upuInfo.CounterUpu)
-	buf = append(buf, byteArray...)
+	if byteArray, err := hex.DecodeString(upuInfo.UpuMacIausf); err != nil {
+		logger.ConvertLog.Warnf("Decode upuInfo.UpuMacIausf failed: %+v", err)
+	} else {
+		buf = append(buf, byteArray...)
+		// Set Counter UPU
+		if computerUpuByteArray, errUpu := hex.DecodeString(upuInfo.CounterUpu); err != nil {
+			logger.ConvertLog.Warnf("Decode upuInfo.CounterUpu failed: %+v", errUpu)
+		} else {
+			buf = append(buf, computerUpuByteArray...)
+		}
+	}
 	// Set UE parameters update list
 	for _, data := range upuInfo.UpuDataList {
+		var byteArray []byte
 		if data.SecPacket != "" {
 			buf = append(buf, 0x01)
-			byteArray, _ = hex.DecodeString(data.SecPacket)
+			if byteArrayTmp, err := hex.DecodeString(data.SecPacket); err != nil {
+				logger.ConvertLog.Warnf("Decode data.SecPacket failed: %+v", err)
+			} else {
+				byteArray = byteArrayTmp
+			}
 		} else {
 			buf = append(buf, 0x02)
 			byteArray = []byte{}
@@ -32,7 +47,7 @@ func UpuInfoToNas(upuInfo models.UpuInfo) (buf []uint8) {
 		buf = append(buf, uint8(len(byteArray)))
 		buf = append(buf, byteArray...)
 	}
-	return
+	return buf
 }
 
 func upuInfoGetHeader(reg bool, ack bool) (buf uint8) {

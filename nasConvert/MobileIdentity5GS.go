@@ -3,6 +3,7 @@ package nasConvert
 import (
 	"encoding/hex"
 	"fmt"
+	"free5gc/lib/nas/logger"
 	"free5gc/lib/nas/nasMessage"
 	"free5gc/lib/nas/nasType"
 	"free5gc/lib/openapi/models"
@@ -16,7 +17,8 @@ func GetTypeOfIdentity(buf byte) uint8 {
 }
 
 // TS 24.501 9.11.3.4
-// suci(imsi) = "suci-0-${mcc}-${mnc}-${routingIndentifier}-${protectionScheme}-${homeNetworkPublicKeyIdentifier}-${schemeOutput}"
+// suci(imsi) =
+// "suci-0-${mcc}-${mnc}-${routingIndentifier}-${protectionScheme}-${homeNetworkPublicKeyIdentifier}-${schemeOutput}"
 // suci(nai) = "nai-${naiString}"
 func SuciToString(buf []byte) (suci string, plmnId string) {
 
@@ -25,7 +27,7 @@ func SuciToString(buf []byte) (suci string, plmnId string) {
 	supiFormat := (buf[0] & 0xf0) >> 4
 	if supiFormat == nasMessage.SupiFormatNai {
 		suci = NaiToString(buf)
-		return
+		return suci, ""
 	}
 
 	// Encode buf to SUCI in supi format "IMSI"
@@ -77,8 +79,9 @@ func SuciToString(buf []byte) (suci string, plmnId string) {
 		schemeOutput = hex.EncodeToString(buf[8:])
 	}
 
-	suci = strings.Join([]string{"suci", "0", mcc, mnc, routingInd, protectionScheme, homeNetworkPublicKeyIdentifier, schemeOutput}, "-")
-	return
+	suci = strings.Join([]string{"suci", "0", mcc, mnc, routingInd, protectionScheme, homeNetworkPublicKeyIdentifier,
+		schemeOutput}, "-")
+	return suci, plmnId
 }
 
 func NaiToString(buf []byte) (nai string) {
@@ -104,22 +107,48 @@ func GutiToString(buf []byte) (guami models.Guami, guti string) {
 	return
 }
 
-func GutiToNas(guti string) (gutiNas nasType.GUTI5G) {
+func GutiToNas(guti string) nasType.GUTI5G {
+	var gutiNas nasType.GUTI5G
 
 	gutiNas.SetLen(11)
 	gutiNas.SetSpare(0)
 	gutiNas.SetTypeOfIdentity(nasMessage.MobileIdentity5GSType5gGuti)
 
-	mcc1, _ := strconv.Atoi(string(guti[0]))
-	mcc2, _ := strconv.Atoi(string(guti[1]))
-	mcc3, _ := strconv.Atoi(string(guti[2]))
-	mnc1, _ := strconv.Atoi(string(guti[3]))
-	mnc2, _ := strconv.Atoi(string(guti[4]))
-	mnc3 := 0x0f
+	var mcc1, mcc2, mcc3, mnc1, mnc2, mnc3 int
+	if mcc1Tmp, err := strconv.Atoi(string(guti[0])); err != nil {
+		logger.ConvertLog.Warnf("atoi mcc1 error: %+v", err)
+	} else {
+		mcc1 = mcc1Tmp
+	}
+	if mcc2Tmp, err := strconv.Atoi(string(guti[1])); err != nil {
+		logger.ConvertLog.Warnf("atoi mcc2 error: %+v", err)
+	} else {
+		mcc2 = mcc2Tmp
+	}
+	if mcc3Tmp, err := strconv.Atoi(string(guti[2])); err != nil {
+		logger.ConvertLog.Warnf("atoi mcc3 error: %+v", err)
+	} else {
+		mcc3 = mcc3Tmp
+	}
+	if mnc1Tmp, err := strconv.Atoi(string(guti[3])); err != nil {
+		logger.ConvertLog.Warnf("atoi mnc1 error: %+v", err)
+	} else {
+		mnc1 = mnc1Tmp
+	}
+	if mnc2Tmp, err := strconv.Atoi(string(guti[4])); err != nil {
+		logger.ConvertLog.Warnf("atoi mnc2 error: %+v", err)
+	} else {
+		mnc2 = mnc2Tmp
+	}
+	mnc3 = 0x0f
 	amfId := ""
 	tmsi := ""
 	if len(guti) == 20 {
-		mnc3, _ = strconv.Atoi(string(guti[5]))
+		if mnc3Tmp, err := strconv.Atoi(string(guti[5])); err != nil {
+			logger.ConvertLog.Warnf("atoi guti error: %+v", err)
+		} else {
+			mnc3 = mnc3Tmp
+		}
 		amfId = guti[6:12]
 		tmsi = guti[12:]
 	} else {
@@ -137,13 +166,16 @@ func GutiToNas(guti string) (gutiNas nasType.GUTI5G) {
 	gutiNas.SetAMFRegionID(amfRegionId)
 	gutiNas.SetAMFSetID(amfSetId)
 	gutiNas.SetAMFPointer(amfPointer)
-	tmsiBytes, _ := hex.DecodeString(tmsi)
-	copy(gutiNas.Octet[7:11], tmsiBytes[:])
-	return
+	if tmsiBytes, err := hex.DecodeString(tmsi); err != nil {
+		logger.ConvertLog.Warnf("Decode TMSI failed: %+v", err)
+	} else {
+		copy(gutiNas.Octet[7:11], tmsiBytes[:])
+	}
+	return gutiNas
 }
 
 // PEI: ^(imei-[0-9]{15}|imeisv-[0-9]{16}|.+)$
-func PeiToString(buf []byte) (pei string) {
+func PeiToString(buf []byte) string {
 
 	var prefix string
 
@@ -175,6 +207,5 @@ func PeiToString(buf []byte) (pei string) {
 		digitStr = digitStr[:len(digitStr)-1] // remove the last digit
 	}
 
-	pei = prefix + digitStr
-	return
+	return prefix + digitStr
 }

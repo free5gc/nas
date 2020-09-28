@@ -108,7 +108,8 @@ func divAlpha(c byte) uint32 {
 }
 
 func lfsrInitialisationMode(F uint32) {
-	v := (lfsr.s[0] << 8) ^ mulAlpha(byte(lfsr.s[0]>>24)&0xff) ^ lfsr.s[2] ^ (lfsr.s[11] >> 8) ^ divAlpha(byte(lfsr.s[11]&0xff)) ^ F
+	v := (lfsr.s[0] << 8) ^ mulAlpha(byte(lfsr.s[0]>>24)&0xff) ^ lfsr.s[2] ^ (lfsr.s[11] >> 8) ^
+		divAlpha(byte(lfsr.s[11]&0xff)) ^ F
 	for i := 0; i < 15; i++ {
 		lfsr.s[i] = lfsr.s[i+1]
 	}
@@ -116,7 +117,8 @@ func lfsrInitialisationMode(F uint32) {
 }
 
 func lfsrKeystreamMode() {
-	v := (lfsr.s[0] << 8) ^ mulAlpha(byte(lfsr.s[0]>>24)&0xff) ^ lfsr.s[2] ^ (lfsr.s[11] >> 8) ^ divAlpha(byte(lfsr.s[11]&0xff))
+	v := (lfsr.s[0] << 8) ^ mulAlpha(byte(lfsr.s[0]>>24)&0xff) ^ lfsr.s[2] ^ (lfsr.s[11] >> 8) ^
+		divAlpha(byte(lfsr.s[11]&0xff))
 	for i := 0; i < 15; i++ {
 		lfsr.s[i] = lfsr.s[i+1]
 	}

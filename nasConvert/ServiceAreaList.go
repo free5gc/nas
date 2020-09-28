@@ -2,13 +2,14 @@ package nasConvert
 
 import (
 	"encoding/hex"
+	"free5gc/lib/nas/logger"
 	"free5gc/lib/nas/nasMessage"
 	"free5gc/lib/openapi/models"
 )
 
 // TS 24.501 9.11.3.49
-func PartialServiceAreaListToNas(plmnID models.PlmnId, serviceAreaRestriction models.ServiceAreaRestriction) (partialServiceAreaList []byte) {
-
+func PartialServiceAreaListToNas(plmnID models.PlmnId, serviceAreaRestriction models.ServiceAreaRestriction) []byte {
+	var partialServiceAreaList []byte
 	var allowedType uint8
 
 	if serviceAreaRestriction.RestrictionType == models.RestrictionType_ALLOWED_AREAS {
@@ -27,9 +28,12 @@ func PartialServiceAreaListToNas(plmnID models.PlmnId, serviceAreaRestriction mo
 
 	for _, area := range serviceAreaRestriction.Areas {
 		for _, tac := range area.Tacs {
-			tacBytes, _ := hex.DecodeString(tac)
-			partialServiceAreaList = append(partialServiceAreaList, tacBytes...)
+			if tacBytes, err := hex.DecodeString(tac); err != nil {
+				logger.ConvertLog.Warnf("Decode tac failed: %+v", err)
+			} else {
+				partialServiceAreaList = append(partialServiceAreaList, tacBytes...)
+			}
 		}
 	}
-	return
+	return partialServiceAreaList
 }

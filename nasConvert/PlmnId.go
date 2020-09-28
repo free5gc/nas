@@ -2,21 +2,50 @@ package nasConvert
 
 import (
 	"encoding/hex"
-	"free5gc/lib/openapi/models"
 	"strconv"
+
+	"free5gc/lib/nas/logger"
+	"free5gc/lib/openapi/models"
 )
 
-func PlmnIDToNas(plmnID models.PlmnId) (plmnNas []uint8) {
+func PlmnIDToNas(plmnID models.PlmnId) []uint8 {
+	var plmnNas []uint8
 
-	mccDigit1, _ := strconv.Atoi(string(plmnID.Mcc[0]))
-	mccDigit2, _ := strconv.Atoi(string(plmnID.Mcc[1]))
-	mccDigit3, _ := strconv.Atoi(string(plmnID.Mcc[2]))
+	var mccDigit1, mccDigit2, mccDigit3 int
+	if mccDigitTmp, err := strconv.Atoi(string(plmnID.Mcc[0])); err != nil {
+		logger.ConvertLog.Warnf("atoi mcc error: %+v", err)
+	} else {
+		mccDigit1 = mccDigitTmp
+	}
+	if mccDigitTmp, err := strconv.Atoi(string(plmnID.Mcc[1])); err != nil {
+		logger.ConvertLog.Warnf("atoi mcc error: %+v", err)
+	} else {
+		mccDigit2 = mccDigitTmp
+	}
+	if mccDigitTmp, err := strconv.Atoi(string(plmnID.Mcc[2])); err != nil {
+		logger.ConvertLog.Warnf("atoi mcc error: %+v", err)
+	} else {
+		mccDigit3 = mccDigitTmp
+	}
 
-	mncDigit1, _ := strconv.Atoi(string(plmnID.Mnc[0]))
-	mncDigit2, _ := strconv.Atoi(string(plmnID.Mnc[1]))
-	mncDigit3 := 0x0f
+	var mncDigit1, mncDigit2, mncDigit3 int
+	if mncDigitTmp, err := strconv.Atoi(string(plmnID.Mnc[0])); err != nil {
+		logger.ConvertLog.Warnf("atoi mnc error: %+v", err)
+	} else {
+		mncDigit1 = mncDigitTmp
+	}
+	if mncDigitTmp, err := strconv.Atoi(string(plmnID.Mnc[1])); err != nil {
+		logger.ConvertLog.Warnf("atoi mnc error: %+v", err)
+	} else {
+		mncDigit2 = mncDigitTmp
+	}
+	mncDigit3 = 0x0f
 	if len(plmnID.Mnc) == 3 {
-		mncDigit3, _ = strconv.Atoi(string(plmnID.Mnc[2]))
+		if mncDigitTmp, err := strconv.Atoi(string(plmnID.Mnc[2])); err != nil {
+			logger.ConvertLog.Warnf("atoi mn error: %+v", err)
+		} else {
+			mncDigit3 = mncDigitTmp
+		}
 	}
 
 	plmnNas = []uint8{
@@ -25,10 +54,10 @@ func PlmnIDToNas(plmnID models.PlmnId) (plmnNas []uint8) {
 		uint8((mncDigit2 << 4) | mncDigit1),
 	}
 
-	return
+	return plmnNas
 }
 
-func PlmnIDToString(nasBuf []byte) (plmnID string) {
+func PlmnIDToString(nasBuf []byte) string {
 
 	mccDigit1 := nasBuf[0] & 0x0f
 	mccDigit2 := (nasBuf[0] & 0xf0) >> 4
@@ -40,9 +69,9 @@ func PlmnIDToString(nasBuf []byte) (plmnID string) {
 
 	tmpBytes := []byte{(mccDigit1 << 4) | mccDigit2, (mccDigit3 << 4) | mncDigit1, (mncDigit2 << 4) | mncDigit3}
 
-	plmnID = hex.EncodeToString(tmpBytes)
+	plmnID := hex.EncodeToString(tmpBytes)
 	if plmnID[5] == 'f' {
 		plmnID = plmnID[:5] // get plmnID[0~4]
 	}
-	return
+	return plmnID
 }

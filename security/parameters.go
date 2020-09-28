@@ -1,6 +1,6 @@
 package security
 
-// TS 33501 Annex A.8 Algorithm distinguisher For Knas_int Knas_enc
+// TS 33.501 Annex A.8 Algorithm distinguisher For Knas_int Knas_enc
 const (
 	NNASEncAlg uint8 = 0x01
 	NNASIntAlg uint8 = 0x02
@@ -10,7 +10,7 @@ const (
 	NUpIntAlg  uint8 = 0x06
 )
 
-// TS 33501 Annex D Algorithm identifier values For Knas_int
+// TS 33.501 5.11.1.1 Algorithm identifier values For integrity algorithm
 const (
 	AlgIntegrity128NIA0 uint8 = 0x00 // NULL
 	AlgIntegrity128NIA1 uint8 = 0x01 // 128-Snow3G
@@ -18,7 +18,7 @@ const (
 	AlgIntegrity128NIA3 uint8 = 0x03 // 128-ZUC
 )
 
-// TS 33501 Annex D Algorithm identifier values For Knas_enc
+// TS 33.501 5.11.1.1 Algorithm identifier values For ciphering algorithm
 const (
 	AlgCiphering128NEA0 uint8 = 0x00 // NULL
 	AlgCiphering128NEA1 uint8 = 0x01 // 128-Snow3G

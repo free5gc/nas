@@ -19,6 +19,7 @@ func (counter *Count) Set(overflow uint16, sqn uint8) {
 }
 
 func (counter *Count) Get() uint32 {
+	counter.maskTo24Bits()
 	return counter.count
 }
 

@@ -2,6 +2,7 @@ package nasConvert
 
 import (
 	"encoding/hex"
+	"free5gc/lib/nas/logger"
 	"free5gc/lib/nas/nasType"
 	"free5gc/lib/openapi/models"
 )
@@ -13,20 +14,26 @@ func SnssaiToModels(nasSnssai *nasType.SNSSAI) (snssai models.Snssai) {
 	return
 }
 
-func SnssaiToNas(snssai models.Snssai) (buf []uint8) {
+func SnssaiToNas(snssai models.Snssai) []uint8 {
+	var buf []uint8
+
 	if snssai.Sd == "" {
 		buf = append(buf, 0x01)
 		buf = append(buf, uint8(snssai.Sst))
 	} else {
 		buf = append(buf, 0x04)
 		buf = append(buf, uint8(snssai.Sst))
-		byteArray, _ := hex.DecodeString(snssai.Sd)
-		buf = append(buf, byteArray...)
+		if byteArray, err := hex.DecodeString(snssai.Sd); err != nil {
+			logger.ConvertLog.Warnf("Decode snssai.sd failed: %+v", err)
+		} else {
+			buf = append(buf, byteArray...)
+		}
 	}
-	return
+	return buf
 }
 
-func RejectedSnssaiToNas(snssai models.Snssai, rejectCause uint8) (rejectedSnssai []uint8) {
+func RejectedSnssaiToNas(snssai models.Snssai, rejectCause uint8) []uint8 {
+	var rejectedSnssai []uint8
 
 	if snssai.Sd == "" {
 		rejectedSnssai = append(rejectedSnssai, (0x01<<4)+rejectCause)
@@ -34,9 +41,12 @@ func RejectedSnssaiToNas(snssai models.Snssai, rejectCause uint8) (rejectedSnssa
 	} else {
 		rejectedSnssai = append(rejectedSnssai, (0x04<<4)+rejectCause)
 		rejectedSnssai = append(rejectedSnssai, uint8(snssai.Sst))
-		sDBytes, _ := hex.DecodeString(snssai.Sd)
-		rejectedSnssai = append(rejectedSnssai, sDBytes...)
+		if sDBytes, err := hex.DecodeString(snssai.Sd); err != nil {
+			logger.ConvertLog.Warnf("Decode snssai.sd failed: %+v", err)
+		} else {
+			rejectedSnssai = append(rejectedSnssai, sDBytes...)
+		}
 	}
 
-	return
+	return rejectedSnssai
 }

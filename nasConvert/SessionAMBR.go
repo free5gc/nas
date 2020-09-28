@@ -6,27 +6,34 @@ import (
 	"strconv"
 	"strings"
 
+	"free5gc/lib/nas/logger"
 	"free5gc/lib/nas/nasMessage"
 	"free5gc/lib/nas/nasType"
 	"free5gc/lib/openapi/models"
 )
 
 func ModelsToSessionAMBR(ambr *models.Ambr) (sessAmbr nasType.SessionAMBR) {
-	var bitRate int64
-	var bitRateBytes [2]byte
 
 	fmt.Println(ambr)
 
 	uplink := strings.Split(ambr.Uplink, " ")
-	bitRate, _ = strconv.ParseInt(uplink[0], 10, 16)
-	binary.BigEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
-	sessAmbr.SetSessionAMBRForUplink(bitRateBytes)
+	if bitRate, err := strconv.ParseInt(uplink[0], 10, 16); err != nil {
+		logger.ConvertLog.Warnf("uplink AMBR parse failed: %+v", err)
+	} else {
+		var bitRateBytes [2]byte
+		binary.BigEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
+		sessAmbr.SetSessionAMBRForUplink(bitRateBytes)
+	}
 	sessAmbr.SetUnitForSessionAMBRForUplink(strToAMBRUnit(uplink[1]))
 
 	downlink := strings.Split(ambr.Downlink, " ")
-	bitRate, _ = strconv.ParseInt(downlink[0], 10, 16)
-	binary.BigEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
-	sessAmbr.SetSessionAMBRForDownlink(bitRateBytes)
+	if bitRate, err := strconv.ParseInt(downlink[0], 10, 16); err != nil {
+		logger.ConvertLog.Warnf("downlink AMBR parse failed: %+v", err)
+	} else {
+		var bitRateBytes [2]byte
+		binary.BigEndian.PutUint16(bitRateBytes[:], uint16(bitRate))
+		sessAmbr.SetSessionAMBRForDownlink(bitRateBytes)
+	}
 	sessAmbr.SetUnitForSessionAMBRForDownlink(strToAMBRUnit(downlink[1]))
 	return
 }

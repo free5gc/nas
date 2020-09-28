@@ -42,17 +42,20 @@ func requestedSnssaiToModels(buf []byte) (snssai models.Snssai, length int) {
 	return
 }
 
-func RejectedNssaiToNas(rejectedNssaiInPlmn []models.Snssai, rejectedNssaiInTa []models.Snssai) (rejectedNssaiNas nasType.RejectedNSSAI) {
+func RejectedNssaiToNas(rejectedNssaiInPlmn []models.Snssai, rejectedNssaiInTa []models.Snssai) nasType.RejectedNSSAI {
+	var rejectedNssaiNas nasType.RejectedNSSAI
 
 	var byteArray []uint8
 	for _, rejectedSnssai := range rejectedNssaiInPlmn {
-		byteArray = append(byteArray, RejectedSnssaiToNas(rejectedSnssai, nasMessage.RejectedSnssaiCauseNotAvailableInCurrentPlmn)...)
+		byteArray = append(byteArray, RejectedSnssaiToNas(rejectedSnssai,
+			nasMessage.RejectedSnssaiCauseNotAvailableInCurrentPlmn)...)
 	}
 	for _, rejectedSnssai := range rejectedNssaiInTa {
-		byteArray = append(byteArray, RejectedSnssaiToNas(rejectedSnssai, nasMessage.RejectedSnssaiCauseNotAvailableInCurrentRegistrationArea)...)
+		byteArray = append(byteArray, RejectedSnssaiToNas(rejectedSnssai,
+			nasMessage.RejectedSnssaiCauseNotAvailableInCurrentRegistrationArea)...)
 	}
 
 	rejectedNssaiNas.SetLen(uint8(len(byteArray)))
 	rejectedNssaiNas.SetRejectedNSSAIContents(byteArray)
-	return
+	return rejectedNssaiNas
 }

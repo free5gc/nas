@@ -11,7 +11,8 @@ import (
 	"github.com/aead/cmac"
 )
 
-func NASEncrypt(AlgoID uint8, KnasEnc [16]byte, Count uint32, Bearer uint8, Direction uint8, payload []byte) error {
+func NASEncrypt(AlgoID uint8, KnasEnc [16]byte, Count uint32, Bearer uint8,
+	Direction uint8, payload []byte) error {
 	if Bearer > 0x1f {
 		return fmt.Errorf("Bearer is beyond 5 bits")
 	}
@@ -24,9 +25,10 @@ func NASEncrypt(AlgoID uint8, KnasEnc [16]byte, Count uint32, Bearer uint8, Dire
 
 	switch AlgoID {
 	case AlgCiphering128NEA0:
-		logger.SecurityLog.Debugf("ALG_CIPHERING is ALG_CIPHERING_128_NEA0")
+		logger.SecurityLog.Debugf("Use NEA0")
 		return nil
 	case AlgCiphering128NEA1:
+		logger.SecurityLog.Debugln("Use NEA1")
 		output, err := NEA1(KnasEnc, Count, uint32(Bearer), uint32(Direction), payload, uint32(len(payload))*8)
 		if err != nil {
 			return err
@@ -35,6 +37,7 @@ func NASEncrypt(AlgoID uint8, KnasEnc [16]byte, Count uint32, Bearer uint8, Dire
 		copy(payload, output)
 		return nil
 	case AlgCiphering128NEA2:
+		logger.SecurityLog.Debugln("Use NEA2")
 		output, err := NEA2(KnasEnc, Count, Bearer, Direction, payload)
 		if err != nil {
 			return err
@@ -43,13 +46,15 @@ func NASEncrypt(AlgoID uint8, KnasEnc [16]byte, Count uint32, Bearer uint8, Dire
 		copy(payload, output)
 		return nil
 	case AlgCiphering128NEA3:
+		logger.SecurityLog.Debugln("Use NEA3")
 		return fmt.Errorf("NEA3 not implement yet.")
 	default:
 		return fmt.Errorf("Unknown Algorithm Identity[%d]", AlgoID)
 	}
 }
 
-func NASMacCalculate(AlgoID uint8, KnasInt [16]uint8, Count uint32, Bearer uint8, Direction uint8, msg []byte) ([]byte, error) {
+func NASMacCalculate(AlgoID uint8, KnasInt [16]uint8, Count uint32,
+	Bearer uint8, Direction uint8, msg []byte) ([]byte, error) {
 	if Bearer > 0x1f {
 		return nil, fmt.Errorf("Bearer is beyond 5 bits")
 	}
@@ -64,13 +69,15 @@ func NASMacCalculate(AlgoID uint8, KnasInt [16]uint8, Count uint32, Bearer uint8
 	case AlgIntegrity128NIA0:
 		logger.SecurityLog.Warningln("Integrity NIA0 is emergency.")
 		return nil, nil
-	case AlgCiphering128NEA1:
+	case AlgIntegrity128NIA1:
+		logger.SecurityLog.Debugf("Use NIA1")
 		return NIA1(KnasInt, Count, Bearer, uint32(Direction), msg, uint64(len(msg))*8)
 	case AlgIntegrity128NIA2:
+		logger.SecurityLog.Debugf("Use NIA2")
 		return NIA2(KnasInt, Count, Bearer, Direction, msg)
 	case AlgIntegrity128NIA3:
-		logger.SecurityLog.Errorf("NIA3 not implement yet.")
-		return nil, nil
+		logger.SecurityLog.Debugf("Use NIA3")
+		return nil, fmt.Errorf("NIA3 not implement yet.")
 	default:
 		return nil, fmt.Errorf("Unknown Algorithm Identity[%d]", AlgoID)
 	}
@@ -109,7 +116,8 @@ func NEA1(ck [16]byte, countC, bearer, direction uint32, ibs []byte, length uint
 }
 
 // ibs: input bit stream, obs: output bit stream
-func NEA2(key [16]byte, count uint32, bearer uint8, direction uint8, ibs []byte) (obs []byte, err error) {
+func NEA2(key [16]byte, count uint32, bearer uint8, direction uint8,
+	ibs []byte) (obs []byte, err error) {
 	// Couter[0..32] | BEARER[0..4] | DIRECTION[0] | 0^26 | 0^64
 	couterBlk := make([]byte, 16)
 	//First 32 bits are count
@@ -162,7 +170,8 @@ func mul(V, P, c uint64) uint64 {
 	return rst
 }
 
-func NIA1(ik [16]byte, countI uint32, bearer byte, direction uint32, msg []byte, length uint64) (mac []byte, err error) {
+func NIA1(ik [16]byte, countI uint32, bearer byte, direction uint32, msg []byte, length uint64) (
+	mac []byte, err error) {
 	fresh := uint32(bearer) << 27
 	var k [4]uint32
 	for i := uint32(0); i < 4; i++ {

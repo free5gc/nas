@@ -2,13 +2,14 @@ package nasConvert
 
 import (
 	"encoding/hex"
+	"free5gc/lib/nas/logger"
 	"free5gc/lib/openapi/models"
 	"reflect"
 )
 
 // TS 24.501 9.11.3.9
-func TaiListToNas(taiList []models.Tai) (taiListNas []uint8) {
-
+func TaiListToNas(taiList []models.Tai) []uint8 {
+	var taiListNas []uint8
 	typeOfList := 0x00
 
 	plmnId := taiList[0].PlmnId
@@ -28,17 +29,23 @@ func TaiListToNas(taiList []models.Tai) (taiListNas []uint8) {
 		taiListNas = append(taiListNas, plmnNas...)
 
 		for _, tai := range taiList {
-			tacBytes, _ := hex.DecodeString(tai.Tac)
-			taiListNas = append(taiListNas, tacBytes...)
+			if tacBytes, err := hex.DecodeString(tai.Tac); err != nil {
+				logger.ConvertLog.Warnf("Decode tac failed: %+v", err)
+			} else {
+				taiListNas = append(taiListNas, tacBytes...)
+			}
 		}
 	case 0x02:
 		for _, tai := range taiList {
 			plmnNas := PlmnIDToNas(*tai.PlmnId)
-			tacBytes, _ := hex.DecodeString(tai.Tac)
-			taiListNas = append(taiListNas, plmnNas...)
-			taiListNas = append(taiListNas, tacBytes...)
+			if tacBytes, err := hex.DecodeString(tai.Tac); err != nil {
+				logger.ConvertLog.Warnf("Decode tac failed: %+v", err)
+			} else {
+				taiListNas = append(taiListNas, plmnNas...)
+				taiListNas = append(taiListNas, tacBytes...)
+			}
 		}
 	}
 
-	return
+	return taiListNas
 }
