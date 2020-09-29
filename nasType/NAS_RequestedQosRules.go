@@ -27,13 +27,13 @@ func (a *RequestedQosRules) SetIei(iei uint8) {
 }
 
 // RequestedQosRules 9.11.4.13
-// Len Row, sBit, len = [], 8, 8
+// Len Row, sBit, len = [], 16, 16
 func (a *RequestedQosRules) GetLen() (len uint16) {
 	return a.Len
 }
 
 // RequestedQosRules 9.11.4.13
-// Len Row, sBit, len = [], 8, 8
+// Len Row, sBit, len = [], 16, 16
 func (a *RequestedQosRules) SetLen(len uint16) {
 	a.Len = len
 	a.Buffer = make([]uint8, a.Len)
