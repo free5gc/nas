@@ -10,7 +10,7 @@ package nasType
 // TAC Row, sBit, len = [3, 5], 8 , 24
 type LastVisitedRegisteredTAI struct {
 	Iei   uint8
-	Octet [7]uint8
+	Octet [6]uint8
 }
 
 func NewLastVisitedRegisteredTAI(iei uint8) (lastVisitedRegisteredTAI *LastVisitedRegisteredTAI) {
