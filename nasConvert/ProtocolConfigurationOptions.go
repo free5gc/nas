@@ -190,6 +190,27 @@ func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddDNSServerIP
 	return
 }
 
+func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddPCscfIPv4Address(pcscfIP net.IP) (err error) {
+	if pcscfIP.To4() == nil {
+		err = fmt.Errorf("The P-CSCF IP should be IPv4!")
+		return
+	}
+	pcscfIP = pcscfIP.To4()
+
+	if len(pcscfIP) != net.IPv4len {
+		err = fmt.Errorf("The length of P-CSCF IP IPv4 is wrong!")
+		return
+	}
+
+	protocolOrContainerUnit := NewProtocolOrContainerUnit()
+	protocolOrContainerUnit.ProtocolOrContainerID = nasMessage.PCSCFIPv4AddressDL
+	protocolOrContainerUnit.LengthOfContents = uint8(net.IPv4len)
+	protocolOrContainerUnit.Contents = append(protocolOrContainerUnit.Contents, pcscfIP.To4()...)
+
+	protocolConfigurationOptions.ProtocolOrContainerList = append(protocolConfigurationOptions.ProtocolOrContainerList, protocolOrContainerUnit)
+	return
+}
+
 func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddDNSServerIPv6Address(dnsIP net.IP) (err error) {
 
 	if dnsIP.To16() == nil {
