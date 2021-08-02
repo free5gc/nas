@@ -1,12 +1,13 @@
 package security
 
 import (
-	"github.com/free5gc/nas/logger"
-	"github.com/free5gc/nas/security/snow3g"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/binary"
 	"fmt"
+
+	"github.com/free5gc/nas/logger"
+	"github.com/free5gc/nas/security/snow3g"
 
 	"github.com/aead/cmac"
 )
@@ -81,7 +82,6 @@ func NASMacCalculate(AlgoID uint8, KnasInt [16]uint8, Count uint32,
 	default:
 		return nil, fmt.Errorf("Unknown Algorithm Identity[%d]", AlgoID)
 	}
-
 }
 
 func NEA1(ck [16]byte, countC, bearer, direction uint32, ibs []byte, length uint32) (obs []byte, err error) {
@@ -120,9 +120,9 @@ func NEA2(key [16]byte, count uint32, bearer uint8, direction uint8,
 	ibs []byte) (obs []byte, err error) {
 	// Couter[0..32] | BEARER[0..4] | DIRECTION[0] | 0^26 | 0^64
 	couterBlk := make([]byte, 16)
-	//First 32 bits are count
+	// First 32 bits are count
 	binary.BigEndian.PutUint32(couterBlk, count)
-	//Put Bearer and direction together
+	// Put Bearer and direction together
 	couterBlk[4] = (bearer << 3) | (direction << 2)
 
 	block, err := aes.NewCipher(key[:])
@@ -138,7 +138,6 @@ func NEA2(key [16]byte, count uint32, bearer uint8, direction uint8,
 }
 
 func NEA3() {
-
 }
 
 // mulx() is for NIA1()
@@ -179,7 +178,7 @@ func NIA1(ik [16]byte, countI uint32, bearer byte, direction uint32, msg []byte,
 	}
 	iv := [4]uint32{fresh ^ (direction << 15), countI ^ (direction << 31), fresh, countI}
 	D := ((length + 63) / 64) + 1
-	var z = make([]uint32, 5)
+	z := make([]uint32, 5)
 	snow3g.InitSnow3g(k, iv)
 	snow3g.GenerateKeystream(5, z)
 
@@ -208,9 +207,9 @@ func NIA1(ik [16]byte, countI uint32, bearer byte, direction uint32, msg []byte,
 func NIA2(key [16]byte, count uint32, bearer uint8, direction uint8, msg []byte) (mac []byte, err error) {
 	// Couter[0..32] | BEARER[0..4] | DIRECTION[0] | 0^26
 	m := make([]byte, len(msg)+8)
-	//First 32 bits are count
+	// First 32 bits are count
 	binary.BigEndian.PutUint32(m, count)
-	//Put Bearer and direction together
+	// Put Bearer and direction together
 	m[4] = (bearer << 3) | (direction << 2)
 
 	block, err := aes.NewCipher(key[:])
@@ -230,5 +229,4 @@ func NIA2(key [16]byte, count uint32, bearer uint8, direction uint8, msg []byte)
 }
 
 func NIA3() {
-
 }

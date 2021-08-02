@@ -1,10 +1,11 @@
 package nasConvert
 
 import (
+	"encoding/hex"
+
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/openapi/models"
-	"encoding/hex"
 )
 
 // TS 24.501 9.11.3.49

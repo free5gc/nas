@@ -1,13 +1,14 @@
 package nasConvert
 
 import (
-	"github.com/free5gc/nas/logger"
-	"github.com/free5gc/nas/nasMessage"
 	"bytes"
 	"encoding/binary"
 	"fmt"
 	"net"
 	"strconv"
+
+	"github.com/free5gc/nas/logger"
+	"github.com/free5gc/nas/nasMessage"
 )
 
 type ProtocolOrContainerUnit struct {
@@ -38,7 +39,6 @@ func NewProtocolOrContainerUnit() (pcu *ProtocolOrContainerUnit) {
 }
 
 func NewProtocolConfigurationOptions() (pco *ProtocolConfigurationOptions) {
-
 	pco = &ProtocolConfigurationOptions{
 		ProtocolOrContainerList: make([]*ProtocolOrContainerUnit, 0),
 	}
@@ -47,7 +47,6 @@ func NewProtocolConfigurationOptions() (pco *ProtocolConfigurationOptions) {
 }
 
 func (protocolConfigurationOptions *ProtocolConfigurationOptions) Marshal() []byte {
-
 	var metaInfo uint8
 	var extension uint8 = 1
 	var spare uint8 = 0
@@ -90,7 +89,6 @@ func (protocolConfigurationOptions *ProtocolConfigurationOptions) UnMarshal(data
 	var curContainer *ProtocolOrContainerUnit
 
 	for numOfBytes > 0 {
-
 		switch readingState {
 		case ReadingID:
 			curContainer = NewProtocolOrContainerUnit()
@@ -164,7 +162,6 @@ func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddIPAddressAl
 }
 
 func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddDNSServerIPv4Address(dnsIP net.IP) (err error) {
-
 	if dnsIP.To4() == nil {
 		err = fmt.Errorf("The DNS IP should be IPv4 in AddDNSServerIPv4Address!")
 		return
@@ -216,7 +213,6 @@ func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddPCSCFIPv4Ad
 }
 
 func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddDNSServerIPv6Address(dnsIP net.IP) (err error) {
-
 	if dnsIP.To16() == nil {
 		err = fmt.Errorf("The DNS IP should be IPv6 in AddDNSServerIPv6Address!")
 		return
