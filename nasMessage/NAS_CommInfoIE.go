@@ -30,6 +30,7 @@ const (
 	Cause5GSMServiceOptionTemporarilyOutOfOrder                          uint8 = 0x22
 	Cause5GSMPTIAlreadyInUse                                             uint8 = 0x23
 	Cause5GSMRegularDeactivation                                         uint8 = 0x24
+	Cause5GSMNetworkFailure                                              uint8 = 0x26
 	Cause5GSMReactivationRequested                                       uint8 = 0x27
 	Cause5GSMInvalidPDUSessionIdentity                                   uint8 = 0x2b
 	Cause5GSMSemanticErrorsInPacketFilter                                uint8 = 0x2c
