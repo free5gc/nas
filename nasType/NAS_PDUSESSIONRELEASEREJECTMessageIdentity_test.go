@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewPDUSESSIONRELEASEREJECTMessageIdentity(t *testing.T) {
@@ -48,7 +48,6 @@ var PDUSESSIONRELEASEREJECTMessageIdentityTable = []PDUSESSIONRELEASEREJECTMessa
 }
 
 func TestNasTypePDUSESSIONRELEASEREJECTMessageIdentity(t *testing.T) {
-
 	for _, table := range PDUSESSIONRELEASEREJECTMessageIdentityTable {
 
 		a := nasType.NewPDUSESSIONRELEASEREJECTMessageIdentity()

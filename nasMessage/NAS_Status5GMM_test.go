@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas"
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageStatus5GMMData struct {
@@ -39,7 +39,6 @@ func TestNasTypeNewStatus5GMM(t *testing.T) {
 }
 
 func TestNasTypeNewStatus5GMMMessage(t *testing.T) {
-
 	for i, table := range nasMessageStatus5GMMTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasMessage.NewStatus5GMM(0)

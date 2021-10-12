@@ -6,7 +6,6 @@ import (
 
 // TS 24.501 9.11.3.35, TS 24.008 10.5.3.5a
 func FullNetworkNameToNas(name string) (fullNetworkName nasType.FullNameForNetwork) {
-
 	asciiArray := []byte(name)
 	numOfSpareBits := 8 - ((7 * len(asciiArray)) % 8)
 
@@ -16,7 +15,7 @@ func FullNetworkNameToNas(name string) (fullNetworkName nasType.FullNameForNetwo
 		if i == 0 {
 			buf = append(buf, char)
 		} else {
-			buf[i-1] = (buf[i-1] & nasType.GetBitMask(idx+1, 0)) + uint8(char<<idx)
+			buf[i-1] = (buf[i-1] & nasType.GetBitMask(idx+1, 0)) + char<<idx
 			buf = append(buf, char>>(8-idx))
 			idx--
 			// if idx overflow, it will round to max(uint8) == 255 == ^uint8(0)
@@ -36,7 +35,6 @@ func FullNetworkNameToNas(name string) (fullNetworkName nasType.FullNameForNetwo
 }
 
 func ShortNetworkNameToNas(name string) (shortNetworkName nasType.ShortNameForNetwork) {
-
 	asciiArray := []byte(name)
 	numOfSpareBits := 8 - ((7 * len(asciiArray)) % 8)
 
@@ -46,7 +44,7 @@ func ShortNetworkNameToNas(name string) (shortNetworkName nasType.ShortNameForNe
 		if i == 0 {
 			buf = append(buf, char)
 		} else {
-			buf[i-1] = (buf[i-1] & nasType.GetBitMask(idx+1, 0)) + uint8(char<<idx)
+			buf[i-1] = (buf[i-1] & nasType.GetBitMask(idx+1, 0)) + char<<idx
 			buf = append(buf, char>>(8-idx))
 			idx--
 			// if idx overflow, it will round to max(uint8) == 255 == ^uint8(0)

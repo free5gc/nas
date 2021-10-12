@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var PDUSessionEstablishmentRequestPDUSessionTypeTypeIeiInput uint8 = 0x09
@@ -76,7 +76,6 @@ var pDUSessionTypeTestTable = []testPDUSessionTypeDataTemplate{
 }
 
 func TestNasTypePDUSessionType(t *testing.T) {
-
 	for _, table := range pDUSessionTypeTestTable {
 		a := nasType.NewPDUSessionType(PDUSessionEstablishmentRequestPDUSessionTypeTypeIeiInput)
 

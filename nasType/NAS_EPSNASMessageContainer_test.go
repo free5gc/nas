@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewEPSNASMessageContainer(t *testing.T) {
 	a := nasType.NewEPSNASMessageContainer(nasMessage.RegistrationRequestEPSNASMessageContainerType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRegistrationRequestEPSNASMessageContainerIeiTable = []NasTypeIeiData{
@@ -76,7 +75,6 @@ var ePSNASMessageContainerTestTable = []testEPSNASMessageContainerDataTemplate{
 }
 
 func TestNasTypeEPSNASMessageContainer(t *testing.T) {
-
 	for i, table := range ePSNASMessageContainerTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewEPSNASMessageContainer(0)

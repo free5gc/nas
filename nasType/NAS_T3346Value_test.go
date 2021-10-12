@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewT3346Value(t *testing.T) {
@@ -63,6 +63,7 @@ type testT3346ValueDataTemplate struct {
 var T3346ValueTestData = []nasType.T3346Value{
 	{nasMessage.RegistrationRejectT3346ValueType, 1, 0x05},
 }
+
 var T3346ValueExpectedData = []nasType.T3346Value{
 	{nasMessage.RegistrationRejectT3346ValueType, 1, 0x05},
 }

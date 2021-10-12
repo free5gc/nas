@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas"
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageDLNASTransportData struct {
@@ -67,7 +67,6 @@ func TestNasTypeNewDLNASTransport(t *testing.T) {
 }
 
 func TestNasTypeNewDLNASTransportMessage(t *testing.T) {
-
 	for i, table := range nasMessageDLNASTransportTable {
 		logger.NasMsgLog.Infoln("Test Cnt:", i)
 		a := nasMessage.NewDLNASTransport(0)

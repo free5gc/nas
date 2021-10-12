@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewPDUSessionStatus(t *testing.T) {
 	a := nasType.NewPDUSessionStatus(nasMessage.ServiceRequestPDUSessionStatusType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeServiceRequestPDUSessionStatusTable = []NasTypeIeiData{

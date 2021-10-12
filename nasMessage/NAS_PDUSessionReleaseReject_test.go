@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessagePDUSessionReleaseRejectData struct {
@@ -44,7 +44,6 @@ func TestNasTypeNewPDUSessionReleaseReject(t *testing.T) {
 }
 
 func TestNasTypeNewPDUSessionReleaseRejectMessage(t *testing.T) {
-
 	for i, table := range nasMessagePDUSessionReleaseRejectTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasMessage.NewPDUSessionReleaseReject(0)

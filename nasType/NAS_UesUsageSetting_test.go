@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewUesUsageSetting(t *testing.T) {
@@ -63,6 +63,7 @@ type testUesUsageSettingDataTemplate struct {
 var UesUsageSettingTestData = []nasType.UesUsageSetting{
 	{nasMessage.RegistrationRequestUesUsageSettingType, 1, 0x01},
 }
+
 var UesUsageSettingExpectedData = []nasType.UesUsageSetting{
 	{nasMessage.RegistrationRequestUesUsageSettingType, 1, 0x01},
 }

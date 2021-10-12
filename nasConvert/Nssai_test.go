@@ -3,15 +3,15 @@ package nasConvert_test
 import (
 	"testing"
 
+	"github.com/smartystreets/goconvey/convey"
+
 	"github.com/free5gc/nas/nasConvert"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
 	"github.com/free5gc/openapi/models"
-	"github.com/smartystreets/goconvey/convey"
 )
 
 func TestRequestedNssaiToModels(t *testing.T) {
-
 	testCases := []struct {
 		name         string
 		requestNssai nasType.RequestedNSSAI

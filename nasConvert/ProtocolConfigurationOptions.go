@@ -59,7 +59,6 @@ func (protocolConfigurationOptions *ProtocolConfigurationOptions) Marshal() []by
 	}
 
 	for _, containerUnit := range protocolConfigurationOptions.ProtocolOrContainerList {
-
 		if err := binary.Write(buffer, binary.BigEndian, &containerUnit.ProtocolOrContainerID); err != nil {
 			logger.ConvertLog.Warnf("Write protocolOrContainerID failed: %+v", err)
 		}

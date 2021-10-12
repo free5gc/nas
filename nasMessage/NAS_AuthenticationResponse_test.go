@@ -2,18 +2,16 @@ package nasMessage_test
 
 import (
 	"bytes"
+	"reflect"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/free5gc/nas/logger"
 
 	//"fmt"
-	"testing"
-
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"reflect"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageAuthenticationResponseData struct {

@@ -3,15 +3,14 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewEAPMessage(t *testing.T) {
 	a := nasType.NewEAPMessage(0)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeAuthenticationRequestEAPMessageIeiTable = []NasTypeIeiData{
@@ -63,11 +62,11 @@ type testEAPDataTemplate struct {
 }
 
 var EAPMessageTestData = []nasType.EAPMessage{
-	{0, 2, []byte{0x00, 0x00}}, //AuthenticationResult
+	{0, 2, []byte{0x00, 0x00}}, // AuthenticationResult
 }
 
 var EAPMessageExpectedTestData = []nasType.EAPMessage{
-	{0, 2, []byte{0x00, 0x00}}, //AuthenticationResult
+	{0, 2, []byte{0x00, 0x00}}, // AuthenticationResult
 }
 
 var EAPMessageTestTable = []testEAPDataTemplate{
@@ -75,10 +74,9 @@ var EAPMessageTestTable = []testEAPDataTemplate{
 }
 
 func TestNasTypeEAPMessage(t *testing.T) {
-
 	for i, table := range EAPMessageTestTable {
 		t.Logf("Test Cnt:%d", i)
-		a := nasType.NewEAPMessage(0) //AuthenticationResult
+		a := nasType.NewEAPMessage(0) // AuthenticationResult
 
 		a.SetIei(table.in.GetIei())
 		a.SetLen(table.in.Len)

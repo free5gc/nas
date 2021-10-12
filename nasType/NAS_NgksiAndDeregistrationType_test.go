@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewNgksiAndDeregistrationType(t *testing.T) {
@@ -112,12 +112,13 @@ type testNgksiAndDeregistrationTypeDataTemplate struct {
 }
 
 var NgksiAndDeregistrationTypeTestTable = []testNgksiAndDeregistrationTypeDataTemplate{
-	{0x01, 0x07, 0x01, 0x01, 0x03,
-		0x01, 0x07, 0x01, 0x01, 0x03},
+	{
+		0x01, 0x07, 0x01, 0x01, 0x03,
+		0x01, 0x07, 0x01, 0x01, 0x03,
+	},
 }
 
 func TestNasTypeNgksiAndDeregistrationType(t *testing.T) {
-
 	for _, table := range NgksiAndDeregistrationTypeTestTable {
 		a := nasType.NewNgksiAndDeregistrationType()
 

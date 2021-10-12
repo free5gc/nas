@@ -3,9 +3,9 @@ package security_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/security"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/security"
 )
 
 func TestSetterGetter(t *testing.T) {
@@ -28,7 +28,6 @@ func TestSetterGetter(t *testing.T) {
 		assert.Equal(t, testCase.overflow, count.Overflow(), "Overflow() Failed")
 		assert.Equal(t, testCase.sqn, count.SQN(), "SQN() Failed")
 	}
-
 }
 
 func TestAddOne(t *testing.T) {

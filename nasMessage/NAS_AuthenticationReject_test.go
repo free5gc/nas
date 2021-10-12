@@ -2,15 +2,14 @@ package nasMessage_test
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"reflect"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageAuthenticationRejectData struct {
@@ -55,7 +54,7 @@ func TestNasTypeNewAuthenticationRejectMessage(t *testing.T) {
 
 		buff := new(bytes.Buffer)
 		a.EncodeAuthenticationReject(buff)
-		//fmt.Println("Encode: ", buff)
+		// fmt.Println("Encode: ", buff)
 		logger.NasMsgLog.Debugln(a)
 
 		data := make([]byte, buff.Len())

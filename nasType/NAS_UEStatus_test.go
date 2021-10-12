@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewUEStatus(t *testing.T) {
@@ -80,6 +80,7 @@ type testUEStatusDataTemplate struct {
 var UEStatusTestData = []nasType.UEStatus{
 	{nasMessage.RegistrationRequestUEStatusType, 1, 0x05},
 }
+
 var UEStatusExpectedData = []nasType.UEStatus{
 	{nasMessage.RegistrationRequestUEStatusType, 1, 0x03},
 }

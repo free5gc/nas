@@ -1,9 +1,10 @@
 package nasMessage
 
 import (
-	"github.com/free5gc/nas/nasType"
 	"bytes"
 	"encoding/binary"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 type PDUSessionModificationRequest struct {
@@ -96,13 +97,11 @@ func (a *PDUSessionModificationRequest) DecodePDUSessionModificationRequest(byte
 		var ieiN uint8
 		var tmpIeiN uint8
 		binary.Read(buffer, binary.BigEndian, &ieiN)
-		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
 		} else {
 			tmpIeiN = ieiN
 		}
-		// fmt.Println("type", tmpIeiN)
 		switch tmpIeiN {
 		case PDUSessionModificationRequestCapability5GSMType:
 			a.Capability5GSM = nasType.NewCapability5GSM(ieiN)

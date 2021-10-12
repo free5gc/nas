@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewAuthenticationFailureMessageIdentity(t *testing.T) {
@@ -48,7 +48,6 @@ var authenticationFailureMessageIdentityTable = []AuthenticationFailureMessageId
 }
 
 func TestNasTypeAuthenticationFailureMessageIdentity(t *testing.T) {
-
 	for i, table := range authenticationFailureMessageIdentityTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewAuthenticationFailureMessageIdentity()

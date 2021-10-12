@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewReplayedS1UESecurityCapabilities(t *testing.T) {
 	a := nasType.NewReplayedS1UESecurityCapabilities(nasMessage.SecurityModeCommandReplayedS1UESecurityCapabilitiesType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeServiceRequestReplayedS1UESecurityCapabilitiesTable = []NasTypeIeiData{

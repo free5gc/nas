@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas"
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageConfigurationUpdateCompleteData struct {
@@ -34,7 +34,6 @@ func TestNasTypeNewConfigurationUpdateComplete(t *testing.T) {
 }
 
 func TestNasTypeNewConfigurationUpdateCompleteMessage(t *testing.T) {
-
 	for i, table := range nasMessageConfigurationUpdateCompleteTable {
 		logger.NasMsgLog.Infoln("Test Cnt:", i)
 		a := nasMessage.NewConfigurationUpdateComplete(0)

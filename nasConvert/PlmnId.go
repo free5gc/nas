@@ -58,7 +58,6 @@ func PlmnIDToNas(plmnID models.PlmnId) []uint8 {
 }
 
 func PlmnIDToString(nasBuf []byte) string {
-
 	mccDigit1 := nasBuf[0] & 0x0f
 	mccDigit2 := (nasBuf[0] & 0xf0) >> 4
 	mccDigit3 := (nasBuf[1] & 0x0f)

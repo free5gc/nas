@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewShortNameForNetwork(t *testing.T) {
 	a := nasType.NewShortNameForNetwork(nasMessage.ConfigurationUpdateCommandShortNameForNetworkType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeShortNameForNetworkTable = []NasTypeIeiData{
@@ -152,7 +151,6 @@ var ShortNameForNetworkTestTable = []testShortNameForNetworkDataTemplate{
 }
 
 func TestNasTypeShortNameForNetwork(t *testing.T) {
-
 	for i, table := range ShortNameForNetworkTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewShortNameForNetwork(nasMessage.ConfigurationUpdateCommandShortNameForNetworkType)

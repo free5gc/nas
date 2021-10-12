@@ -2,19 +2,16 @@ package nasMessage_test
 
 import (
 	"bytes"
-
-	"github.com/free5gc/nas/logger"
-
-	//"fmt"
+	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
+	//"fmt"
 	"github.com/free5gc/nas"
+	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"reflect"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageIdentityResponseData struct {
@@ -45,7 +42,6 @@ func TestNasTypeNewIdentityResponse(t *testing.T) {
 }
 
 func TestNasTypeNewIdentityResponseMessage(t *testing.T) {
-
 	for i, table := range nasMessageIdentityResponseTable {
 		logger.NasMsgLog.Infoln("Test Cnt:", i)
 		a := nasMessage.NewIdentityResponse(0)

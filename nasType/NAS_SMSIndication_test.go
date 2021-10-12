@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewSMSIndication(t *testing.T) {
@@ -62,7 +62,6 @@ var SMSIndicationTable = []SMSIndicationTestDataTemplate{
 }
 
 func TestNasTypeSMSIndication(t *testing.T) {
-
 	for _, table := range SMSIndicationTable {
 
 		a := nasType.NewSMSIndication(nasMessage.ConfigurationUpdateCommandSMSIndicationType)

@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewServiceAreaList(t *testing.T) {
 	a := nasType.NewServiceAreaList(nasMessage.RegistrationAcceptServiceAreaListType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeServiceAreaListTable = []NasTypeIeiData{
@@ -76,7 +75,6 @@ var ServiceAreaListTestTable = []testServiceAreaListDataTemplate{
 }
 
 func TestNasTypeServiceAreaList(t *testing.T) {
-
 	for i, table := range ServiceAreaListTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewServiceAreaList(nasMessage.RegistrationAcceptServiceAreaListType)

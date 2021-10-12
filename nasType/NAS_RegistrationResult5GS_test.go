@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewRegistrationResult5GS(t *testing.T) {
@@ -84,6 +84,7 @@ type testRegistrationResult5GSDataTemplate struct {
 var registrationResult5GSTestData = []nasType.RegistrationResult5GS{
 	{nasMessage.RegistrationAcceptNetworkFeatureSupport5GSType, 1, 0x05},
 }
+
 var registrationResult5GSExpectedData = []nasType.RegistrationResult5GS{
 	{nasMessage.RegistrationAcceptNetworkFeatureSupport5GSType, 1, 0x0f},
 }

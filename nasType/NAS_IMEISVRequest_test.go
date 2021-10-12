@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 var SecurityModeCommandIMEISVRequestTypeIeiInput uint8 = 0x0E
@@ -53,12 +53,13 @@ type testIMEISVRequestDataTemplate struct {
 }
 
 var iMEISVRequestTestTable = []testIMEISVRequestDataTemplate{
-	{SecurityModeCommandIMEISVRequestTypeIeiInput, 0x07,
-		0x0E, 0x07},
+	{
+		SecurityModeCommandIMEISVRequestTypeIeiInput, 0x07,
+		0x0E, 0x07,
+	},
 }
 
 func TestNasTypeIMEISVRequest(t *testing.T) {
-
 	for _, table := range iMEISVRequestTestTable {
 		a := nasType.NewIMEISVRequest(SecurityModeCommandIMEISVRequestTypeIeiInput)
 

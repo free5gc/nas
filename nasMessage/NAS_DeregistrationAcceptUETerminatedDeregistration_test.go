@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas"
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageDeregistrationAcceptUETerminatedDeregistrationData struct {
@@ -34,7 +34,6 @@ func TestNasTypeNewDeregistrationAcceptUETerminatedDeregistration(t *testing.T) 
 }
 
 func TestNasTypeNewDeregistrationAcceptUETerminatedDeregistrationMessage(t *testing.T) {
-
 	for i, table := range nasMessageDeregistrationAcceptUETerminatedDeregistrationTable {
 		logger.NasMsgLog.Infoln("Test Cnt:", i)
 		a := nasMessage.NewDeregistrationAcceptUETerminatedDeregistration(0)

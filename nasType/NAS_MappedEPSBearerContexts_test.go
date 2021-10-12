@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewMappedEPSBearerContexts(t *testing.T) {
 	a := nasType.NewMappedEPSBearerContexts(nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRegistrationRequestMappedEPSBearerContextsTable = []NasTypeIeiData{
@@ -68,12 +67,15 @@ type testMappedEPSBearerContextsDataTemplate struct {
 }
 
 var testMappedEPSBearerContextsTestTable = []testMappedEPSBearerContextsDataTemplate{
-	{nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType, 2, []uint8{0xff, 0xff},
-		nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType, 2, []uint8{0xff, 0xff}},
+	{
+		nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType, 2,
+		[]uint8{0xff, 0xff},
+		nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType, 2,
+		[]uint8{0xff, 0xff},
+	},
 }
 
 func TestNasTypeMappedEPSBearerContexts(t *testing.T) {
-
 	for i, table := range testMappedEPSBearerContextsTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewMappedEPSBearerContexts(nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType)

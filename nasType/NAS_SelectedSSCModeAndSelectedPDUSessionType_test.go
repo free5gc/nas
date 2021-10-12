@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewSelectedSSCModeAndSelectedPDUSessionType(t *testing.T) {
@@ -65,7 +65,6 @@ var SelectedSSCModeAndSelectedPDUSessionTypeTable = []SelectedSSCModeAndSelected
 }
 
 func TestNasTypeSelectedSSCModeAndSelectedPDUSessionType(t *testing.T) {
-
 	for _, table := range SelectedSSCModeAndSelectedPDUSessionTypeTable {
 
 		a := nasType.NewSelectedSSCModeAndSelectedPDUSessionType()

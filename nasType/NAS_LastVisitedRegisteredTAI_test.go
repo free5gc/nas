@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewLastVisitedRegisteredTAI(t *testing.T) {
 	a := nasType.NewLastVisitedRegisteredTAI(nasMessage.RegistrationRequestLastVisitedRegisteredTAIType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRegistrationRequestLastVisitedRegisteredTAITable = []NasTypeIeiData{
@@ -167,12 +166,15 @@ type testLastVisitedRegisteredTAIDataTemplate struct {
 }
 
 var testLastVisitedRegisteredTAITestTable = []testLastVisitedRegisteredTAIDataTemplate{
-	{nasMessage.RegistrationRequestLastVisitedRegisteredTAIType, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, [3]uint8{0x01, 0x01, 0x01},
-		nasMessage.RegistrationRequestLastVisitedRegisteredTAIType, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, [3]uint8{0x01, 0x01, 0x01}},
+	{
+		nasMessage.RegistrationRequestLastVisitedRegisteredTAIType, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+		[3]uint8{0x01, 0x01, 0x01},
+		nasMessage.RegistrationRequestLastVisitedRegisteredTAIType, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+		[3]uint8{0x01, 0x01, 0x01},
+	},
 }
 
 func TestNasTypeLastVisitedRegisteredTAI(t *testing.T) {
-
 	for i, table := range testLastVisitedRegisteredTAITestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewLastVisitedRegisteredTAI(nasMessage.RegistrationRequestLastVisitedRegisteredTAIType)

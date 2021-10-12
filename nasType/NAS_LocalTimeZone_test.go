@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewLocalTimeZone(t *testing.T) {
 	a := nasType.NewLocalTimeZone(nasMessage.ConfigurationUpdateCommandLocalTimeZoneType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeConfigurationUpdateCommandLocalTimeZoneTable = []NasTypeIeiData{
@@ -62,7 +61,6 @@ var LocalTimeZoneTestTable = []testLocalTimeZoneDataTemplate{
 }
 
 func TestNasTypeLocalTimeZone(t *testing.T) {
-
 	for i, table := range LocalTimeZoneTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewLocalTimeZone(nasMessage.ConfigurationUpdateCommandLocalTimeZoneType)

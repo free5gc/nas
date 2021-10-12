@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewPayloadContainer(t *testing.T) {
 	a := nasType.NewPayloadContainer(nasMessage.RegistrationRequestPayloadContainerType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypePayloadContainerRegistrationRequestPayloadContainerTypeTable = []NasTypeIeiData{
@@ -68,12 +67,15 @@ type testPayloadContainerDataTemplate struct {
 }
 
 var testPayloadContainerTestTable = []testPayloadContainerDataTemplate{
-	{nasMessage.RegistrationRequestPayloadContainerType, 2, []uint8{0x0f, 0x0f},
-		nasMessage.RegistrationRequestPayloadContainerType, 2, []uint8{0x0f, 0x0f}},
+	{
+		nasMessage.RegistrationRequestPayloadContainerType, 2,
+		[]uint8{0x0f, 0x0f},
+		nasMessage.RegistrationRequestPayloadContainerType, 2,
+		[]uint8{0x0f, 0x0f},
+	},
 }
 
 func TestNasTypePayloadContainer(t *testing.T) {
-
 	for i, table := range testPayloadContainerTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewPayloadContainer(nasMessage.RegistrationRequestPayloadContainerType)

@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessagePDUSessionModificationCompleteData struct {
@@ -40,7 +40,6 @@ func TestNasTypeNewPDUSessionModificationComplete(t *testing.T) {
 }
 
 func TestNasTypeNewPDUSessionModificationCompleteMessage(t *testing.T) {
-
 	for i, table := range nasMessagePDUSessionModificationCompleteTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasMessage.NewPDUSessionModificationComplete(0)

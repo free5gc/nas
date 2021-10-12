@@ -6,7 +6,6 @@ import (
 
 // TS 24.008 10.5.7.4a
 func GPRSTimer3ToNas(timerValue int) (timerValueNas uint8) {
-
 	if timerValue <= 2*31 {
 		t := uint8(timerValue / 2)
 		timerValueNas = (nasMessage.GPRSTimer3UnitMultiplesOf2Seconds << 5) + t

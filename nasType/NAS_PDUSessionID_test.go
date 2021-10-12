@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewPDUSessionID(t *testing.T) {
 	a := nasType.NewPDUSessionID()
 	assert.NotNil(t, a)
-
 }
 
 var nasTypePDUSessionIDULNASTransportOldPDUSessionIDTypeTable = []NasTypeIeiData{
@@ -54,7 +53,6 @@ var testPDUSessionIDTestTable = []testPDUSessionIDDataTemplate{
 }
 
 func TestNasTypePDUSessionID(t *testing.T) {
-
 	for i, table := range testPDUSessionIDTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewPDUSessionID()

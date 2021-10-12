@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 var RegistrationRequestNoncurrentNativeNASKeySetIdentifierTypeIeiInput uint8 = 0x0C
@@ -37,8 +37,10 @@ type nasTypeNoncurrentNativeNASKeySetIdentifier struct {
 }
 
 var nasTypeNoncurrentNativeNASKeySetIdentifierTable = []nasTypeNoncurrentNativeNASKeySetIdentifier{
-	{RegistrationRequestNoncurrentNativeNASKeySetIdentifierTypeIeiInput, 0x01, 0x01,
-		0x0C, 0x01, 0x01},
+	{
+		RegistrationRequestNoncurrentNativeNASKeySetIdentifierTypeIeiInput, 0x01, 0x01,
+		0x0C, 0x01, 0x01,
+	},
 }
 
 func TestNasTypeNoncurrentNativeNASKeySetIdentifier(t *testing.T) {

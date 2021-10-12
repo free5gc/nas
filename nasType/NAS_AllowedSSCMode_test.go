@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var pDUSessionEstablishmentRejectAllowedSSCModeIeiInput uint8 = 0xf
@@ -16,7 +16,7 @@ func TestNasTypeNewAllowedSSCMode(t *testing.T) {
 	assert.NotNil(t, a)
 }
 
-//var nasTypePDUSessionEstablishmentRejectAllowedSSCModeOut = (nasMessage.PDUSessionEstablishmentRejectAllowedSSCModeType & 15) << 4
+// var nasTypePDUSessionEstablishmentRejectAllowedSSCModeOut = (nasMessage.PDUSessionEstablishmentRejectAllowedSSCModeType & 15) << 4
 var nasTypePDUSessionEstablishmentRejectAllowedSSCModeTable = []NasTypeIeiData{
 	{pDUSessionEstablishmentRejectAllowedSSCModeIeiInput, pDUSessionEstablishmentRejectAllowedSSCModeIeiInput},
 }
@@ -83,7 +83,6 @@ var allowedSSCModeTestTable = []testAllowedSSCModeDataTemplate{
 }
 
 func TestNasTypeAllowedSSCMode(t *testing.T) {
-
 	for _, table := range allowedSSCModeTestTable {
 		a := nasType.NewAllowedSSCMode(pDUSessionEstablishmentRejectAllowedSSCModeIeiInput)
 

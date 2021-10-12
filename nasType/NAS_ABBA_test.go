@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewABBA(t *testing.T) {
 	a := nasType.NewABBA(nasMessage.AuthenticationResultABBAType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeAuthenticationResultABBATable = []NasTypeIeiData{
@@ -83,7 +82,6 @@ var aBBATestTable = []testABBADataTemplate{
 }
 
 func TestNasTypeABBA(t *testing.T) {
-
 	for i, table := range aBBATestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewABBA(nasMessage.AuthenticationResultABBAType)

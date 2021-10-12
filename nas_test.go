@@ -3,9 +3,10 @@ package nas
 import (
 	"bytes"
 	"encoding/hex"
-	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var hexString = "7e00560102000021e440b883d63a9f9c56b3703217152eba2010068f241c77748000b2180e54a9760068"
@@ -40,6 +41,6 @@ func TestPlainNas(t *testing.T) {
 	buff, err1 := m.PlainNasEncode()
 	assert.Nil(t, err1)
 	if !reflect.DeepEqual(data, buff) {
-		t.Errorf("Expect : 0x%0x\nOuput: 0x%0x", data, buff)
+		t.Errorf("Expect : 0x%0x\nOutput: 0x%0x", data, buff)
 	}
 }

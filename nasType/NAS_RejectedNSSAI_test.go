@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewRejectedNSSAI(t *testing.T) {
 	a := nasType.NewRejectedNSSAI(nasMessage.RegistrationAcceptRejectedNSSAIType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeAuthenticationResultRejectedNSSAITable = []NasTypeIeiData{
@@ -83,7 +82,6 @@ var RejectedNSSAITestTable = []testRejectedNSSAIDataTemplate{
 }
 
 func TestNasTypeRejectedNSSAI(t *testing.T) {
-
 	for i, table := range RejectedNSSAITestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewRejectedNSSAI(nasMessage.RegistrationAcceptRejectedNSSAIType)
