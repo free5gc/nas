@@ -2,17 +2,14 @@ package nasMessage_test
 
 import (
 	"bytes"
-
-	"github.com/free5gc/nas/logger"
-
+	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"reflect"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageNotificationResponseData struct {
@@ -43,7 +40,6 @@ func TestNasTypeNewNotificationResponse(t *testing.T) {
 }
 
 func TestNasTypeNewNotificationResponseMessage(t *testing.T) {
-
 	for i, table := range nasMessageNotificationResponseTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasMessage.NewNotificationResponse(0)

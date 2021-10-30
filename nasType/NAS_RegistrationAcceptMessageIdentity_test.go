@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewRegistrationAcceptMessageIdentity(t *testing.T) {
@@ -48,7 +48,6 @@ var RegistrationAcceptMessageIdentityTable = []RegistrationAcceptMessageIdentity
 }
 
 func TestNasTypeRegistrationAcceptMessageIdentity(t *testing.T) {
-
 	for _, table := range RegistrationAcceptMessageIdentityTable {
 
 		a := nasType.NewRegistrationAcceptMessageIdentity()

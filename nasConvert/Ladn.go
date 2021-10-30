@@ -5,7 +5,6 @@ import (
 )
 
 func LadnToModels(buf []uint8) (dnnValues []string) {
-
 	for bufOffset := 1; bufOffset < len(buf); {
 		lenOfDnn := int(buf[bufOffset])
 		dnn := string(buf[bufOffset : bufOffset+lenOfDnn])
@@ -17,7 +16,6 @@ func LadnToModels(buf []uint8) (dnnValues []string) {
 }
 
 func LadnToNas(dnn string, taiLists []models.Tai) (ladnNas []uint8) {
-
 	dnnNas := []byte(dnn)
 
 	ladnNas = append(ladnNas, uint8(len(dnnNas)))

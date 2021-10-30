@@ -3,15 +3,14 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewTMSI5GS(t *testing.T) {
 	a := nasType.NewTMSI5GS(0x01)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeServiceRequestTMSI5GSTable = []NasTypeIeiData{

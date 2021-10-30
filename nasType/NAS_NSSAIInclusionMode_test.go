@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 var RegistrationAcceptNSSAIInclusionModeTypeIeiInput uint8 = 0x0A
@@ -35,8 +35,10 @@ type nasTypeNSSAIInclusionMode struct {
 }
 
 var nasTypeNSSAIInclusionModeTable = []nasTypeNSSAIInclusionMode{
-	{RegistrationAcceptNSSAIInclusionModeTypeIeiInput, 0x03,
-		0x0A, 0x03},
+	{
+		RegistrationAcceptNSSAIInclusionModeTypeIeiInput, 0x03,
+		0x0A, 0x03,
+	},
 }
 
 func TestNasTypeNSSAIInclusionMode(t *testing.T) {

@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewSecurityModeCompleteMessageIdentity(t *testing.T) {
@@ -48,7 +48,6 @@ var SecurityModeCompleteMessageIdentityTable = []SecurityModeCompleteMessageIden
 }
 
 func TestNasTypeSecurityModeCompleteMessageIdentity(t *testing.T) {
-
 	for _, table := range SecurityModeCompleteMessageIdentityTable {
 
 		a := nasType.NewSecurityModeCompleteMessageIdentity()

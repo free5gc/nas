@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewBackoffTimerValue(t *testing.T) {
 	a := nasType.NewBackoffTimerValue(nasMessage.RegistrationAcceptT3512ValueType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeAuthenticationRequestBackoffTimerValueIeiTable = []NasTypeIeiData{
@@ -83,6 +82,7 @@ type testBackoffTimerValueDataTemplate struct {
 var BackoffTimerValueTestData = []nasType.BackoffTimerValue{
 	{nasMessage.RegistrationAcceptT3512ValueType, 1, 0xff},
 }
+
 var BackoffTimerValueExpectedData = []nasType.BackoffTimerValue{
 	{nasMessage.RegistrationAcceptT3512ValueType, 1, 0xff},
 }

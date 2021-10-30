@@ -270,7 +270,7 @@ const (
 	SessionAMBRUnit256Pbps uint8 = 0x19
 )
 
-//TS 24.008 10.5.6.3
+// TS 24.008 10.5.6.3
 const (
 	PCSCFIPv6AddressRequestUL                                     uint16 = 0x0001
 	IMCNSubsystemSignalingFlagUL                                  uint16 = 0x0002
@@ -308,7 +308,7 @@ const (
 	InternetProtocolControlProtocolUL                             uint16 = 0x8021
 )
 
-//TS 24.008 10.5.6.3
+// TS 24.008 10.5.6.3
 
 const (
 	PCSCFIPv6AddressDL                                   uint16 = 0x0001

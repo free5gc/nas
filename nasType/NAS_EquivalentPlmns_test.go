@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewEquivalentPlmns(t *testing.T) {
 	a := nasType.NewEquivalentPlmns(nasMessage.RegistrationAcceptEquivalentPlmnsType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRegistrationRequestEquivalentPlmnsIeiTable = []NasTypeIeiData{
@@ -1857,7 +1856,6 @@ var equivalentPlmnsTestTable = []testEquivalentPlmnsDataTemplate{
 }
 
 func TestNasTypeEquivalentPlmns(t *testing.T) {
-
 	for i, table := range equivalentPlmnsTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewEquivalentPlmns(0)

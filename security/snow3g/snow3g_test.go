@@ -11,7 +11,7 @@ func Test1(t *testing.T) {
 	iv := [4]uint32{0xea024714, 0xad5c4d84, 0xdf1f9b25, 0x1c0bf45f}
 	z := [2]uint32{0xabee9704, 0x7ac31373}
 
-	var ks = make([]uint32, 2)
+	ks := make([]uint32, 2)
 	snow3g.InitSnow3g(k, iv)
 	snow3g.GenerateKeystream(2, ks)
 	for i, k := range ks {
@@ -26,7 +26,7 @@ func Test2(t *testing.T) {
 	iv := [4]uint32{0xd3c5d592, 0x327fb11c, 0xde551988, 0xceb2f9b7}
 	z := [2]uint32{0xeff8a342, 0xf751480f}
 
-	var ks = make([]uint32, 2)
+	ks := make([]uint32, 2)
 	snow3g.InitSnow3g(k, iv)
 	snow3g.GenerateKeystream(2, ks)
 	for i, k := range ks {
@@ -41,7 +41,7 @@ func Test3(t *testing.T) {
 	iv := [4]uint32{0x62a54098, 0x1ba6f9b7, 0x4592b0e7, 0x8690f71b}
 	z := [2]uint32{0xa8c874a9, 0x7ae7c4f8}
 
-	var ks = make([]uint32, 2)
+	ks := make([]uint32, 2)
 	snow3g.InitSnow3g(k, iv)
 	snow3g.GenerateKeystream(2, ks)
 	for i, k := range ks {
@@ -56,7 +56,7 @@ func Test4(t *testing.T) {
 	iv := [4]uint32{0x6b68079a, 0x41a7c4c9, 0x1befd79f, 0x7fdcc233}
 	z := [3]uint32{0xd712c05c, 0xa937c2a6, 0xeb7eaae3}
 
-	var ks = make([]uint32, 2500)
+	ks := make([]uint32, 2500)
 	snow3g.InitSnow3g(k, iv)
 	snow3g.GenerateKeystream(2500, ks)
 	for i := 0; i < 3; i++ {

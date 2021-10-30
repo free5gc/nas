@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessageRegistrationRequestData struct {
@@ -157,7 +157,6 @@ func TestNasTypeNewRegistrationRequest(t *testing.T) {
 }
 
 func TestNasTypeNewRegistrationRequestMessage(t *testing.T) {
-
 	for i, table := range nasMessageRegistrationRequestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasMessage.NewRegistrationRequest(0)
@@ -239,7 +238,7 @@ func TestNasTypeNewRegistrationRequestMessage(t *testing.T) {
 
 		data := make([]byte, buff.Len())
 		buff.Read(data)
-		//fmt.Println(data)
+		// fmt.Println(data)
 		b.DecodeRegistrationRequest(&data)
 		fmt.Println("Decode: ", b)
 

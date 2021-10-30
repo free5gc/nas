@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewNgksiAndRegistrationType5GS(t *testing.T) {
@@ -83,7 +83,6 @@ var registrationType5GSAndNgksiTestTable = []testRegistrationType5GSAndNgksiData
 }
 
 func TestNasTypeRegistrationType5GSAndNgksi(t *testing.T) {
-
 	for _, table := range registrationType5GSAndNgksiTestTable {
 		a := nasType.NewNgksiAndRegistrationType5GS()
 

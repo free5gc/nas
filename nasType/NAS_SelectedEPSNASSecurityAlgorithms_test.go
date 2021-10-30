@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewSelectedEPSNASSecurityAlgorithms(t *testing.T) {
@@ -75,7 +75,6 @@ var SelectedEPSNASSecurityAlgorithmsTestTable = []testSelectedEPSNASSecurityAlgo
 }
 
 func TestNasTypeSelectedEPSNASSecurityAlgorithms(t *testing.T) {
-
 	for _, table := range SelectedEPSNASSecurityAlgorithmsTestTable {
 		a := nasType.NewSelectedEPSNASSecurityAlgorithms(nasMessage.SecurityModeCommandSelectedEPSNASSecurityAlgorithmsType)
 

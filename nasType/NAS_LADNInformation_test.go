@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewLADNInformation(t *testing.T) {
 	a := nasType.NewLADNInformation(nasMessage.ConfigurationUpdateCommandLADNInformationType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRegistrationRequestLADNInformationTable = []NasTypeIeiData{
@@ -68,12 +67,15 @@ type testLADNInformationDataTemplate struct {
 }
 
 var testLADNInformationTestTable = []testLADNInformationDataTemplate{
-	{nasMessage.ConfigurationUpdateCommandLADNInformationType, 2, []uint8{0xff, 0xff},
-		nasMessage.ConfigurationUpdateCommandLADNInformationType, 2, []uint8{0xff, 0xff}},
+	{
+		nasMessage.ConfigurationUpdateCommandLADNInformationType, 2,
+		[]uint8{0xff, 0xff},
+		nasMessage.ConfigurationUpdateCommandLADNInformationType, 2,
+		[]uint8{0xff, 0xff},
+	},
 }
 
 func TestNasTypeLADNInformation(t *testing.T) {
-
 	for i, table := range testLADNInformationTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewLADNInformation(nasMessage.ConfigurationUpdateCommandLADNInformationType)

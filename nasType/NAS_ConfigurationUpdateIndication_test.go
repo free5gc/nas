@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 var ConfigurationUpdateCommandConfigurationUpdateIndicationTypeIeiInput uint8 = 0x0D
@@ -81,7 +81,6 @@ var configurationUpdateIndicationTestTable = []testConfigurationUpdateIndication
 }
 
 func TestNasTypeConfigurationUpdateIndication(t *testing.T) {
-
 	for _, table := range configurationUpdateIndicationTestTable {
 		a := nasType.NewConfigurationUpdateIndication(ConfigurationUpdateCommandConfigurationUpdateIndicationTypeIeiInput)
 

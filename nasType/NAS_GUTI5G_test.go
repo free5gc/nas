@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewGUTI5G(t *testing.T) {
 	a := nasType.NewGUTI5G(nasMessage.ConfigurationUpdateCommandGUTI5GType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeConfigurationUpdateCommandGUTI5GTable = []NasTypeIeiData{
@@ -300,12 +299,15 @@ type testGUTI5GDataTemplate struct {
 }
 
 var gUTI5GTestTable = []testGUTI5GDataTemplate{
-	{nasMessage.ConfigurationUpdateCommandGUTI5GType, 12, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x101, 0x01, [4]uint8{0x01, 0x01, 0x01, 0x01},
-		nasMessage.ConfigurationUpdateCommandGUTI5GType, 12, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x101, 0x01, [4]uint8{0x01, 0x01, 0x01, 0x01}},
+	{
+		nasMessage.ConfigurationUpdateCommandGUTI5GType, 12, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x101, 0x01,
+		[4]uint8{0x01, 0x01, 0x01, 0x01},
+		nasMessage.ConfigurationUpdateCommandGUTI5GType, 12, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x101, 0x01,
+		[4]uint8{0x01, 0x01, 0x01, 0x01},
+	},
 }
 
 func TestNasTypeGUTI5G(t *testing.T) {
-
 	for i, table := range gUTI5GTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewGUTI5G(nasMessage.ConfigurationUpdateCommandGUTI5GType)

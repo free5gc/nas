@@ -32,7 +32,6 @@ func RequestedNssaiToModels(nasNssai *nasType.RequestedNSSAI) ([]models.MappingO
 
 // TS 24.501 9.11.2.8, Length & value part of S-NSSAI IE
 func snssaiToModels(lengthOfSnssaiContents uint8, buf []byte) (models.MappingOfSnssai, error) {
-
 	snssai := models.MappingOfSnssai{}
 
 	switch lengthOfSnssaiContents {

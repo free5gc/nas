@@ -5,11 +5,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type nasMessagePDUSessionReleaseCompleteData struct {
@@ -45,7 +45,6 @@ func TestNasTypeNewPDUSessionReleaseComplete(t *testing.T) {
 }
 
 func TestNasTypeNewPDUSessionReleaseCompleteMessage(t *testing.T) {
-
 	for i, table := range nasMessagePDUSessionReleaseCompleteTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasMessage.NewPDUSessionReleaseComplete(0)
@@ -73,10 +72,10 @@ func TestNasTypeNewPDUSessionReleaseCompleteMessage(t *testing.T) {
 		logger.NasMsgLog.Debugln(data)
 		b.DecodePDUSessionReleaseComplete(&data)
 		logger.NasMsgLog.Debugln("Decode: ", b)
-		//fmt.Println(a.Cause5GSM)
-		//fmt.Println(b.Cause5GSM)
-		//fmt.Println(a.ExtendedProtocolConfigurationOptions)
-		//fmt.Println(b.ExtendedProtocolConfigurationOptions)
+		// fmt.Println(a.Cause5GSM)
+		// fmt.Println(b.Cause5GSM)
+		// fmt.Println(a.ExtendedProtocolConfigurationOptions)
+		// fmt.Println(b.ExtendedProtocolConfigurationOptions)
 		if reflect.DeepEqual(a, b) != true {
 			t.Errorf("Not correct")
 		}

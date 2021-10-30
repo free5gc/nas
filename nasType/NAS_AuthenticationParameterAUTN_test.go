@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewAuthenticationParameterAUTN(t *testing.T) {
 	a := nasType.NewAuthenticationParameterAUTN(nasMessage.AuthenticationRequestAuthenticationParameterAUTNType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeAuthenticationResultAuthenticationParameterAUTNTable = []NasTypeIeiData{
@@ -76,7 +75,6 @@ var authenticationParameterAUTNTestTable = []testAuthenticationParameterAUTNData
 }
 
 func TestNasTypeAuthenticationParameterAUTN(t *testing.T) {
-
 	for i, table := range authenticationParameterAUTNTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewAuthenticationParameterAUTN(nasMessage.AuthenticationRequestAuthenticationParameterAUTNType)

@@ -1,10 +1,11 @@
 package nas
 
 import (
-	"github.com/free5gc/nas/nasMessage"
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
+	"github.com/free5gc/nas/nasMessage"
 )
 
 // Message TODO：description
@@ -106,35 +107,35 @@ func GetSecurityHeaderType(byteArray []byte) uint8 {
 
 type GmmMessage struct {
 	GmmHeader
-	*nasMessage.AuthenticationRequest                            //8.2.1
-	*nasMessage.AuthenticationResponse                           //8.2.2
-	*nasMessage.AuthenticationResult                             //8.2.3
-	*nasMessage.AuthenticationFailure                            //8.2.4
-	*nasMessage.AuthenticationReject                             //8.2.5
-	*nasMessage.RegistrationRequest                              //8.2.6
-	*nasMessage.RegistrationAccept                               //8.2.7
-	*nasMessage.RegistrationComplete                             //8.2.8
-	*nasMessage.RegistrationReject                               //8.2.9
-	*nasMessage.ULNASTransport                                   //8.2.10
-	*nasMessage.DLNASTransport                                   //8.2.11
-	*nasMessage.DeregistrationRequestUEOriginatingDeregistration //8.2.12
-	*nasMessage.DeregistrationAcceptUEOriginatingDeregistration  //8.2.13
-	*nasMessage.DeregistrationRequestUETerminatedDeregistration  //8.2.14
-	*nasMessage.DeregistrationAcceptUETerminatedDeregistration   //8.2.15
-	*nasMessage.ServiceRequest                                   //8.2.16
-	*nasMessage.ServiceAccept                                    //8.2.17
-	*nasMessage.ServiceReject                                    //8.2.18
-	*nasMessage.ConfigurationUpdateCommand                       //8.2.19
-	*nasMessage.ConfigurationUpdateComplete                      //8.2.20
-	*nasMessage.IdentityRequest                                  //8.2.21
-	*nasMessage.IdentityResponse                                 //8.2.22
-	*nasMessage.Notification                                     //8.2.23
-	*nasMessage.NotificationResponse                             //8.2.24
-	*nasMessage.SecurityModeCommand                              //8.2.25
-	*nasMessage.SecurityModeComplete                             //8.2.26
-	*nasMessage.SecurityModeReject                               //8.2.27
-	*nasMessage.SecurityProtected5GSNASMessage                   //8.2.28
-	*nasMessage.Status5GMM                                       //8.2.29
+	*nasMessage.AuthenticationRequest                            // 8.2.1
+	*nasMessage.AuthenticationResponse                           // 8.2.2
+	*nasMessage.AuthenticationResult                             // 8.2.3
+	*nasMessage.AuthenticationFailure                            // 8.2.4
+	*nasMessage.AuthenticationReject                             // 8.2.5
+	*nasMessage.RegistrationRequest                              // 8.2.6
+	*nasMessage.RegistrationAccept                               // 8.2.7
+	*nasMessage.RegistrationComplete                             // 8.2.8
+	*nasMessage.RegistrationReject                               // 8.2.9
+	*nasMessage.ULNASTransport                                   // 8.2.10
+	*nasMessage.DLNASTransport                                   // 8.2.11
+	*nasMessage.DeregistrationRequestUEOriginatingDeregistration // 8.2.12
+	*nasMessage.DeregistrationAcceptUEOriginatingDeregistration  // 8.2.13
+	*nasMessage.DeregistrationRequestUETerminatedDeregistration  // 8.2.14
+	*nasMessage.DeregistrationAcceptUETerminatedDeregistration   // 8.2.15
+	*nasMessage.ServiceRequest                                   // 8.2.16
+	*nasMessage.ServiceAccept                                    // 8.2.17
+	*nasMessage.ServiceReject                                    // 8.2.18
+	*nasMessage.ConfigurationUpdateCommand                       // 8.2.19
+	*nasMessage.ConfigurationUpdateComplete                      // 8.2.20
+	*nasMessage.IdentityRequest                                  // 8.2.21
+	*nasMessage.IdentityResponse                                 // 8.2.22
+	*nasMessage.Notification                                     // 8.2.23
+	*nasMessage.NotificationResponse                             // 8.2.24
+	*nasMessage.SecurityModeCommand                              // 8.2.25
+	*nasMessage.SecurityModeComplete                             // 8.2.26
+	*nasMessage.SecurityModeReject                               // 8.2.27
+	*nasMessage.SecurityProtected5GSNASMessage                   // 8.2.28
+	*nasMessage.Status5GMM                                       // 8.2.29
 }
 
 const (
@@ -178,6 +179,7 @@ func (a *Message) PlainNasDecode(byteArray *[]byte) error {
 	}
 	return fmt.Errorf("Extended Protocol Discriminator[%d] is not allowed in Nas Message Deocde", epd)
 }
+
 func (a *Message) PlainNasEncode() ([]byte, error) {
 	data := new(bytes.Buffer)
 	if a.GmmMessage != nil {
@@ -188,13 +190,14 @@ func (a *Message) PlainNasEncode() ([]byte, error) {
 		return data.Bytes(), err
 	}
 	return nil, fmt.Errorf("Gmm/Gsm Message are both empty in Nas Message Encode")
-
 }
 
 func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
 	a.GmmMessage = NewGmmMessage()
-	binary.Read(buffer, binary.BigEndian, &a.GmmMessage.GmmHeader)
+	if err := binary.Read(buffer, binary.BigEndian, &a.GmmMessage.GmmHeader); err != nil {
+		return fmt.Errorf("GMM NAS decode Fail: read fail - %+v", err)
+	}
 	switch a.GmmMessage.GmmHeader.GetMessageType() {
 	case MsgTypeRegistrationRequest:
 		a.GmmMessage.RegistrationRequest = nasMessage.NewRegistrationRequest(MsgTypeRegistrationRequest)
@@ -209,16 +212,24 @@ func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 		a.GmmMessage.RegistrationReject = nasMessage.NewRegistrationReject(MsgTypeRegistrationReject)
 		a.GmmMessage.DecodeRegistrationReject(byteArray)
 	case MsgTypeDeregistrationRequestUEOriginatingDeregistration:
-		a.GmmMessage.DeregistrationRequestUEOriginatingDeregistration = nasMessage.NewDeregistrationRequestUEOriginatingDeregistration(MsgTypeDeregistrationRequestUEOriginatingDeregistration)
+		a.GmmMessage.DeregistrationRequestUEOriginatingDeregistration =
+			nasMessage.NewDeregistrationRequestUEOriginatingDeregistration(
+				MsgTypeDeregistrationRequestUEOriginatingDeregistration)
 		a.GmmMessage.DecodeDeregistrationRequestUEOriginatingDeregistration(byteArray)
 	case MsgTypeDeregistrationAcceptUEOriginatingDeregistration:
-		a.GmmMessage.DeregistrationAcceptUEOriginatingDeregistration = nasMessage.NewDeregistrationAcceptUEOriginatingDeregistration(MsgTypeDeregistrationAcceptUEOriginatingDeregistration)
+		a.GmmMessage.DeregistrationAcceptUEOriginatingDeregistration =
+			nasMessage.NewDeregistrationAcceptUEOriginatingDeregistration(
+				MsgTypeDeregistrationAcceptUEOriginatingDeregistration)
 		a.GmmMessage.DecodeDeregistrationAcceptUEOriginatingDeregistration(byteArray)
 	case MsgTypeDeregistrationRequestUETerminatedDeregistration:
-		a.GmmMessage.DeregistrationRequestUETerminatedDeregistration = nasMessage.NewDeregistrationRequestUETerminatedDeregistration(MsgTypeDeregistrationRequestUETerminatedDeregistration)
+		a.GmmMessage.DeregistrationRequestUETerminatedDeregistration =
+			nasMessage.NewDeregistrationRequestUETerminatedDeregistration(
+				MsgTypeDeregistrationRequestUETerminatedDeregistration)
 		a.GmmMessage.DecodeDeregistrationRequestUETerminatedDeregistration(byteArray)
 	case MsgTypeDeregistrationAcceptUETerminatedDeregistration:
-		a.GmmMessage.DeregistrationAcceptUETerminatedDeregistration = nasMessage.NewDeregistrationAcceptUETerminatedDeregistration(MsgTypeDeregistrationAcceptUETerminatedDeregistration)
+		a.GmmMessage.DeregistrationAcceptUETerminatedDeregistration =
+			nasMessage.NewDeregistrationAcceptUETerminatedDeregistration(
+				MsgTypeDeregistrationAcceptUETerminatedDeregistration)
 		a.GmmMessage.DecodeDeregistrationAcceptUETerminatedDeregistration(byteArray)
 	case MsgTypeServiceRequest:
 		a.GmmMessage.ServiceRequest = nasMessage.NewServiceRequest(MsgTypeServiceRequest)
@@ -230,10 +241,12 @@ func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 		a.GmmMessage.ServiceAccept = nasMessage.NewServiceAccept(MsgTypeServiceAccept)
 		a.GmmMessage.DecodeServiceAccept(byteArray)
 	case MsgTypeConfigurationUpdateCommand:
-		a.GmmMessage.ConfigurationUpdateCommand = nasMessage.NewConfigurationUpdateCommand(MsgTypeConfigurationUpdateCommand)
+		a.GmmMessage.ConfigurationUpdateCommand =
+			nasMessage.NewConfigurationUpdateCommand(MsgTypeConfigurationUpdateCommand)
 		a.GmmMessage.DecodeConfigurationUpdateCommand(byteArray)
 	case MsgTypeConfigurationUpdateComplete:
-		a.GmmMessage.ConfigurationUpdateComplete = nasMessage.NewConfigurationUpdateComplete(MsgTypeConfigurationUpdateComplete)
+		a.GmmMessage.ConfigurationUpdateComplete =
+			nasMessage.NewConfigurationUpdateComplete(MsgTypeConfigurationUpdateComplete)
 		a.GmmMessage.DecodeConfigurationUpdateComplete(byteArray)
 	case MsgTypeAuthenticationRequest:
 		a.GmmMessage.AuthenticationRequest = nasMessage.NewAuthenticationRequest(MsgTypeAuthenticationRequest)
@@ -281,7 +294,8 @@ func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 		a.GmmMessage.DLNASTransport = nasMessage.NewDLNASTransport(MsgTypeDLNASTransport)
 		a.GmmMessage.DecodeDLNASTransport(byteArray)
 	default:
-		return fmt.Errorf("NAS decode Fail: MsgType[%d] doesn't exist in GMM Message", a.GmmMessage.GmmHeader.GetMessageType())
+		return fmt.Errorf("NAS decode Fail: MsgType[%d] doesn't exist in GMM Message",
+			a.GmmMessage.GmmHeader.GetMessageType())
 	}
 	return nil
 }
@@ -345,29 +359,30 @@ func (a *Message) GmmMessageEncode(buffer *bytes.Buffer) error {
 	case MsgTypeDLNASTransport:
 		a.GmmMessage.EncodeDLNASTransport(buffer)
 	default:
-		return fmt.Errorf("NAS Encode Fail: MsgType[%d] doesn't exist in GMM Message", a.GmmMessage.GmmHeader.GetMessageType())
+		return fmt.Errorf("NAS Encode Fail: MsgType[%d] doesn't exist in GMM Message",
+			a.GmmMessage.GmmHeader.GetMessageType())
 	}
 	return nil
 }
 
 type GsmMessage struct {
 	GsmHeader
-	*nasMessage.PDUSessionEstablishmentRequest      //8.3.1
-	*nasMessage.PDUSessionEstablishmentAccept       //8.3.2
-	*nasMessage.PDUSessionEstablishmentReject       //8.3.3
-	*nasMessage.PDUSessionAuthenticationCommand     //8.3.4
-	*nasMessage.PDUSessionAuthenticationComplete    //8.3.5
-	*nasMessage.PDUSessionAuthenticationResult      //8.3.6
-	*nasMessage.PDUSessionModificationRequest       //8.3.7
-	*nasMessage.PDUSessionModificationReject        //8.3.8
-	*nasMessage.PDUSessionModificationCommand       //8.3.9
-	*nasMessage.PDUSessionModificationComplete      //8.3.10
-	*nasMessage.PDUSessionModificationCommandReject //8.3.11
-	*nasMessage.PDUSessionReleaseRequest            //8.3.12
-	*nasMessage.PDUSessionReleaseReject             //8.3.13
-	*nasMessage.PDUSessionReleaseCommand            //8.3.14
-	*nasMessage.PDUSessionReleaseComplete           //8.3.15
-	*nasMessage.Status5GSM                          //8.3.16
+	*nasMessage.PDUSessionEstablishmentRequest      // 8.3.1
+	*nasMessage.PDUSessionEstablishmentAccept       // 8.3.2
+	*nasMessage.PDUSessionEstablishmentReject       // 8.3.3
+	*nasMessage.PDUSessionAuthenticationCommand     // 8.3.4
+	*nasMessage.PDUSessionAuthenticationComplete    // 8.3.5
+	*nasMessage.PDUSessionAuthenticationResult      // 8.3.6
+	*nasMessage.PDUSessionModificationRequest       // 8.3.7
+	*nasMessage.PDUSessionModificationReject        // 8.3.8
+	*nasMessage.PDUSessionModificationCommand       // 8.3.9
+	*nasMessage.PDUSessionModificationComplete      // 8.3.10
+	*nasMessage.PDUSessionModificationCommandReject // 8.3.11
+	*nasMessage.PDUSessionReleaseRequest            // 8.3.12
+	*nasMessage.PDUSessionReleaseReject             // 8.3.13
+	*nasMessage.PDUSessionReleaseCommand            // 8.3.14
+	*nasMessage.PDUSessionReleaseComplete           // 8.3.15
+	*nasMessage.Status5GSM                          // 8.3.16
 }
 
 const (
@@ -392,40 +407,53 @@ const (
 func (a *Message) GsmMessageDecode(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
 	a.GsmMessage = NewGsmMessage()
-	binary.Read(buffer, binary.BigEndian, &a.GsmMessage.GsmHeader)
+	if err := binary.Read(buffer, binary.BigEndian, &a.GsmMessage.GsmHeader); err != nil {
+		return fmt.Errorf("GSM NAS decode Fail: read fail - %+v", err)
+	}
 	switch a.GsmMessage.GsmHeader.GetMessageType() {
 	case MsgTypePDUSessionEstablishmentRequest:
-		a.GsmMessage.PDUSessionEstablishmentRequest = nasMessage.NewPDUSessionEstablishmentRequest(MsgTypePDUSessionEstablishmentRequest)
+		a.GsmMessage.PDUSessionEstablishmentRequest =
+			nasMessage.NewPDUSessionEstablishmentRequest(MsgTypePDUSessionEstablishmentRequest)
 		a.GsmMessage.DecodePDUSessionEstablishmentRequest(byteArray)
 	case MsgTypePDUSessionEstablishmentAccept:
-		a.GsmMessage.PDUSessionEstablishmentAccept = nasMessage.NewPDUSessionEstablishmentAccept(MsgTypePDUSessionEstablishmentAccept)
+		a.GsmMessage.PDUSessionEstablishmentAccept =
+			nasMessage.NewPDUSessionEstablishmentAccept(MsgTypePDUSessionEstablishmentAccept)
 		a.GsmMessage.DecodePDUSessionEstablishmentAccept(byteArray)
 	case MsgTypePDUSessionEstablishmentReject:
-		a.GsmMessage.PDUSessionEstablishmentReject = nasMessage.NewPDUSessionEstablishmentReject(MsgTypePDUSessionEstablishmentReject)
+		a.GsmMessage.PDUSessionEstablishmentReject =
+			nasMessage.NewPDUSessionEstablishmentReject(MsgTypePDUSessionEstablishmentReject)
 		a.GsmMessage.DecodePDUSessionEstablishmentReject(byteArray)
 	case MsgTypePDUSessionAuthenticationCommand:
-		a.GsmMessage.PDUSessionAuthenticationCommand = nasMessage.NewPDUSessionAuthenticationCommand(MsgTypePDUSessionAuthenticationCommand)
+		a.GsmMessage.PDUSessionAuthenticationCommand =
+			nasMessage.NewPDUSessionAuthenticationCommand(MsgTypePDUSessionAuthenticationCommand)
 		a.GsmMessage.DecodePDUSessionAuthenticationCommand(byteArray)
 	case MsgTypePDUSessionAuthenticationComplete:
-		a.GsmMessage.PDUSessionAuthenticationComplete = nasMessage.NewPDUSessionAuthenticationComplete(MsgTypePDUSessionAuthenticationComplete)
+		a.GsmMessage.PDUSessionAuthenticationComplete =
+			nasMessage.NewPDUSessionAuthenticationComplete(MsgTypePDUSessionAuthenticationComplete)
 		a.GsmMessage.DecodePDUSessionAuthenticationComplete(byteArray)
 	case MsgTypePDUSessionAuthenticationResult:
-		a.GsmMessage.PDUSessionAuthenticationResult = nasMessage.NewPDUSessionAuthenticationResult(MsgTypePDUSessionAuthenticationResult)
+		a.GsmMessage.PDUSessionAuthenticationResult =
+			nasMessage.NewPDUSessionAuthenticationResult(MsgTypePDUSessionAuthenticationResult)
 		a.GsmMessage.DecodePDUSessionAuthenticationResult(byteArray)
 	case MsgTypePDUSessionModificationRequest:
-		a.GsmMessage.PDUSessionModificationRequest = nasMessage.NewPDUSessionModificationRequest(MsgTypePDUSessionModificationRequest)
+		a.GsmMessage.PDUSessionModificationRequest =
+			nasMessage.NewPDUSessionModificationRequest(MsgTypePDUSessionModificationRequest)
 		a.GsmMessage.DecodePDUSessionModificationRequest(byteArray)
 	case MsgTypePDUSessionModificationReject:
-		a.GsmMessage.PDUSessionModificationReject = nasMessage.NewPDUSessionModificationReject(MsgTypePDUSessionModificationReject)
+		a.GsmMessage.PDUSessionModificationReject =
+			nasMessage.NewPDUSessionModificationReject(MsgTypePDUSessionModificationReject)
 		a.GsmMessage.DecodePDUSessionModificationReject(byteArray)
 	case MsgTypePDUSessionModificationCommand:
-		a.GsmMessage.PDUSessionModificationCommand = nasMessage.NewPDUSessionModificationCommand(MsgTypePDUSessionModificationCommand)
+		a.GsmMessage.PDUSessionModificationCommand =
+			nasMessage.NewPDUSessionModificationCommand(MsgTypePDUSessionModificationCommand)
 		a.GsmMessage.DecodePDUSessionModificationCommand(byteArray)
 	case MsgTypePDUSessionModificationComplete:
-		a.GsmMessage.PDUSessionModificationComplete = nasMessage.NewPDUSessionModificationComplete(MsgTypePDUSessionModificationComplete)
+		a.GsmMessage.PDUSessionModificationComplete =
+			nasMessage.NewPDUSessionModificationComplete(MsgTypePDUSessionModificationComplete)
 		a.GsmMessage.DecodePDUSessionModificationComplete(byteArray)
 	case MsgTypePDUSessionModificationCommandReject:
-		a.GsmMessage.PDUSessionModificationCommandReject = nasMessage.NewPDUSessionModificationCommandReject(MsgTypePDUSessionModificationCommandReject)
+		a.GsmMessage.PDUSessionModificationCommandReject =
+			nasMessage.NewPDUSessionModificationCommandReject(MsgTypePDUSessionModificationCommandReject)
 		a.GsmMessage.DecodePDUSessionModificationCommandReject(byteArray)
 	case MsgTypePDUSessionReleaseRequest:
 		a.GsmMessage.PDUSessionReleaseRequest = nasMessage.NewPDUSessionReleaseRequest(MsgTypePDUSessionReleaseRequest)
@@ -443,7 +471,8 @@ func (a *Message) GsmMessageDecode(byteArray *[]byte) error {
 		a.GsmMessage.Status5GSM = nasMessage.NewStatus5GSM(MsgTypeStatus5GSM)
 		a.GsmMessage.DecodeStatus5GSM(byteArray)
 	default:
-		return fmt.Errorf("NAS Decode Fail: MsgType[%d] doesn't exist in GSM Message", a.GsmMessage.GsmHeader.GetMessageType())
+		return fmt.Errorf("NAS Decode Fail: MsgType[%d] doesn't exist in GSM Message",
+			a.GsmMessage.GsmHeader.GetMessageType())
 	}
 	return nil
 }
@@ -483,7 +512,8 @@ func (a *Message) GsmMessageEncode(buffer *bytes.Buffer) error {
 	case MsgTypeStatus5GSM:
 		a.GsmMessage.EncodeStatus5GSM(buffer)
 	default:
-		return fmt.Errorf("NAS Encode Fail: MsgType[%d] doesn't exist in GSM Message", a.GsmMessage.GsmHeader.GetMessageType())
+		return fmt.Errorf("NAS Encode Fail: MsgType[%d] doesn't exist in GSM Message",
+			a.GsmMessage.GsmHeader.GetMessageType())
 	}
 	return nil
 }

@@ -1,7 +1,9 @@
 package nasType
 
 import (
-	"github.com/free5gc/util_3gpp"
+	"bytes"
+	"errors"
+	"strings"
 )
 
 // DNN 9.11.2.1A
@@ -45,17 +47,49 @@ func (a *DNN) SetLen(len uint8) {
 
 // DNN 9.11.2.1A
 // DNN Row, sBit, len = [0, 0], 8 , INF
-func (a *DNN) GetDNN() (dNN []uint8) {
-	dnn := new(util_3gpp.Dnn)
-	dnn.UnmarshalBinary(a.Buffer)
-	return *dnn
+func (a *DNN) GetDNN() string {
+	return rfc1035tofqdn(a.Buffer)
 }
 
 // DNN 9.11.2.1A
 // DNN Row, sBit, len = [0, 0], 8 , INF
-func (a *DNN) SetDNN(dNN []uint8) {
-	tmp := (util_3gpp.Dnn)(dNN)
-	dnn, _ := tmp.MarshalBinary()
-	a.Buffer = dnn
-	a.Len = uint8(len(a.Buffer))
+func (a *DNN) SetDNN(dNN string) {
+	if b, err := fqdnToRfc1035(dNN); err == nil {
+		a.Buffer = b
+		a.Len = uint8(len(a.Buffer))
+	}
+}
+
+func fqdnToRfc1035(fqdn string) ([]byte, error) {
+	var rfc1035RR []byte
+	domainSegments := strings.Split(fqdn, ".")
+
+	for _, segment := range domainSegments {
+		if len(segment) > 63 {
+			return nil, errors.New("fqdn limit the label to 63 octets or less")
+		}
+		rfc1035RR = append(rfc1035RR, uint8(len(segment)))
+		rfc1035RR = append(rfc1035RR, segment...)
+	}
+
+	if len(rfc1035RR) > 255 {
+		return nil, errors.New("fqdn should less then 255 octet")
+	}
+	return rfc1035RR, nil
+}
+
+func rfc1035tofqdn(rfc1035RR []byte) string {
+	rfc1035Reader := bytes.NewBuffer(rfc1035RR)
+	fqdn := ""
+
+	for {
+		// length of label
+		if labelLen, err := rfc1035Reader.ReadByte(); err != nil {
+			break
+		} else {
+			fqdn += string(rfc1035Reader.Next(int(labelLen))) + "."
+		}
+	}
+
+	return fqdn[0 : len(fqdn)-1]
 }

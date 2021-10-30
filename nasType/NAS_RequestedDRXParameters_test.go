@@ -3,16 +3,15 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewRequestedDRXParameters(t *testing.T) {
 	a := nasType.NewRequestedDRXParameters(nasMessage.RegistrationRequestRequestedDRXParametersType)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRequestedDRXParametersServiceRejectT3346ValueTypeTable = []NasTypeIeiData{
@@ -66,12 +65,13 @@ type testRequestedDRXParametersDataTemplate struct {
 }
 
 var testRequestedDRXParametersTestTable = []testRequestedDRXParametersDataTemplate{
-	{nasMessage.RegistrationRequestRequestedDRXParametersType, 2, 0x0f,
-		nasMessage.RegistrationRequestRequestedDRXParametersType, 2, 0x0f},
+	{
+		nasMessage.RegistrationRequestRequestedDRXParametersType, 2, 0x0f,
+		nasMessage.RegistrationRequestRequestedDRXParametersType, 2, 0x0f,
+	},
 }
 
 func TestNasTypeRequestedDRXParameters(t *testing.T) {
-
 	for i, table := range testRequestedDRXParametersTestTable {
 		t.Logf("Test Cnt:%d", i)
 		a := nasType.NewRequestedDRXParameters(nasMessage.RegistrationRequestRequestedDRXParametersType)

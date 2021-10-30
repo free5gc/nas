@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var AlwaysonPDUSessionRequestedIeiInput uint8 = 0x0B
@@ -63,7 +63,6 @@ var alwaysonPDUSessionRequestedTestTable = []testAlwaysonPDUSessionRequestedData
 }
 
 func TestNasTypeAlwaysonPDUSessionRequested(t *testing.T) {
-
 	for _, table := range alwaysonPDUSessionRequestedTestTable {
 		a := nasType.NewAlwaysonPDUSessionRequested(AlwaysonPDUSessionRequestedIeiInput)
 

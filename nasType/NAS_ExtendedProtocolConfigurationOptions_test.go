@@ -3,15 +3,14 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewExtendedProtocolConfigurationOptions(t *testing.T) {
 	a := nasType.NewExtendedProtocolConfigurationOptions(0x7B)
 	assert.NotNil(t, a)
-
 }
 
 var nasTypeRegistrationAcceptExtendedProtocolConfigurationOptionsIeiTable = []NasTypeIeiData{

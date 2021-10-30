@@ -3,10 +3,10 @@ package nasType_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNasTypeNewT3512Value(t *testing.T) {
@@ -80,6 +80,7 @@ type testT3512ValueDataTemplate struct {
 var T3512ValueTestData = []nasType.T3512Value{
 	{nasMessage.RegistrationAcceptT3512ValueType, 1, 0x00},
 }
+
 var T3512ValueExpectedData = []nasType.T3512Value{
 	{nasMessage.RegistrationAcceptT3512ValueType, 1, 0x21},
 }

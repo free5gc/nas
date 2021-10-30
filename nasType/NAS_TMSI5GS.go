@@ -1,5 +1,9 @@
 package nasType
 
+import (
+	"encoding/hex"
+)
+
 // TMSI5GS 9.11.3.4
 // Spare Row, sBit, len = [0, 0], 4 , 1
 // TypeOfIdentity Row, sBit, len = [0, 0], 3 , 3
@@ -103,4 +107,11 @@ func (a *TMSI5GS) GetTMSI5G() (tMSI5G [4]uint8) {
 // TMSI5G Row, sBit, len = [3, 6], 8 , 32
 func (a *TMSI5GS) SetTMSI5G(tMSI5G [4]uint8) {
 	copy(a.Octet[3:7], tMSI5G[:])
+}
+
+func (a *TMSI5GS) Get5GSTMSI() (tMSI5GS string, mobileIdType string, err error) {
+	partOfAmfId := hex.EncodeToString(a.Octet[1:3])
+	tmsi5g := hex.EncodeToString(a.Octet[3:7])
+	tMSI5GS = partOfAmfId + tmsi5g
+	return tMSI5GS, "5G-S-TMSI", nil
 }

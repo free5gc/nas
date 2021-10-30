@@ -10,7 +10,7 @@ import (
 
 func SnssaiToModels(nasSnssai *nasType.SNSSAI) (snssai models.Snssai) {
 	sD := nasSnssai.GetSD()
-	snssai.Sd = hex.EncodeToString([]uint8(sD[:]))
+	snssai.Sd = hex.EncodeToString(sD[:])
 	snssai.Sst = int32(nasSnssai.GetSST())
 	return
 }

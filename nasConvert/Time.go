@@ -1,16 +1,16 @@
 package nasConvert
 
 import (
-	"github.com/free5gc/nas/nasType"
 	"strings"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
-
 	time := 0
 
 	if timezone[0] == '-' {
-		time = 64 //0x80
+		time = 64 // 0x80
 	}
 
 	if timezone[1] == '1' {
@@ -34,7 +34,6 @@ func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
 }
 
 func DaylightSavingTimeToNas(timezone string) (nasDaylightSavingTimeToNas nasType.NetworkDaylightSavingTime) {
-
 	value := 0
 
 	if strings.Contains(timezone, "+1h") {

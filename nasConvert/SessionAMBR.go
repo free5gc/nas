@@ -2,7 +2,6 @@ package nasConvert
 
 import (
 	"encoding/binary"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -13,9 +12,6 @@ import (
 )
 
 func ModelsToSessionAMBR(ambr *models.Ambr) (sessAmbr nasType.SessionAMBR) {
-
-	fmt.Println(ambr)
-
 	uplink := strings.Split(ambr.Uplink, " ")
 	if bitRate, err := strconv.ParseInt(uplink[0], 10, 16); err != nil {
 		logger.ConvertLog.Warnf("uplink AMBR parse failed: %+v", err)

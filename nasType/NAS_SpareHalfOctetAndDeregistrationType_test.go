@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewNewSpareHalfOctetAndDeregistrationType(t *testing.T) {
@@ -85,7 +85,6 @@ var deregistrationTypeAndSpareHalfOctetTestTable = []testDeregistrationTypeAndSp
 }
 
 func TestNasTypeDeregistrationTypeAndSpareHalfOctet(t *testing.T) {
-
 	for _, table := range deregistrationTypeAndSpareHalfOctetTestTable {
 		a := nasType.NewSpareHalfOctetAndDeregistrationType()
 

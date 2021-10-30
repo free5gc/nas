@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewDNN(t *testing.T) {
@@ -13,81 +13,56 @@ func TestNasTypeNewDNN(t *testing.T) {
 	assert.NotNil(t, a)
 }
 
-var nasTypeDNNIeiTable = []NasTypeIeiData{
+var NNIeiTable = []NasTypeIeiData{
 	{0, 0},
 }
 
 func TestNasTypDNNGetSetIei(t *testing.T) {
 	a := nasType.NewDNN(0)
-	for _, table := range nasTypeDNNIeiTable {
+	for _, table := range NNIeiTable {
 		a.SetIei(table.in)
 		assert.Equal(t, table.out, a.GetIei())
 	}
 }
 
-var nasTypeDNNLenTable = []NasTypeLenuint8Data{
+var NNLenTable = []NasTypeLenuint8Data{
 	{1, 1},
 }
 
 func TestNasTypeDNNGetSetLen(t *testing.T) {
 	a := nasType.NewDNN(0)
-	for _, table := range nasTypeDNNLenTable {
+	for _, table := range NNLenTable {
 		a.SetLen(table.in)
 		assert.Equal(t, table.out, a.GetLen())
 	}
 }
 
-type nasTypetDNNData struct {
-	inLen uint8
-	in    []uint8
-	out   []uint8
-}
-
-var nasTypeDNNTable = []nasTypetDNNData{
-	{8, []uint8{0x07, 0x64, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74}, []uint8{0x07, 0x64, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74}},
+type DNNData struct {
+	in  string
+	out []uint8
 }
 
 func TestNasTypeDNNGetSetDNNValue(t *testing.T) {
-	a := nasType.NewDNN(0)
-	for _, table := range nasTypeDNNTable {
-		a.SetLen(table.inLen)
-		a.SetDNN(table.in)
-		assert.Equalf(t, table.out, a.GetDNN(), "in(%v): out %v, actual %x", table.in, table.out, a.GetDNN())
+	NNTable := []DNNData{
+		{
+			"internet",
+			[]uint8{0x8, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x65, 0x74},
+		},
+		{
+			"www.example.com",
+			[]uint8{
+				0x03, 0x77, 0x77, 0x77,
+				0x07, 0x65, 0x78, 0x61, 0x6D, 0x70, 0x6c, 0x65,
+				0x03, 0x63, 0x6f, 0x6d,
+			},
+		},
 	}
-}
 
-type testDNNDataTemplate struct {
-	in  nasType.DNN
-	out nasType.DNN
-}
-
-var DNNTestData = []nasType.DNN{
-	{0, 7, []byte{0x64, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74}}, //AuthenticationResult
-}
-
-var DNNExpectedTestData = []nasType.DNN{
-	{0, 8, []byte{0x07, 0x64, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74}}, //AuthenticationResult
-}
-
-var DNNTestTable = []testDNNDataTemplate{
-	{DNNTestData[0], DNNExpectedTestData[0]},
-}
-
-func TestNasTypeDNN(t *testing.T) {
-
-	for i, table := range DNNTestTable {
-		t.Logf("Test Cnt:%d", i)
-		a := nasType.NewDNN(0) //AuthenticationResult
-
-		a.SetIei(table.in.GetIei())
-		a.SetLen(table.in.Len)
-		a.SetDNN(table.in.Buffer)
-
-		assert.Equalf(t, table.out.Iei, a.Iei, "in(%v): out %v, actual %x", table.in.Iei, table.out.Iei, a.Iei)
-		assert.Equalf(t, table.out.Len, a.Len, "in(%v): out %v, actual %x", table.in.Len, table.out.Len, a.Len)
-		assert.Equalf(t, table.out.Buffer, a.Buffer, "in(%v): out %v, actual %x", table.in.Buffer, table.out.Buffer, a.Buffer)
-		t.Log(table.out.Buffer, a.Buffer, "in(%v): out %v, actual %x", table.in.Buffer, table.out.Buffer, a.Buffer)
-		t.Log(a.Len)
-
+	a := nasType.NewDNN(0)
+	for _, table := range NNTable {
+		a.SetDNN(table.in)
+		assert.Equalf(t, table.out, a.Buffer, "in(%v): out %v, actual %x", table.in, table.out, a.Buffer)
+		assert.Equalf(t, uint8(len(table.out)), a.Len, "outlen %d, actual %d", table.in, len(table.out), a.Len)
+		assert.Equalf(t, table.in, a.GetDNN(), "in(%v): GetDNN %x", table.in, a.GetDNN())
 	}
 }

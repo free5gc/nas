@@ -6,10 +6,10 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/aead/cmac"
+
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/security/snow3g"
-
-	"github.com/aead/cmac"
 )
 
 func NASEncrypt(AlgoID uint8, KnasEnc [16]byte, Count uint32, Bearer uint8,
@@ -198,9 +198,9 @@ func NIA1(ik [16]byte, countI uint32, bearer byte, direction uint32, msg []byte,
 	M := binary.BigEndian.Uint64(tmp)
 	Eval = mul(Eval^M, P, 0x000000000000001b)
 
-	Eval = Eval ^ uint64(length)
+	Eval = Eval ^ length
 	Eval = mul(Eval, Q, 0x000000000000001b)
-	MacI := uint32(uint32(Eval>>32) ^ z[4])
+	MacI := uint32(Eval>>32) ^ z[4]
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, MacI)
 	return b, nil

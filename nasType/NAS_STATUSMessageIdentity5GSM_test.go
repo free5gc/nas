@@ -3,9 +3,9 @@ package nasType_test
 import (
 	"testing"
 
-	"github.com/free5gc/nas/nasType"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/free5gc/nas/nasType"
 )
 
 func TestNasTypeNewSTATUSMessageIdentity5GSM(t *testing.T) {
@@ -48,7 +48,6 @@ var STATUSMessageIdentity5GSMTable = []STATUSMessageIdentity5GSMTestDataTemplate
 }
 
 func TestNasTypeSTATUSMessageIdentity5GSM(t *testing.T) {
-
 	for _, table := range STATUSMessageIdentity5GSMTable {
 
 		a := nasType.NewSTATUSMessageIdentity5GSM()
