@@ -69,7 +69,7 @@ func NASMacCalculate(AlgoID uint8, KnasInt [16]uint8, Count uint32,
 	switch AlgoID {
 	case AlgIntegrity128NIA0:
 		logger.SecurityLog.Warningln("Integrity NIA0 is emergency.")
-		return nil, nil
+		return make([]byte, 4), nil
 	case AlgIntegrity128NIA1:
 		logger.SecurityLog.Debugf("Use NIA1")
 		return NIA1(KnasInt, Count, Bearer, uint32(Direction), msg, uint64(len(msg))*8)
@@ -97,7 +97,9 @@ func NEA1(ck [16]byte, countC, bearer, direction uint32, ibs []byte, length uint
 	ks := make([]uint32, l)
 	snow3g.GenerateKeystream(int(l), ks)
 	// Clear keystream bits which exceed length
-	ks[l-1] &= ^((1 << (32 - r)) - 1)
+	if r != 0 {
+		ks[l-1] &= ^((1 << (32 - r)) - 1)
+	}
 
 	obs = make([]byte, len(ibs))
 	var i uint32
