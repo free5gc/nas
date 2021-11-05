@@ -40,7 +40,7 @@ var sq = [...]byte{
 
 type Snow3gFunc struct {
 	lfsr [16]uint32
-	fsm [3]uint32
+	fsm  [3]uint32
 }
 
 func mulx(V, c byte) byte {
