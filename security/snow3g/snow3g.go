@@ -38,18 +38,10 @@ var sq = [...]byte{
 	0x56, 0xe1, 0x77, 0xc9, 0x1e, 0x9e, 0x95, 0xa3, 0x90, 0x19, 0xa8, 0x6c, 0x09, 0xd0, 0xf0, 0x86,
 }
 
-type Lfsr struct {
-	s [16]uint32
+type snow3g struct {
+	lfsr [16]uint32
+	fsm  [3]uint32
 }
-
-type Fsm struct {
-	r [3]uint32
-}
-
-var (
-	lfsr Lfsr
-	fsm  Fsm
-)
 
 func mulx(V, c byte) byte {
 	if V&0x80 != 0 {
@@ -109,68 +101,81 @@ func divAlpha(c byte) uint32 {
 	return (r0 << 24) | (r1 << 16) | (r2 << 8) | r3
 }
 
-func lfsrInitialisationMode(F uint32) {
-	v := (lfsr.s[0] << 8) ^ mulAlpha(byte(lfsr.s[0]>>24)&0xff) ^ lfsr.s[2] ^ (lfsr.s[11] >> 8) ^
-		divAlpha(byte(lfsr.s[11]&0xff)) ^ F
+func (s *snow3g) lfsrInitializationMode(F uint32) {
+	v := (s.lfsr[0] << 8) ^ mulAlpha(byte(s.lfsr[0]>>24)&0xff) ^ s.lfsr[2] ^ (s.lfsr[11] >> 8) ^
+		divAlpha(byte(s.lfsr[11]&0xff)) ^ F
 	for i := 0; i < 15; i++ {
-		lfsr.s[i] = lfsr.s[i+1]
+		s.lfsr[i] = s.lfsr[i+1]
 	}
-	lfsr.s[15] = v
+	s.lfsr[15] = v
 }
 
-func lfsrKeystreamMode() {
-	v := (lfsr.s[0] << 8) ^ mulAlpha(byte(lfsr.s[0]>>24)&0xff) ^ lfsr.s[2] ^ (lfsr.s[11] >> 8) ^
-		divAlpha(byte(lfsr.s[11]&0xff))
+func (s *snow3g) lfsrKeystreamMode() {
+	v := (s.lfsr[0] << 8) ^ mulAlpha(byte(s.lfsr[0]>>24)&0xff) ^ s.lfsr[2] ^ (s.lfsr[11] >> 8) ^
+		divAlpha(byte(s.lfsr[11]&0xff))
 	for i := 0; i < 15; i++ {
-		lfsr.s[i] = lfsr.s[i+1]
+		s.lfsr[i] = s.lfsr[i+1]
 	}
-	lfsr.s[15] = v
+	s.lfsr[15] = v
 }
 
-func clockFsm(s15, s5 uint32) uint32 {
-	F := (s15 + fsm.r[0]) ^ fsm.r[1]
-	r := fsm.r[1] + (fsm.r[2] ^ s5)
-	fsm.r[2] = s2(fsm.r[1])
-	fsm.r[1] = s1(fsm.r[0])
-	fsm.r[0] = r
+func (s *snow3g) clockFsm(s15, s5 uint32) uint32 {
+	F := (s15 + s.fsm[0]) ^ s.fsm[1]
+	r := s.fsm[1] + (s.fsm[2] ^ s5)
+	s.fsm[2] = s2(s.fsm[1])
+	s.fsm[1] = s1(s.fsm[0])
+	s.fsm[0] = r
 	return F
 }
 
-func InitSnow3g(k, iv [4]uint32) {
-	lfsr.s[0] = k[0] ^ 0xffffffff
-	lfsr.s[1] = k[1] ^ 0xffffffff
-	lfsr.s[2] = k[2] ^ 0xffffffff
-	lfsr.s[3] = k[3] ^ 0xffffffff
-	lfsr.s[4] = k[0]
-	lfsr.s[5] = k[1]
-	lfsr.s[6] = k[2]
-	lfsr.s[7] = k[3]
-	lfsr.s[8] = k[0] ^ 0xffffffff
-	lfsr.s[9] = k[1] ^ 0xffffffff ^ iv[3]
-	lfsr.s[10] = k[2] ^ 0xffffffff ^ iv[2]
-	lfsr.s[11] = k[3] ^ 0xffffffff
-	lfsr.s[12] = k[0] ^ iv[1]
-	lfsr.s[13] = k[1]
-	lfsr.s[14] = k[2]
-	lfsr.s[15] = k[3] ^ iv[0]
+func newSnow3g(k, iv [4]uint32) *snow3g {
+	s := &snow3g{}
+
+	s.lfsr[0] = k[0] ^ 0xffffffff
+	s.lfsr[1] = k[1] ^ 0xffffffff
+	s.lfsr[2] = k[2] ^ 0xffffffff
+	s.lfsr[3] = k[3] ^ 0xffffffff
+	s.lfsr[4] = k[0]
+	s.lfsr[5] = k[1]
+	s.lfsr[6] = k[2]
+	s.lfsr[7] = k[3]
+	s.lfsr[8] = k[0] ^ 0xffffffff
+	s.lfsr[9] = k[1] ^ 0xffffffff ^ iv[3]
+	s.lfsr[10] = k[2] ^ 0xffffffff ^ iv[2]
+	s.lfsr[11] = k[3] ^ 0xffffffff
+	s.lfsr[12] = k[0] ^ iv[1]
+	s.lfsr[13] = k[1]
+	s.lfsr[14] = k[2]
+	s.lfsr[15] = k[3] ^ iv[0]
 
 	for i := 0; i < 3; i++ {
-		fsm.r[i] = 0
+		s.fsm[i] = 0
 	}
 
 	for i := 0; i < 32; i++ {
-		F := clockFsm(lfsr.s[15], lfsr.s[5])
-		lfsrInitialisationMode(F)
+		F := s.clockFsm(s.lfsr[15], s.lfsr[5])
+		s.lfsrInitializationMode(F)
+	}
+
+	return s
+}
+
+func (s *snow3g) generateKeystream(n int, ks []uint32) {
+	s.clockFsm(s.lfsr[15], s.lfsr[5])
+	s.lfsrKeystreamMode()
+
+	for i := 0; i < n; i++ {
+		F := s.clockFsm(s.lfsr[15], s.lfsr[5])
+		ks[i] = F ^ s.lfsr[0]
+		s.lfsrKeystreamMode()
 	}
 }
 
-func GenerateKeystream(n int, ks []uint32) {
-	clockFsm(lfsr.s[15], lfsr.s[5])
-	lfsrKeystreamMode()
+func GetKeyStream(k, iv [4]uint32, n int) []uint32 {
+	s := newSnow3g(k, iv)
 
-	for i := 0; i < n; i++ {
-		F := clockFsm(lfsr.s[15], lfsr.s[5])
-		ks[i] = F ^ lfsr.s[0]
-		lfsrKeystreamMode()
-	}
+	ks := make([]uint32, n)
+	s.generateKeystream(n, ks)
+
+	return ks
 }
