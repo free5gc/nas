@@ -90,12 +90,10 @@ func NEA1(ck [16]byte, countC, bearer, direction uint32, ibs []byte, length uint
 		k[i] = binary.BigEndian.Uint32(ck[4*(3-i) : 4*(3-i+1)])
 	}
 	iv := [4]uint32{(bearer << 27) | (direction << 26), countC, (bearer << 27) | (direction << 26), countC}
-	snow3g.InitSnow3g(k, iv)
 
 	l := (length + 31) / 32
 	r := length % 32
-	ks := make([]uint32, l)
-	snow3g.GenerateKeystream(int(l), ks)
+	ks := snow3g.GetKeyStream(k, iv, int(l))
 	// Clear keystream bits which exceed length
 	if r != 0 {
 		ks[l-1] &= ^((1 << (32 - r)) - 1)
@@ -180,9 +178,7 @@ func NIA1(ik [16]byte, countI uint32, bearer byte, direction uint32, msg []byte,
 	}
 	iv := [4]uint32{fresh ^ (direction << 15), countI ^ (direction << 31), fresh, countI}
 	D := ((length + 63) / 64) + 1
-	z := make([]uint32, 5)
-	snow3g.InitSnow3g(k, iv)
-	snow3g.GenerateKeystream(5, z)
+	z := snow3g.GetKeyStream(k, iv, 5)
 
 	P := (uint64(z[0]) << 32) | uint64(z[1])
 	Q := (uint64(z[2]) << 32) | uint64(z[3])
