@@ -192,7 +192,11 @@ func (a *RegistrationRequest) DecodeRegistrationRequest(byteArray *[]byte) {
 		case RegistrationRequestCapability5GMMType:
 			a.Capability5GMM = nasType.NewCapability5GMM(ieiN)
 			binary.Read(buffer, binary.BigEndian, &a.Capability5GMM.Len)
-			a.Capability5GMM.SetLen(a.Capability5GMM.GetLen())
+			if int(a.Capability5GMM.GetLen()) > len(a.Capability5GMM.Octet) {
+				a.Capability5GMM.SetLen(13)
+			} else {
+				a.Capability5GMM.SetLen(a.Capability5GMM.GetLen())
+			}
 			binary.Read(buffer, binary.BigEndian, a.Capability5GMM.Octet[:a.Capability5GMM.GetLen()])
 		case RegistrationRequestUESecurityCapabilityType:
 			a.UESecurityCapability = nasType.NewUESecurityCapability(ieiN)
