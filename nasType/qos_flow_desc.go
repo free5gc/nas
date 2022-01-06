@@ -42,7 +42,7 @@ func (q *QoSFlowDescs) UnmarshalBinary(b []byte) error {
 type QoSFlowOperationCode uint8
 
 const (
-	OperationCodeCreateNewQoSFlowDescription QoSFlowOperationCode = iota
+	OperationCodeCreateNewQoSFlowDescription QoSFlowOperationCode = iota + 1
 	OperationCodeDeleteExistingQoSFlowDescription
 	OperationCodeModifyExistingQoSFlowDescription
 )
