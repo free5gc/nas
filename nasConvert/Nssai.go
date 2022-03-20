@@ -34,6 +34,10 @@ func RequestedNssaiToModels(nasNssai *nasType.RequestedNSSAI) ([]models.MappingO
 func snssaiToModels(lengthOfSnssaiContents uint8, buf []byte) (models.MappingOfSnssai, error) {
 	snssai := models.MappingOfSnssai{}
 
+	if alen, elen := len(buf), int(lengthOfSnssaiContents)+1; alen < elen {
+		return snssai, fmt.Errorf("S-NSSAI contents is too short: expected = %d, actual = %d", elen, alen)
+	}
+
 	switch lengthOfSnssaiContents {
 	case 0x01: // SST
 		snssai.ServingSnssai = &models.Snssai{
