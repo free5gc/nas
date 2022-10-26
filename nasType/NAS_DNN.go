@@ -65,15 +65,17 @@ func fqdnToRfc1035(fqdn string) ([]byte, error) {
 	domainSegments := strings.Split(fqdn, ".")
 
 	for _, segment := range domainSegments {
-		if len(segment) > 63 {
-			return nil, errors.New("fqdn limit the label to 63 octets or less")
+		// In RFC 1035 max length is 63, but in TS 23.003 including length octet
+		if len(segment) > 62 {
+			return nil, errors.New("DNN limit the label to 62 octets or less")
 		}
 		rfc1035RR = append(rfc1035RR, uint8(len(segment)))
 		rfc1035RR = append(rfc1035RR, segment...)
 	}
 
-	if len(rfc1035RR) > 255 {
-		return nil, errors.New("fqdn should less then 255 octet")
+	// In RFC 1035 max length is 255, but in TS 23.003 is 100
+	if len(rfc1035RR) > 100 {
+		return nil, errors.New("DNN should less then 100 octet")
 	}
 	return rfc1035RR, nil
 }
