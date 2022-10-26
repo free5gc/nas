@@ -240,11 +240,11 @@ func (protocolConfigurationOptions *ProtocolConfigurationOptions) AddIPv4LinkMTU
 	protocolOrContainerUnit.ProtocolOrContainerID = nasMessage.IPv4LinkMTUDL
 	protocolOrContainerUnit.LengthOfContents = 2
 	logger.ConvertLog.Traceln("LengthOfContents: ", protocolOrContainerUnit.LengthOfContents)
-	protocolOrContainerUnit.Contents =
-		append(protocolOrContainerUnit.Contents, []byte{uint8(mtu >> 8), uint8(mtu & 0xff)}...)
+	protocolOrContainerUnit.Contents = append(
+		protocolOrContainerUnit.Contents, []byte{uint8(mtu >> 8), uint8(mtu & 0xff)}...)
 	logger.ConvertLog.Traceln("Contents: ", protocolOrContainerUnit.Contents)
 
-	protocolConfigurationOptions.ProtocolOrContainerList =
-		append(protocolConfigurationOptions.ProtocolOrContainerList, protocolOrContainerUnit)
+	protocolConfigurationOptions.ProtocolOrContainerList = append(
+		protocolConfigurationOptions.ProtocolOrContainerList, protocolOrContainerUnit)
 	return
 }

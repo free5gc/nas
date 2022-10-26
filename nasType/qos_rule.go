@@ -65,11 +65,9 @@ func (q *QoSRules) MarshalBinary() ([]byte, error) {
 		var packetFilterError error
 		var packetFilterBytes []byte
 		if rule.Operation == OperationCodeModifyExistingQoSRuleAndDeletePacketFilters {
-			packetFilterBytes, packetFilterError =
-				buildPacketFilterDeleteList(rule.PacketFilterList)
+			packetFilterBytes, packetFilterError = buildPacketFilterDeleteList(rule.PacketFilterList)
 		} else {
-			packetFilterBytes, packetFilterError =
-				buildPacketFilterList(rule.PacketFilterList)
+			packetFilterBytes, packetFilterError = buildPacketFilterList(rule.PacketFilterList)
 		}
 
 		if packetFilterError != nil {

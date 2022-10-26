@@ -212,23 +212,23 @@ func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 		a.GmmMessage.RegistrationReject = nasMessage.NewRegistrationReject(MsgTypeRegistrationReject)
 		a.GmmMessage.DecodeRegistrationReject(byteArray)
 	case MsgTypeDeregistrationRequestUEOriginatingDeregistration:
-		a.GmmMessage.DeregistrationRequestUEOriginatingDeregistration =
-			nasMessage.NewDeregistrationRequestUEOriginatingDeregistration(
+		a.GmmMessage.DeregistrationRequestUEOriginatingDeregistration = nasMessage.
+			NewDeregistrationRequestUEOriginatingDeregistration(
 				MsgTypeDeregistrationRequestUEOriginatingDeregistration)
 		a.GmmMessage.DecodeDeregistrationRequestUEOriginatingDeregistration(byteArray)
 	case MsgTypeDeregistrationAcceptUEOriginatingDeregistration:
-		a.GmmMessage.DeregistrationAcceptUEOriginatingDeregistration =
-			nasMessage.NewDeregistrationAcceptUEOriginatingDeregistration(
+		a.GmmMessage.DeregistrationAcceptUEOriginatingDeregistration = nasMessage.
+			NewDeregistrationAcceptUEOriginatingDeregistration(
 				MsgTypeDeregistrationAcceptUEOriginatingDeregistration)
 		a.GmmMessage.DecodeDeregistrationAcceptUEOriginatingDeregistration(byteArray)
 	case MsgTypeDeregistrationRequestUETerminatedDeregistration:
-		a.GmmMessage.DeregistrationRequestUETerminatedDeregistration =
-			nasMessage.NewDeregistrationRequestUETerminatedDeregistration(
+		a.GmmMessage.DeregistrationRequestUETerminatedDeregistration = nasMessage.
+			NewDeregistrationRequestUETerminatedDeregistration(
 				MsgTypeDeregistrationRequestUETerminatedDeregistration)
 		a.GmmMessage.DecodeDeregistrationRequestUETerminatedDeregistration(byteArray)
 	case MsgTypeDeregistrationAcceptUETerminatedDeregistration:
-		a.GmmMessage.DeregistrationAcceptUETerminatedDeregistration =
-			nasMessage.NewDeregistrationAcceptUETerminatedDeregistration(
+		a.GmmMessage.DeregistrationAcceptUETerminatedDeregistration = nasMessage.
+			NewDeregistrationAcceptUETerminatedDeregistration(
 				MsgTypeDeregistrationAcceptUETerminatedDeregistration)
 		a.GmmMessage.DecodeDeregistrationAcceptUETerminatedDeregistration(byteArray)
 	case MsgTypeServiceRequest:
@@ -241,15 +241,15 @@ func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 		a.GmmMessage.ServiceAccept = nasMessage.NewServiceAccept(MsgTypeServiceAccept)
 		a.GmmMessage.DecodeServiceAccept(byteArray)
 	case MsgTypeConfigurationUpdateCommand:
-		a.GmmMessage.ConfigurationUpdateCommand =
-			nasMessage.NewConfigurationUpdateCommand(MsgTypeConfigurationUpdateCommand)
+		a.GmmMessage.ConfigurationUpdateCommand = nasMessage.NewConfigurationUpdateCommand(MsgTypeConfigurationUpdateCommand)
 		a.GmmMessage.DecodeConfigurationUpdateCommand(byteArray)
 	case MsgTypeConfigurationUpdateComplete:
-		a.GmmMessage.ConfigurationUpdateComplete =
-			nasMessage.NewConfigurationUpdateComplete(MsgTypeConfigurationUpdateComplete)
+		a.GmmMessage.ConfigurationUpdateComplete = nasMessage.
+			NewConfigurationUpdateComplete(MsgTypeConfigurationUpdateComplete)
 		a.GmmMessage.DecodeConfigurationUpdateComplete(byteArray)
 	case MsgTypeAuthenticationRequest:
-		a.GmmMessage.AuthenticationRequest = nasMessage.NewAuthenticationRequest(MsgTypeAuthenticationRequest)
+		a.GmmMessage.AuthenticationRequest = nasMessage.
+			NewAuthenticationRequest(MsgTypeAuthenticationRequest)
 		a.GmmMessage.DecodeAuthenticationRequest(byteArray)
 	case MsgTypeAuthenticationResponse:
 		a.GmmMessage.AuthenticationResponse = nasMessage.NewAuthenticationResponse(MsgTypeAuthenticationResponse)
@@ -412,60 +412,64 @@ func (a *Message) GsmMessageDecode(byteArray *[]byte) error {
 	}
 	switch a.GsmMessage.GsmHeader.GetMessageType() {
 	case MsgTypePDUSessionEstablishmentRequest:
-		a.GsmMessage.PDUSessionEstablishmentRequest =
-			nasMessage.NewPDUSessionEstablishmentRequest(MsgTypePDUSessionEstablishmentRequest)
+		a.GsmMessage.PDUSessionEstablishmentRequest = nasMessage.
+			NewPDUSessionEstablishmentRequest(MsgTypePDUSessionEstablishmentRequest)
 		a.GsmMessage.DecodePDUSessionEstablishmentRequest(byteArray)
 	case MsgTypePDUSessionEstablishmentAccept:
-		a.GsmMessage.PDUSessionEstablishmentAccept =
-			nasMessage.NewPDUSessionEstablishmentAccept(MsgTypePDUSessionEstablishmentAccept)
+		a.GsmMessage.PDUSessionEstablishmentAccept = nasMessage.
+			NewPDUSessionEstablishmentAccept(MsgTypePDUSessionEstablishmentAccept)
 		a.GsmMessage.DecodePDUSessionEstablishmentAccept(byteArray)
 	case MsgTypePDUSessionEstablishmentReject:
-		a.GsmMessage.PDUSessionEstablishmentReject =
-			nasMessage.NewPDUSessionEstablishmentReject(MsgTypePDUSessionEstablishmentReject)
+		a.GsmMessage.PDUSessionEstablishmentReject = nasMessage.
+			NewPDUSessionEstablishmentReject(MsgTypePDUSessionEstablishmentReject)
 		a.GsmMessage.DecodePDUSessionEstablishmentReject(byteArray)
 	case MsgTypePDUSessionAuthenticationCommand:
-		a.GsmMessage.PDUSessionAuthenticationCommand =
-			nasMessage.NewPDUSessionAuthenticationCommand(MsgTypePDUSessionAuthenticationCommand)
+		a.GsmMessage.PDUSessionAuthenticationCommand = nasMessage.
+			NewPDUSessionAuthenticationCommand(MsgTypePDUSessionAuthenticationCommand)
 		a.GsmMessage.DecodePDUSessionAuthenticationCommand(byteArray)
 	case MsgTypePDUSessionAuthenticationComplete:
-		a.GsmMessage.PDUSessionAuthenticationComplete =
-			nasMessage.NewPDUSessionAuthenticationComplete(MsgTypePDUSessionAuthenticationComplete)
+		a.GsmMessage.PDUSessionAuthenticationComplete = nasMessage.
+			NewPDUSessionAuthenticationComplete(MsgTypePDUSessionAuthenticationComplete)
 		a.GsmMessage.DecodePDUSessionAuthenticationComplete(byteArray)
 	case MsgTypePDUSessionAuthenticationResult:
-		a.GsmMessage.PDUSessionAuthenticationResult =
-			nasMessage.NewPDUSessionAuthenticationResult(MsgTypePDUSessionAuthenticationResult)
+		a.GsmMessage.PDUSessionAuthenticationResult = nasMessage.
+			NewPDUSessionAuthenticationResult(MsgTypePDUSessionAuthenticationResult)
 		a.GsmMessage.DecodePDUSessionAuthenticationResult(byteArray)
 	case MsgTypePDUSessionModificationRequest:
-		a.GsmMessage.PDUSessionModificationRequest =
-			nasMessage.NewPDUSessionModificationRequest(MsgTypePDUSessionModificationRequest)
+		a.GsmMessage.PDUSessionModificationRequest = nasMessage.
+			NewPDUSessionModificationRequest(MsgTypePDUSessionModificationRequest)
 		a.GsmMessage.DecodePDUSessionModificationRequest(byteArray)
 	case MsgTypePDUSessionModificationReject:
-		a.GsmMessage.PDUSessionModificationReject =
-			nasMessage.NewPDUSessionModificationReject(MsgTypePDUSessionModificationReject)
+		a.GsmMessage.PDUSessionModificationReject = nasMessage.
+			NewPDUSessionModificationReject(MsgTypePDUSessionModificationReject)
 		a.GsmMessage.DecodePDUSessionModificationReject(byteArray)
 	case MsgTypePDUSessionModificationCommand:
-		a.GsmMessage.PDUSessionModificationCommand =
-			nasMessage.NewPDUSessionModificationCommand(MsgTypePDUSessionModificationCommand)
+		a.GsmMessage.PDUSessionModificationCommand = nasMessage.
+			NewPDUSessionModificationCommand(MsgTypePDUSessionModificationCommand)
 		a.GsmMessage.DecodePDUSessionModificationCommand(byteArray)
 	case MsgTypePDUSessionModificationComplete:
-		a.GsmMessage.PDUSessionModificationComplete =
-			nasMessage.NewPDUSessionModificationComplete(MsgTypePDUSessionModificationComplete)
+		a.GsmMessage.PDUSessionModificationComplete = nasMessage.
+			NewPDUSessionModificationComplete(MsgTypePDUSessionModificationComplete)
 		a.GsmMessage.DecodePDUSessionModificationComplete(byteArray)
 	case MsgTypePDUSessionModificationCommandReject:
-		a.GsmMessage.PDUSessionModificationCommandReject =
-			nasMessage.NewPDUSessionModificationCommandReject(MsgTypePDUSessionModificationCommandReject)
+		a.GsmMessage.PDUSessionModificationCommandReject = nasMessage.
+			NewPDUSessionModificationCommandReject(MsgTypePDUSessionModificationCommandReject)
 		a.GsmMessage.DecodePDUSessionModificationCommandReject(byteArray)
 	case MsgTypePDUSessionReleaseRequest:
-		a.GsmMessage.PDUSessionReleaseRequest = nasMessage.NewPDUSessionReleaseRequest(MsgTypePDUSessionReleaseRequest)
+		a.GsmMessage.PDUSessionReleaseRequest = nasMessage.
+			NewPDUSessionReleaseRequest(MsgTypePDUSessionReleaseRequest)
 		a.GsmMessage.DecodePDUSessionReleaseRequest(byteArray)
 	case MsgTypePDUSessionReleaseReject:
-		a.GsmMessage.PDUSessionReleaseReject = nasMessage.NewPDUSessionReleaseReject(MsgTypePDUSessionReleaseReject)
+		a.GsmMessage.PDUSessionReleaseReject = nasMessage.
+			NewPDUSessionReleaseReject(MsgTypePDUSessionReleaseReject)
 		a.GsmMessage.DecodePDUSessionReleaseReject(byteArray)
 	case MsgTypePDUSessionReleaseCommand:
-		a.GsmMessage.PDUSessionReleaseCommand = nasMessage.NewPDUSessionReleaseCommand(MsgTypePDUSessionReleaseCommand)
+		a.GsmMessage.PDUSessionReleaseCommand = nasMessage.
+			NewPDUSessionReleaseCommand(MsgTypePDUSessionReleaseCommand)
 		a.GsmMessage.DecodePDUSessionReleaseCommand(byteArray)
 	case MsgTypePDUSessionReleaseComplete:
-		a.GsmMessage.PDUSessionReleaseComplete = nasMessage.NewPDUSessionReleaseComplete(MsgTypePDUSessionReleaseComplete)
+		a.GsmMessage.PDUSessionReleaseComplete = nasMessage.
+			NewPDUSessionReleaseComplete(MsgTypePDUSessionReleaseComplete)
 		a.GsmMessage.DecodePDUSessionReleaseComplete(byteArray)
 	case MsgTypeStatus5GSM:
 		a.GsmMessage.Status5GSM = nasMessage.NewStatus5GSM(MsgTypeStatus5GSM)
