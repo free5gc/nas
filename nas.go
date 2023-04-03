@@ -2,6 +2,7 @@ package nas
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 
 	"github.com/free5gc/nas/nasMessage"
@@ -106,6 +107,12 @@ func GetSecurityHeaderType(byteArray []byte) uint8 {
 }
 
 func (a *Message) PlainNasDecode(byteArray *[]byte) error {
+	if byteArray == nil {
+		return errors.New("byteArray is nil")
+	}
+	if len(*byteArray) == 0 {
+		return errors.New("empty message")
+	}
 	epd := GetEPD(*byteArray)
 	switch epd {
 	case nasMessage.Epd5GSMobilityManagementMessage:
