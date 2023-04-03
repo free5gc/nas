@@ -14,3 +14,7 @@ cscope.*
 .DS_Store
 
 support
+
+# NAS spec
+24501-*.zip
+spec.csv
