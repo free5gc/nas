@@ -23,6 +23,8 @@ type ieEntry struct {
 	lengthSize int
 	minLength  int
 	maxLength  int
+	useBuffer  bool
+	notArray   bool
 }
 
 var msgDefs map[string][]ieEntry
@@ -141,7 +143,7 @@ func parseSpecs() {
 							if i, err := strconv.ParseUint(iei[0:1], 16, 4); err != nil {
 								panic(err)
 							} else {
-								ie.iei = int(i) << 4
+								ie.iei = int(i)
 							}
 						} else {
 							if i, err := strconv.ParseUint(iei, 16, 8); err != nil {
@@ -207,13 +209,17 @@ func parseSpecs() {
 					} else {
 						switch ieCell {
 						case "Payload container type":
-							break skipIE
+							if ie.mandatory {
+								typeName = "PayloadContainerType"
+							} else {
+								continue skipIE
+							}
 						case "Non-3GPP NW policies":
-							break skipIE
+							continue skipIE
 						case "EPS bearer context status":
-							break skipIE
+							continue skipIE
 						case "5GSM congestion re-attempt indicator":
-							break skipIE
+							continue skipIE
 						case "5GMM STATUS message identity":
 							typeName = "STATUSMessageIdentity5GMM"
 						case "5GSM STATUS message identity":
@@ -248,6 +254,48 @@ func parseSpecs() {
 						}
 					}
 					ie.typeName = typeName
+					if ie.lengthSize == 0 {
+						ie.useBuffer = false
+						ie.notArray = false
+					} else {
+						switch typeName {
+						case "BackoffTimerValue",
+							"NetworkDaylightSavingTime",
+							"RegistrationResult5GS",
+							"Non3GppDeregistrationTimerValue",
+							"NegotiatedDRXParameters",
+							"UEStatus",
+							"UesUsageSetting",
+							"RequestedDRXParameters",
+							"UpdateType5GS",
+							"Additional5GSecurityInformation",
+							"T3502Value",
+							"T3512Value",
+							"T3346Value":
+							ie.useBuffer = false
+							ie.notArray = true
+						case "AuthenticationFailureParameter",
+							"AuthenticationParameterAUTN",
+							"AuthenticationResponseParameter",
+							"EquivalentPlmns",
+							"NetworkFeatureSupport5GS",
+							"GUTI5G",
+							"SessionAMBR",
+							"PDUAddress",
+							"SNSSAI",
+							"AdditionalGUTI",
+							"IMEISV",
+							"Plain5GSNASMessage",
+							"TMSI5GS",
+							"Capability5GMM",
+							"Capability5GSM":
+							ie.useBuffer = false
+							ie.notArray = false
+						default:
+							ie.useBuffer = true
+							ie.notArray = false
+						}
+					}
 
 					if half && prevHalf {
 						prevIe := &ies[len(ies)-1]
@@ -279,13 +327,15 @@ func main() {
 	parseSpecs()
 
 	for msgName, ies := range msgDefs {
+		lmsgName := strings.ToLower(msgName[0:1]) + msgName[1:]
+
 		fBuf := new(bytes.Buffer)
 		fmt.Fprint(fBuf, `
 package nasMessage
 
 import (
-		// "bytes"
-		// "encoding/binary"
+		"bytes"
+		"encoding/binary"
 
 		"github.com/free5gc/nas/nasType"
 )
@@ -301,6 +351,63 @@ import (
 			}
 		}
 		fmt.Fprintln(fBuf, "}")
+		fmt.Fprintln(fBuf, "")
+
+		fmt.Fprintf(fBuf, "func New%s(iei uint8) (%s *%s) {\n", msgName, lmsgName, msgName)
+		fmt.Fprintf(fBuf, "%s = &%s{}\n", lmsgName, msgName)
+		fmt.Fprintf(fBuf, "return %s\n", lmsgName)
+		fmt.Fprintln(fBuf, "}")
+		fmt.Fprintln(fBuf, "")
+
+		hasOptionalIEs := false
+		for _, ie := range ies {
+			if !ie.mandatory {
+				hasOptionalIEs = true
+			}
+		}
+		if hasOptionalIEs {
+			fmt.Fprintln(fBuf, "const (")
+			for _, ie := range ies {
+				if !ie.mandatory {
+					fmt.Fprintf(fBuf, "%s%sType uint8 = 0x%02X\n", msgName, ie.typeName, ie.iei)
+				}
+			}
+			fmt.Fprintln(fBuf, ")")
+			fmt.Fprintln(fBuf, "")
+		}
+
+		fmt.Fprintf(fBuf, "func (a *%s) Encode%s(buffer *bytes.Buffer) {\n", msgName, msgName)
+		for _, ie := range ies {
+			if !ie.mandatory {
+				fmt.Fprintf(fBuf, "if a.%s != nil {\n", ie.typeName)
+				if ie.iei >= 16 {
+					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.GetIei())\n", ie.typeName)
+				}
+			}
+			if ie.lengthSize != 0 {
+				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.GetLen())\n", ie.typeName)
+			}
+			if ie.useBuffer {
+				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s.Buffer)\n", ie.typeName)
+			} else {
+				if ie.typeName == "Plain5GSNASMessage" {
+					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
+				} else if ie.notArray || ie.lengthSize == 0 {
+					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s.Octet)\n", ie.typeName)
+				} else {
+					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.Octet[:a.%s.GetLen()])\n", ie.typeName, ie.typeName)
+				}
+			}
+			if !ie.mandatory {
+				fmt.Fprintln(fBuf, "}")
+			}
+		}
+		fmt.Fprintln(fBuf, "}")
+		fmt.Fprintln(fBuf, "")
+
+		fmt.Fprintf(fBuf, "func (a *%s) Decode%s(byteArray *[]byte) {\n", msgName, msgName)
+		fmt.Fprintln(fBuf, "}")
+		fmt.Fprintln(fBuf, "")
 
 		out, err := format.Source(fBuf.Bytes())
 		if err != nil {
