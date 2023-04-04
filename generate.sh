@@ -17,3 +17,6 @@ if [ ! -f spec.csv ] ; then
     fi
     python3 extract.py
 fi
+
+ls nasMessage/*go | grep -v "_test" | grep -v "NAS_EPD" | grep -v "NAS_CommInfoIE" |  xargs rm -f
+go run generator.go
