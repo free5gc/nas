@@ -406,6 +406,54 @@ import (
 		fmt.Fprintln(fBuf, "")
 
 		fmt.Fprintf(fBuf, "func (a *%s) Decode%s(byteArray *[]byte) {\n", msgName, msgName)
+		fmt.Fprintln(fBuf, "buffer := bytes.NewBuffer(*byteArray)")
+		for _, mandatoryPart := range []bool{true, false} {
+			if !mandatoryPart {
+				fmt.Fprintln(fBuf, "for buffer.Len() > 0 {")
+				fmt.Fprintln(fBuf, "var ieiN uint8")
+				fmt.Fprintln(fBuf, "var tmpIeiN uint8")
+				fmt.Fprintln(fBuf, "binary.Read(buffer, binary.BigEndian, &ieiN)")
+				fmt.Fprintln(fBuf, "// fmt.Println(ieiN)")
+				fmt.Fprintln(fBuf, "if ieiN >= 0x80 {")
+				fmt.Fprintln(fBuf, "tmpIeiN = (ieiN & 0xf0) >> 4")
+				fmt.Fprintln(fBuf, "} else {")
+				fmt.Fprintln(fBuf, "tmpIeiN = ieiN")
+				fmt.Fprintln(fBuf, "}")
+				fmt.Fprintln(fBuf, "// fmt.Println(\"type\", tmpIeiN)")
+				fmt.Fprintln(fBuf, "switch tmpIeiN {")
+			}
+			for _, ie := range ies {
+				if ie.mandatory == mandatoryPart {
+					if !ie.mandatory {
+						fmt.Fprintf(fBuf, "case %s%sType:\n", msgName, ie.typeName)
+						fmt.Fprintf(fBuf, "a.%s = nasType.New%s(ieiN)\n", ie.typeName, ie.typeName)
+					}
+					if ie.lengthSize != 0 {
+						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Len)\n", ie.typeName)
+						fmt.Fprintf(fBuf, "a.%s.SetLen(a.%s.GetLen())\n", ie.typeName, ie.typeName)
+					}
+					if ie.useBuffer {
+						// fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.Buffer[:a.%s.GetLen()])\n", ie.typeName, ie.typeName)
+						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Buffer)\n", ie.typeName)
+					} else {
+						if ie.typeName == "Plain5GSNASMessage" {
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
+						} else if ie.notArray && !ie.mandatory && ie.iei < 16 {
+							fmt.Fprintf(fBuf, "a.%s.Octet = ieiN\n", ie.typeName)
+						} else if ie.notArray || ie.lengthSize == 0 {
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Octet)\n", ie.typeName)
+						} else {
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.Octet[:a.%s.GetLen()])\n", ie.typeName, ie.typeName)
+						}
+					}
+				}
+			}
+			if !mandatoryPart {
+				fmt.Fprintln(fBuf, "default:")
+				fmt.Fprintln(fBuf, "}")
+				fmt.Fprintln(fBuf, "}")
+			}
+		}
 		fmt.Fprintln(fBuf, "}")
 		fmt.Fprintln(fBuf, "")
 
