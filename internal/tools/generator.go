@@ -11,6 +11,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -23,8 +24,6 @@ type ieEntry struct {
 	lengthSize int
 	minLength  int
 	maxLength  int
-	useBuffer  bool
-	notArray   bool
 }
 
 var msgDefs map[string][]ieEntry
@@ -215,10 +214,13 @@ func parseSpecs() {
 								continue skipIE
 							}
 						case "Non-3GPP NW policies":
+							// XXX
 							continue skipIE
 						case "EPS bearer context status":
+							// XXX
 							continue skipIE
 						case "5GSM congestion re-attempt indicator":
+							// XXX
 							continue skipIE
 						case "5GMM STATUS message identity":
 							typeName = "STATUSMessageIdentity5GMM"
@@ -254,47 +256,9 @@ func parseSpecs() {
 						}
 					}
 					ie.typeName = typeName
-					if ie.lengthSize == 0 {
-						ie.useBuffer = false
-						ie.notArray = false
-					} else {
-						switch typeName {
-						case "BackoffTimerValue",
-							"NetworkDaylightSavingTime",
-							"RegistrationResult5GS",
-							"Non3GppDeregistrationTimerValue",
-							"NegotiatedDRXParameters",
-							"UEStatus",
-							"UesUsageSetting",
-							"RequestedDRXParameters",
-							"UpdateType5GS",
-							"Additional5GSecurityInformation",
-							"T3502Value",
-							"T3512Value",
-							"T3346Value":
-							ie.useBuffer = false
-							ie.notArray = true
-						case "AuthenticationFailureParameter",
-							"AuthenticationParameterAUTN",
-							"AuthenticationResponseParameter",
-							"EquivalentPlmns",
-							"NetworkFeatureSupport5GS",
-							"GUTI5G",
-							"SessionAMBR",
-							"PDUAddress",
-							"SNSSAI",
-							"AdditionalGUTI",
-							"IMEISV",
-							"Plain5GSNASMessage",
-							"TMSI5GS",
-							"Capability5GMM",
-							"Capability5GSM":
-							ie.useBuffer = false
-							ie.notArray = false
-						default:
-							ie.useBuffer = true
-							ie.notArray = false
-						}
+					// XXX
+					if typeName == "MappedEPSBearerContexts" && msgName != "PDUSessionEstablishmentAccept" {
+						ie.iei = 0x7F
 					}
 
 					if half && prevHalf {
@@ -323,9 +287,7 @@ func parseSpecs() {
 	}
 }
 
-func main() {
-	parseSpecs()
-
+func generate() {
 	for msgName, ies := range msgDefs {
 		lmsgName := strings.ToLower(msgName[0:1]) + msgName[1:]
 
@@ -378,6 +340,16 @@ import (
 
 		fmt.Fprintf(fBuf, "func (a *%s) Encode%s(buffer *bytes.Buffer) {\n", msgName, msgName)
 		for _, ie := range ies {
+			ieType := nasTypeTable[ie.typeName]
+			dataFieldName := ""
+			var dateFieldType reflect.Type
+			for _, n := range []string{"Buffer", "Octet"} {
+				if field, exist := ieType.FieldByName(n); exist {
+					dataFieldName = n
+					dateFieldType = field.Type
+					break
+				}
+			}
 			if !ie.mandatory {
 				fmt.Fprintf(fBuf, "if a.%s != nil {\n", ie.typeName)
 				if ie.iei >= 16 {
@@ -385,18 +357,22 @@ import (
 				}
 			}
 			if ie.lengthSize != 0 {
+				if lenField, exist := ieType.FieldByName("Len"); !exist {
+					panic(fmt.Sprintf("Len is not exist %s", ie.typeName))
+				} else {
+					if lenField.Type.Size() != uintptr(ie.lengthSize) {
+						panic(fmt.Sprintf("Size of length mismatch %d, %d", lenField.Type.Size(), ie.lengthSize))
+					}
+				}
 				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.GetLen())\n", ie.typeName)
 			}
-			if ie.useBuffer {
-				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s.Buffer)\n", ie.typeName)
+			if dataFieldName == "" {
+				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
+			} else if dataFieldName == "Buffer" || dateFieldType.Kind() == reflect.Uint8 || ie.lengthSize == 0 ||
+				(ie.typeName == "SessionAMBR" && ie.mandatory) || ie.typeName == "TMSI5GS" {
+				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s.%s)\n", ie.typeName, dataFieldName)
 			} else {
-				if ie.typeName == "Plain5GSNASMessage" {
-					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
-				} else if ie.notArray || ie.lengthSize == 0 {
-					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s.Octet)\n", ie.typeName)
-				} else {
-					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.Octet[:a.%s.GetLen()])\n", ie.typeName, ie.typeName)
-				}
+				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.%s[:a.%s.GetLen()])\n", ie.typeName, dataFieldName, ie.typeName)
 			}
 			if !ie.mandatory {
 				fmt.Fprintln(fBuf, "}")
@@ -423,6 +399,17 @@ import (
 				fmt.Fprintln(fBuf, "switch tmpIeiN {")
 			}
 			for _, ie := range ies {
+				ieType := nasTypeTable[ie.typeName]
+				dataFieldName := ""
+				var dateFieldType reflect.Type
+				for _, n := range []string{"Buffer", "Octet"} {
+					if field, exist := ieType.FieldByName(n); exist {
+						dataFieldName = n
+						dateFieldType = field.Type
+						break
+					}
+				}
+
 				if ie.mandatory == mandatoryPart {
 					if !ie.mandatory {
 						fmt.Fprintf(fBuf, "case %s%sType:\n", msgName, ie.typeName)
@@ -432,18 +419,28 @@ import (
 						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Len)\n", ie.typeName)
 						fmt.Fprintf(fBuf, "a.%s.SetLen(a.%s.GetLen())\n", ie.typeName, ie.typeName)
 					}
-					if ie.useBuffer {
-						// fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.Buffer[:a.%s.GetLen()])\n", ie.typeName, ie.typeName)
-						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Buffer)\n", ie.typeName)
-					} else {
-						if ie.typeName == "Plain5GSNASMessage" {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
-						} else if ie.notArray && !ie.mandatory && ie.iei < 16 {
-							fmt.Fprintf(fBuf, "a.%s.Octet = ieiN\n", ie.typeName)
-						} else if ie.notArray || ie.lengthSize == 0 {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Octet)\n", ie.typeName)
+					if dataFieldName == "" {
+						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
+					} else if dataFieldName == "Buffer" {
+						if ie.mandatory {
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.%s)\n", ie.typeName, dataFieldName)
 						} else {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.Octet[:a.%s.GetLen()])\n", ie.typeName, ie.typeName)
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.%s[:a.%s.GetLen()])\n", ie.typeName, dataFieldName, ie.typeName)
+						}
+					} else {
+						if dateFieldType.Kind() == reflect.Uint8 && ie.iei < 16 && !ie.mandatory {
+							fmt.Fprintf(fBuf, "a.%s.Octet = ieiN\n", ie.typeName)
+						} else if ie.minLength == ie.maxLength &&
+							ie.typeName != "IMEISV" &&
+							ie.typeName != "AdditionalGUTI" &&
+							ie.typeName != "GUTI5G" &&
+							ie.typeName != "AuthenticationFailureParameter" &&
+							ie.typeName != "AuthenticationParameterAUTN" &&
+							ie.typeName != "AuthenticationResponseParameter" &&
+							!(ie.typeName == "SessionAMBR" && !ie.mandatory) {
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.%s)\n", ie.typeName, dataFieldName)
+						} else {
+							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.%s[:a.%s.GetLen()])\n", ie.typeName, dataFieldName, ie.typeName)
 						}
 					}
 				}
@@ -475,4 +472,10 @@ import (
 			panic(err)
 		}
 	}
+}
+
+func main() {
+	parseSpecs()
+
+	generate()
 }
