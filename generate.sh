@@ -2,10 +2,7 @@
 
 SPEC=24501-f70
 
-if [ ! -f nasConvert/GPRSTimer2.go ] ; then
-    echo "BAD directory."
-    exit 1
-fi
+cd `dirname $0`
 
 if [ ! -f spec.csv ] ; then
     if [ ! -f ${SPEC}.zip ] ; then
@@ -15,8 +12,8 @@ if [ ! -f spec.csv ] ; then
         echo "Download failed."
         exit 1
     fi
-    python3 extract.py
+    python3 internal/tools/extract.py
 fi
 
 ls nasMessage/*go | grep -v "_test" | grep -v "NAS_EPD" | grep -v "NAS_CommInfoIE" |  xargs rm -f
-go run generator.go
+go run internal/tools/generator.go
