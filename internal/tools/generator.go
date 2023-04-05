@@ -300,6 +300,7 @@ package nasMessage
 import (
 		"bytes"
 		"encoding/binary"
+		"fmt"
 
 		"github.com/free5gc/nas/nasType"
 )
@@ -340,7 +341,7 @@ import (
 			fmt.Fprintln(fBuf, "")
 		}
 
-		fmt.Fprintf(fBuf, "func (a *%s) Encode%s(buffer *bytes.Buffer) {\n", msgName, msgName)
+		fmt.Fprintf(fBuf, "func (a *%s) Encode%s(buffer *bytes.Buffer) error {\n", msgName, msgName)
 		for _, ie := range ies {
 			ieType := nasTypeTable[ie.typeName]
 			dataFieldName := ""
@@ -355,7 +356,7 @@ import (
 			if !ie.mandatory {
 				fmt.Fprintf(fBuf, "if a.%s != nil {\n", ie.typeName)
 				if ie.iei >= 16 {
-					fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.GetIei())\n", ie.typeName)
+					putReadWrite(fBuf, true, msgName, ie.typeName, fmt.Sprintf("a.%s.GetIei()", ie.typeName))
 				}
 			}
 			if ie.lengthSize != 0 {
@@ -366,31 +367,32 @@ import (
 						panic(fmt.Sprintf("Size of length mismatch %d, %d", lenField.Type.Size(), ie.lengthSize))
 					}
 				}
-				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.GetLen())\n", ie.typeName)
+				putReadWrite(fBuf, true, msgName, ie.typeName, fmt.Sprintf("a.%s.GetLen()", ie.typeName))
 			}
 			if dataFieldName == "" {
-				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
+				putReadWrite(fBuf, true, msgName, ie.typeName, fmt.Sprintf("&a.%s", ie.typeName))
 			} else if dataFieldName == "Buffer" || dateFieldType.Kind() == reflect.Uint8 || ie.lengthSize == 0 ||
 				(ie.typeName == "SessionAMBR" && ie.mandatory) || ie.typeName == "TMSI5GS" {
-				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, &a.%s.%s)\n", ie.typeName, dataFieldName)
+				putReadWrite(fBuf, true, msgName, ie.typeName, fmt.Sprintf("&a.%s.%s", ie.typeName, dataFieldName))
 			} else {
-				fmt.Fprintf(fBuf, "binary.Write(buffer, binary.BigEndian, a.%s.%s[:a.%s.GetLen()])\n", ie.typeName, dataFieldName, ie.typeName)
+				putReadWrite(fBuf, true, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
 			}
 			if !ie.mandatory {
 				fmt.Fprintln(fBuf, "}")
 			}
 		}
+		fmt.Fprintln(fBuf, "return nil")
 		fmt.Fprintln(fBuf, "}")
 		fmt.Fprintln(fBuf, "")
 
-		fmt.Fprintf(fBuf, "func (a *%s) Decode%s(byteArray *[]byte) {\n", msgName, msgName)
+		fmt.Fprintf(fBuf, "func (a *%s) Decode%s(byteArray *[]byte) error {\n", msgName, msgName)
 		fmt.Fprintln(fBuf, "buffer := bytes.NewBuffer(*byteArray)")
 		for _, mandatoryPart := range []bool{true, false} {
 			if !mandatoryPart {
 				fmt.Fprintln(fBuf, "for buffer.Len() > 0 {")
 				fmt.Fprintln(fBuf, "var ieiN uint8")
 				fmt.Fprintln(fBuf, "var tmpIeiN uint8")
-				fmt.Fprintln(fBuf, "binary.Read(buffer, binary.BigEndian, &ieiN)")
+				putReadWrite(fBuf, false, msgName, "iei", "&ieiN")
 				fmt.Fprintln(fBuf, "// fmt.Println(ieiN)")
 				fmt.Fprintln(fBuf, "if ieiN >= 0x80 {")
 				fmt.Fprintln(fBuf, "tmpIeiN = (ieiN & 0xf0) >> 4")
@@ -418,16 +420,16 @@ import (
 						fmt.Fprintf(fBuf, "a.%s = nasType.New%s(ieiN)\n", ie.typeName, ie.typeName)
 					}
 					if ie.lengthSize != 0 {
-						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.Len)\n", ie.typeName)
+						putReadWrite(fBuf, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.Len", ie.typeName))
 						fmt.Fprintf(fBuf, "a.%s.SetLen(a.%s.GetLen())\n", ie.typeName, ie.typeName)
 					}
 					if dataFieldName == "" {
-						fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s)\n", ie.typeName)
+						putReadWrite(fBuf, false, msgName, ie.typeName, fmt.Sprintf("&a.%s", ie.typeName))
 					} else if dataFieldName == "Buffer" {
 						if ie.mandatory {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.%s)\n", ie.typeName, dataFieldName)
+							putReadWrite(fBuf, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.%s", ie.typeName, dataFieldName))
 						} else {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.%s[:a.%s.GetLen()])\n", ie.typeName, dataFieldName, ie.typeName)
+							putReadWrite(fBuf, false, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
 						}
 					} else {
 						if dateFieldType.Kind() == reflect.Uint8 && ie.iei < 16 && !ie.mandatory {
@@ -440,9 +442,9 @@ import (
 							ie.typeName != "AuthenticationParameterAUTN" &&
 							ie.typeName != "AuthenticationResponseParameter" &&
 							!(ie.typeName == "SessionAMBR" && !ie.mandatory) {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, &a.%s.%s)\n", ie.typeName, dataFieldName)
+							putReadWrite(fBuf, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.%s", ie.typeName, dataFieldName))
 						} else {
-							fmt.Fprintf(fBuf, "binary.Read(buffer, binary.BigEndian, a.%s.%s[:a.%s.GetLen()])\n", ie.typeName, dataFieldName, ie.typeName)
+							putReadWrite(fBuf, false, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
 						}
 					}
 				}
@@ -453,6 +455,7 @@ import (
 				fmt.Fprintln(fBuf, "}")
 			}
 		}
+		fmt.Fprintln(fBuf, "return nil")
 		fmt.Fprintln(fBuf, "}")
 		fmt.Fprintln(fBuf, "")
 
@@ -474,6 +477,21 @@ import (
 			panic(err)
 		}
 	}
+}
+
+func putReadWrite(f io.Writer, write bool, msgName string, ieName string, value string) {
+	var rw string
+	var encDec string
+	if write {
+		rw = "Write"
+		encDec = "encode"
+	} else {
+		rw = "Read"
+		encDec = "decode"
+	}
+	fmt.Fprintf(f, "if err := binary.%s(buffer, binary.BigEndian, %s) ; err != nil {\n", rw, value)
+	fmt.Fprintf(f, "return fmt.Errorf(\"NAS %s error (%s/%s): %%w\", err)\n", encDec, msgName, ieName)
+	fmt.Fprintln(f, "}")
 }
 
 func main() {

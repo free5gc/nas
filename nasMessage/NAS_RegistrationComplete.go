@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -25,26 +26,47 @@ const (
 	RegistrationCompleteSORTransparentContainerType uint8 = 0x73
 )
 
-func (a *RegistrationComplete) EncodeRegistrationComplete(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.RegistrationCompleteMessageIdentity.Octet)
-	if a.SORTransparentContainer != nil {
-		binary.Write(buffer, binary.BigEndian, a.SORTransparentContainer.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.SORTransparentContainer.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.SORTransparentContainer.Buffer)
+func (a *RegistrationComplete) EncodeRegistrationComplete(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (RegistrationComplete/ExtendedProtocolDiscriminator): %w", err)
 	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (RegistrationComplete/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.RegistrationCompleteMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (RegistrationComplete/RegistrationCompleteMessageIdentity): %w", err)
+	}
+	if a.SORTransparentContainer != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.SORTransparentContainer.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationComplete/SORTransparentContainer): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.SORTransparentContainer.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationComplete/SORTransparentContainer): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.SORTransparentContainer.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationComplete/SORTransparentContainer): %w", err)
+		}
+	}
+	return nil
 }
 
-func (a *RegistrationComplete) DecodeRegistrationComplete(byteArray *[]byte) {
+func (a *RegistrationComplete) DecodeRegistrationComplete(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.RegistrationCompleteMessageIdentity.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (RegistrationComplete/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (RegistrationComplete/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.RegistrationCompleteMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (RegistrationComplete/RegistrationCompleteMessageIdentity): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (RegistrationComplete/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -55,10 +77,15 @@ func (a *RegistrationComplete) DecodeRegistrationComplete(byteArray *[]byte) {
 		switch tmpIeiN {
 		case RegistrationCompleteSORTransparentContainerType:
 			a.SORTransparentContainer = nasType.NewSORTransparentContainer(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.SORTransparentContainer.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.SORTransparentContainer.Len); err != nil {
+				return fmt.Errorf("NAS decode error (RegistrationComplete/SORTransparentContainer): %w", err)
+			}
 			a.SORTransparentContainer.SetLen(a.SORTransparentContainer.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.SORTransparentContainer.Buffer[:a.SORTransparentContainer.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.SORTransparentContainer.Buffer[:a.SORTransparentContainer.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (RegistrationComplete/SORTransparentContainer): %w", err)
+			}
 		default:
 		}
 	}
+	return nil
 }

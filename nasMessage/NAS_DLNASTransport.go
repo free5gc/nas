@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -33,46 +34,93 @@ const (
 	DLNASTransportBackoffTimerValueType     uint8 = 0x37
 )
 
-func (a *DLNASTransport) EncodeDLNASTransport(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.DLNASTRANSPORTMessageIdentity.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndPayloadContainerType.Octet)
-	binary.Write(buffer, binary.BigEndian, a.PayloadContainer.GetLen())
-	binary.Write(buffer, binary.BigEndian, &a.PayloadContainer.Buffer)
+func (a *DLNASTransport) EncodeDLNASTransport(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (DLNASTransport/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (DLNASTransport/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.DLNASTRANSPORTMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (DLNASTransport/DLNASTRANSPORTMessageIdentity): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndPayloadContainerType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (DLNASTransport/SpareHalfOctetAndPayloadContainerType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, a.PayloadContainer.GetLen()); err != nil {
+		return fmt.Errorf("NAS encode error (DLNASTransport/PayloadContainer): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.PayloadContainer.Buffer); err != nil {
+		return fmt.Errorf("NAS encode error (DLNASTransport/PayloadContainer): %w", err)
+	}
 	if a.PduSessionID2Value != nil {
-		binary.Write(buffer, binary.BigEndian, a.PduSessionID2Value.GetIei())
-		binary.Write(buffer, binary.BigEndian, &a.PduSessionID2Value.Octet)
+		if err := binary.Write(buffer, binary.BigEndian, a.PduSessionID2Value.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/PduSessionID2Value): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.PduSessionID2Value.Octet); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/PduSessionID2Value): %w", err)
+		}
 	}
 	if a.AdditionalInformation != nil {
-		binary.Write(buffer, binary.BigEndian, a.AdditionalInformation.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.AdditionalInformation.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.AdditionalInformation.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.AdditionalInformation.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/AdditionalInformation): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.AdditionalInformation.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/AdditionalInformation): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.AdditionalInformation.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/AdditionalInformation): %w", err)
+		}
 	}
 	if a.Cause5GMM != nil {
-		binary.Write(buffer, binary.BigEndian, a.Cause5GMM.GetIei())
-		binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet)
+		if err := binary.Write(buffer, binary.BigEndian, a.Cause5GMM.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/Cause5GMM): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/Cause5GMM): %w", err)
+		}
 	}
 	if a.BackoffTimerValue != nil {
-		binary.Write(buffer, binary.BigEndian, a.BackoffTimerValue.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.BackoffTimerValue.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet)
+		if err := binary.Write(buffer, binary.BigEndian, a.BackoffTimerValue.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/BackoffTimerValue): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.BackoffTimerValue.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/BackoffTimerValue): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet); err != nil {
+			return fmt.Errorf("NAS encode error (DLNASTransport/BackoffTimerValue): %w", err)
+		}
 	}
+	return nil
 }
 
-func (a *DLNASTransport) DecodeDLNASTransport(byteArray *[]byte) {
+func (a *DLNASTransport) DecodeDLNASTransport(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.DLNASTRANSPORTMessageIdentity.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndPayloadContainerType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Len)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (DLNASTransport/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (DLNASTransport/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.DLNASTRANSPORTMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (DLNASTransport/DLNASTRANSPORTMessageIdentity): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndPayloadContainerType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (DLNASTransport/SpareHalfOctetAndPayloadContainerType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Len); err != nil {
+		return fmt.Errorf("NAS decode error (DLNASTransport/PayloadContainer): %w", err)
+	}
 	a.PayloadContainer.SetLen(a.PayloadContainer.GetLen())
-	binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Buffer)
+	if err := binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Buffer); err != nil {
+		return fmt.Errorf("NAS decode error (DLNASTransport/PayloadContainer): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (DLNASTransport/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -83,21 +131,34 @@ func (a *DLNASTransport) DecodeDLNASTransport(byteArray *[]byte) {
 		switch tmpIeiN {
 		case DLNASTransportPduSessionID2ValueType:
 			a.PduSessionID2Value = nasType.NewPduSessionID2Value(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.PduSessionID2Value.Octet)
+			if err := binary.Read(buffer, binary.BigEndian, &a.PduSessionID2Value.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (DLNASTransport/PduSessionID2Value): %w", err)
+			}
 		case DLNASTransportAdditionalInformationType:
 			a.AdditionalInformation = nasType.NewAdditionalInformation(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.AdditionalInformation.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.AdditionalInformation.Len); err != nil {
+				return fmt.Errorf("NAS decode error (DLNASTransport/AdditionalInformation): %w", err)
+			}
 			a.AdditionalInformation.SetLen(a.AdditionalInformation.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.AdditionalInformation.Buffer[:a.AdditionalInformation.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.AdditionalInformation.Buffer[:a.AdditionalInformation.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (DLNASTransport/AdditionalInformation): %w", err)
+			}
 		case DLNASTransportCause5GMMType:
 			a.Cause5GMM = nasType.NewCause5GMM(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.Cause5GMM.Octet)
+			if err := binary.Read(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (DLNASTransport/Cause5GMM): %w", err)
+			}
 		case DLNASTransportBackoffTimerValueType:
 			a.BackoffTimerValue = nasType.NewBackoffTimerValue(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Len); err != nil {
+				return fmt.Errorf("NAS decode error (DLNASTransport/BackoffTimerValue): %w", err)
+			}
 			a.BackoffTimerValue.SetLen(a.BackoffTimerValue.GetLen())
-			binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet)
+			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (DLNASTransport/BackoffTimerValue): %w", err)
+			}
 		default:
 		}
 	}
+	return nil
 }

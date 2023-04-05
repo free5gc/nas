@@ -50,7 +50,8 @@ func NewGsmMessage() *GsmMessage {
 }
 
 // GmmHeader Octet1 protocolDiscriminator securityHeaderType
-//           Octet2 MessageType
+//
+//	Octet2 MessageType
 type GmmHeader struct {
 	Octet [3]uint8
 }
@@ -201,168 +202,166 @@ func (a *Message) GmmMessageDecode(byteArray *[]byte) error {
 	switch a.GmmMessage.GmmHeader.GetMessageType() {
 	case MsgTypeRegistrationRequest:
 		a.GmmMessage.RegistrationRequest = nasMessage.NewRegistrationRequest(MsgTypeRegistrationRequest)
-		a.GmmMessage.DecodeRegistrationRequest(byteArray)
+		return a.GmmMessage.DecodeRegistrationRequest(byteArray)
 	case MsgTypeRegistrationAccept:
 		a.GmmMessage.RegistrationAccept = nasMessage.NewRegistrationAccept(MsgTypeRegistrationAccept)
-		a.GmmMessage.DecodeRegistrationAccept(byteArray)
+		return a.GmmMessage.DecodeRegistrationAccept(byteArray)
 	case MsgTypeRegistrationComplete:
 		a.GmmMessage.RegistrationComplete = nasMessage.NewRegistrationComplete(MsgTypeRegistrationComplete)
-		a.GmmMessage.DecodeRegistrationComplete(byteArray)
+		return a.GmmMessage.DecodeRegistrationComplete(byteArray)
 	case MsgTypeRegistrationReject:
 		a.GmmMessage.RegistrationReject = nasMessage.NewRegistrationReject(MsgTypeRegistrationReject)
-		a.GmmMessage.DecodeRegistrationReject(byteArray)
+		return a.GmmMessage.DecodeRegistrationReject(byteArray)
 	case MsgTypeDeregistrationRequestUEOriginatingDeregistration:
 		a.GmmMessage.DeregistrationRequestUEOriginatingDeregistration = nasMessage.
 			NewDeregistrationRequestUEOriginatingDeregistration(
 				MsgTypeDeregistrationRequestUEOriginatingDeregistration)
-		a.GmmMessage.DecodeDeregistrationRequestUEOriginatingDeregistration(byteArray)
+		return a.GmmMessage.DecodeDeregistrationRequestUEOriginatingDeregistration(byteArray)
 	case MsgTypeDeregistrationAcceptUEOriginatingDeregistration:
 		a.GmmMessage.DeregistrationAcceptUEOriginatingDeregistration = nasMessage.
 			NewDeregistrationAcceptUEOriginatingDeregistration(
 				MsgTypeDeregistrationAcceptUEOriginatingDeregistration)
-		a.GmmMessage.DecodeDeregistrationAcceptUEOriginatingDeregistration(byteArray)
+		return a.GmmMessage.DecodeDeregistrationAcceptUEOriginatingDeregistration(byteArray)
 	case MsgTypeDeregistrationRequestUETerminatedDeregistration:
 		a.GmmMessage.DeregistrationRequestUETerminatedDeregistration = nasMessage.
 			NewDeregistrationRequestUETerminatedDeregistration(
 				MsgTypeDeregistrationRequestUETerminatedDeregistration)
-		a.GmmMessage.DecodeDeregistrationRequestUETerminatedDeregistration(byteArray)
+		return a.GmmMessage.DecodeDeregistrationRequestUETerminatedDeregistration(byteArray)
 	case MsgTypeDeregistrationAcceptUETerminatedDeregistration:
 		a.GmmMessage.DeregistrationAcceptUETerminatedDeregistration = nasMessage.
 			NewDeregistrationAcceptUETerminatedDeregistration(
 				MsgTypeDeregistrationAcceptUETerminatedDeregistration)
-		a.GmmMessage.DecodeDeregistrationAcceptUETerminatedDeregistration(byteArray)
+		return a.GmmMessage.DecodeDeregistrationAcceptUETerminatedDeregistration(byteArray)
 	case MsgTypeServiceRequest:
 		a.GmmMessage.ServiceRequest = nasMessage.NewServiceRequest(MsgTypeServiceRequest)
-		a.GmmMessage.DecodeServiceRequest(byteArray)
+		return a.GmmMessage.DecodeServiceRequest(byteArray)
 	case MsgTypeServiceReject:
 		a.GmmMessage.ServiceReject = nasMessage.NewServiceReject(MsgTypeServiceReject)
-		a.GmmMessage.DecodeServiceReject(byteArray)
+		return a.GmmMessage.DecodeServiceReject(byteArray)
 	case MsgTypeServiceAccept:
 		a.GmmMessage.ServiceAccept = nasMessage.NewServiceAccept(MsgTypeServiceAccept)
-		a.GmmMessage.DecodeServiceAccept(byteArray)
+		return a.GmmMessage.DecodeServiceAccept(byteArray)
 	case MsgTypeConfigurationUpdateCommand:
 		a.GmmMessage.ConfigurationUpdateCommand = nasMessage.NewConfigurationUpdateCommand(MsgTypeConfigurationUpdateCommand)
-		a.GmmMessage.DecodeConfigurationUpdateCommand(byteArray)
+		return a.GmmMessage.DecodeConfigurationUpdateCommand(byteArray)
 	case MsgTypeConfigurationUpdateComplete:
 		a.GmmMessage.ConfigurationUpdateComplete = nasMessage.
 			NewConfigurationUpdateComplete(MsgTypeConfigurationUpdateComplete)
-		a.GmmMessage.DecodeConfigurationUpdateComplete(byteArray)
+		return a.GmmMessage.DecodeConfigurationUpdateComplete(byteArray)
 	case MsgTypeAuthenticationRequest:
 		a.GmmMessage.AuthenticationRequest = nasMessage.
 			NewAuthenticationRequest(MsgTypeAuthenticationRequest)
-		a.GmmMessage.DecodeAuthenticationRequest(byteArray)
+		return a.GmmMessage.DecodeAuthenticationRequest(byteArray)
 	case MsgTypeAuthenticationResponse:
 		a.GmmMessage.AuthenticationResponse = nasMessage.NewAuthenticationResponse(MsgTypeAuthenticationResponse)
-		a.GmmMessage.DecodeAuthenticationResponse(byteArray)
+		return a.GmmMessage.DecodeAuthenticationResponse(byteArray)
 	case MsgTypeAuthenticationReject:
 		a.GmmMessage.AuthenticationReject = nasMessage.NewAuthenticationReject(MsgTypeAuthenticationReject)
-		a.GmmMessage.DecodeAuthenticationReject(byteArray)
+		return a.GmmMessage.DecodeAuthenticationReject(byteArray)
 	case MsgTypeAuthenticationFailure:
 		a.GmmMessage.AuthenticationFailure = nasMessage.NewAuthenticationFailure(MsgTypeAuthenticationFailure)
-		a.GmmMessage.DecodeAuthenticationFailure(byteArray)
+		return a.GmmMessage.DecodeAuthenticationFailure(byteArray)
 	case MsgTypeAuthenticationResult:
 		a.GmmMessage.AuthenticationResult = nasMessage.NewAuthenticationResult(MsgTypeAuthenticationResult)
-		a.GmmMessage.DecodeAuthenticationResult(byteArray)
+		return a.GmmMessage.DecodeAuthenticationResult(byteArray)
 	case MsgTypeIdentityRequest:
 		a.GmmMessage.IdentityRequest = nasMessage.NewIdentityRequest(MsgTypeIdentityRequest)
-		a.GmmMessage.DecodeIdentityRequest(byteArray)
+		return a.GmmMessage.DecodeIdentityRequest(byteArray)
 	case MsgTypeIdentityResponse:
 		a.GmmMessage.IdentityResponse = nasMessage.NewIdentityResponse(MsgTypeIdentityResponse)
-		a.GmmMessage.DecodeIdentityResponse(byteArray)
+		return a.GmmMessage.DecodeIdentityResponse(byteArray)
 	case MsgTypeSecurityModeCommand:
 		a.GmmMessage.SecurityModeCommand = nasMessage.NewSecurityModeCommand(MsgTypeSecurityModeCommand)
-		a.GmmMessage.DecodeSecurityModeCommand(byteArray)
+		return a.GmmMessage.DecodeSecurityModeCommand(byteArray)
 	case MsgTypeSecurityModeComplete:
 		a.GmmMessage.SecurityModeComplete = nasMessage.NewSecurityModeComplete(MsgTypeSecurityModeComplete)
-		a.GmmMessage.DecodeSecurityModeComplete(byteArray)
+		return a.GmmMessage.DecodeSecurityModeComplete(byteArray)
 	case MsgTypeSecurityModeReject:
 		a.GmmMessage.SecurityModeReject = nasMessage.NewSecurityModeReject(MsgTypeSecurityModeReject)
-		a.GmmMessage.DecodeSecurityModeReject(byteArray)
+		return a.GmmMessage.DecodeSecurityModeReject(byteArray)
 	case MsgTypeStatus5GMM:
 		a.GmmMessage.Status5GMM = nasMessage.NewStatus5GMM(MsgTypeStatus5GMM)
-		a.GmmMessage.DecodeStatus5GMM(byteArray)
+		return a.GmmMessage.DecodeStatus5GMM(byteArray)
 	case MsgTypeNotification:
 		a.GmmMessage.Notification = nasMessage.NewNotification(MsgTypeNotification)
-		a.GmmMessage.DecodeNotification(byteArray)
+		return a.GmmMessage.DecodeNotification(byteArray)
 	case MsgTypeNotificationResponse:
 		a.GmmMessage.NotificationResponse = nasMessage.NewNotificationResponse(MsgTypeNotificationResponse)
-		a.GmmMessage.DecodeNotificationResponse(byteArray)
+		return a.GmmMessage.DecodeNotificationResponse(byteArray)
 	case MsgTypeULNASTransport:
 		a.GmmMessage.ULNASTransport = nasMessage.NewULNASTransport(MsgTypeULNASTransport)
-		a.GmmMessage.DecodeULNASTransport(byteArray)
+		return a.GmmMessage.DecodeULNASTransport(byteArray)
 	case MsgTypeDLNASTransport:
 		a.GmmMessage.DLNASTransport = nasMessage.NewDLNASTransport(MsgTypeDLNASTransport)
-		a.GmmMessage.DecodeDLNASTransport(byteArray)
+		return a.GmmMessage.DecodeDLNASTransport(byteArray)
 	default:
 		return fmt.Errorf("NAS decode Fail: MsgType[%d] doesn't exist in GMM Message",
 			a.GmmMessage.GmmHeader.GetMessageType())
 	}
-	return nil
 }
 
 func (a *Message) GmmMessageEncode(buffer *bytes.Buffer) error {
 	switch a.GmmMessage.GmmHeader.GetMessageType() {
 	case MsgTypeRegistrationRequest:
-		a.GmmMessage.EncodeRegistrationRequest(buffer)
+		return a.GmmMessage.EncodeRegistrationRequest(buffer)
 	case MsgTypeRegistrationAccept:
-		a.GmmMessage.EncodeRegistrationAccept(buffer)
+		return a.GmmMessage.EncodeRegistrationAccept(buffer)
 	case MsgTypeRegistrationComplete:
-		a.GmmMessage.EncodeRegistrationComplete(buffer)
+		return a.GmmMessage.EncodeRegistrationComplete(buffer)
 	case MsgTypeRegistrationReject:
-		a.GmmMessage.EncodeRegistrationReject(buffer)
+		return a.GmmMessage.EncodeRegistrationReject(buffer)
 	case MsgTypeDeregistrationRequestUEOriginatingDeregistration:
-		a.GmmMessage.EncodeDeregistrationRequestUEOriginatingDeregistration(buffer)
+		return a.GmmMessage.EncodeDeregistrationRequestUEOriginatingDeregistration(buffer)
 	case MsgTypeDeregistrationAcceptUEOriginatingDeregistration:
-		a.GmmMessage.EncodeDeregistrationAcceptUEOriginatingDeregistration(buffer)
+		return a.GmmMessage.EncodeDeregistrationAcceptUEOriginatingDeregistration(buffer)
 	case MsgTypeDeregistrationRequestUETerminatedDeregistration:
-		a.GmmMessage.EncodeDeregistrationRequestUETerminatedDeregistration(buffer)
+		return a.GmmMessage.EncodeDeregistrationRequestUETerminatedDeregistration(buffer)
 	case MsgTypeDeregistrationAcceptUETerminatedDeregistration:
-		a.GmmMessage.EncodeDeregistrationAcceptUETerminatedDeregistration(buffer)
+		return a.GmmMessage.EncodeDeregistrationAcceptUETerminatedDeregistration(buffer)
 	case MsgTypeServiceRequest:
-		a.GmmMessage.EncodeServiceRequest(buffer)
+		return a.GmmMessage.EncodeServiceRequest(buffer)
 	case MsgTypeServiceReject:
-		a.GmmMessage.EncodeServiceReject(buffer)
+		return a.GmmMessage.EncodeServiceReject(buffer)
 	case MsgTypeServiceAccept:
-		a.GmmMessage.EncodeServiceAccept(buffer)
+		return a.GmmMessage.EncodeServiceAccept(buffer)
 	case MsgTypeConfigurationUpdateCommand:
-		a.GmmMessage.EncodeConfigurationUpdateCommand(buffer)
+		return a.GmmMessage.EncodeConfigurationUpdateCommand(buffer)
 	case MsgTypeConfigurationUpdateComplete:
-		a.GmmMessage.EncodeConfigurationUpdateComplete(buffer)
+		return a.GmmMessage.EncodeConfigurationUpdateComplete(buffer)
 	case MsgTypeAuthenticationRequest:
-		a.GmmMessage.EncodeAuthenticationRequest(buffer)
+		return a.GmmMessage.EncodeAuthenticationRequest(buffer)
 	case MsgTypeAuthenticationResponse:
-		a.GmmMessage.EncodeAuthenticationResponse(buffer)
+		return a.GmmMessage.EncodeAuthenticationResponse(buffer)
 	case MsgTypeAuthenticationReject:
-		a.GmmMessage.EncodeAuthenticationReject(buffer)
+		return a.GmmMessage.EncodeAuthenticationReject(buffer)
 	case MsgTypeAuthenticationFailure:
-		a.GmmMessage.EncodeAuthenticationFailure(buffer)
+		return a.GmmMessage.EncodeAuthenticationFailure(buffer)
 	case MsgTypeAuthenticationResult:
-		a.GmmMessage.EncodeAuthenticationResult(buffer)
+		return a.GmmMessage.EncodeAuthenticationResult(buffer)
 	case MsgTypeIdentityRequest:
-		a.GmmMessage.EncodeIdentityRequest(buffer)
+		return a.GmmMessage.EncodeIdentityRequest(buffer)
 	case MsgTypeIdentityResponse:
-		a.GmmMessage.EncodeIdentityResponse(buffer)
+		return a.GmmMessage.EncodeIdentityResponse(buffer)
 	case MsgTypeSecurityModeCommand:
-		a.GmmMessage.EncodeSecurityModeCommand(buffer)
+		return a.GmmMessage.EncodeSecurityModeCommand(buffer)
 	case MsgTypeSecurityModeComplete:
-		a.GmmMessage.EncodeSecurityModeComplete(buffer)
+		return a.GmmMessage.EncodeSecurityModeComplete(buffer)
 	case MsgTypeSecurityModeReject:
-		a.GmmMessage.EncodeSecurityModeReject(buffer)
+		return a.GmmMessage.EncodeSecurityModeReject(buffer)
 	case MsgTypeStatus5GMM:
-		a.GmmMessage.EncodeStatus5GMM(buffer)
+		return a.GmmMessage.EncodeStatus5GMM(buffer)
 	case MsgTypeNotification:
-		a.GmmMessage.EncodeNotification(buffer)
+		return a.GmmMessage.EncodeNotification(buffer)
 	case MsgTypeNotificationResponse:
-		a.GmmMessage.EncodeNotificationResponse(buffer)
+		return a.GmmMessage.EncodeNotificationResponse(buffer)
 	case MsgTypeULNASTransport:
-		a.GmmMessage.EncodeULNASTransport(buffer)
+		return a.GmmMessage.EncodeULNASTransport(buffer)
 	case MsgTypeDLNASTransport:
-		a.GmmMessage.EncodeDLNASTransport(buffer)
+		return a.GmmMessage.EncodeDLNASTransport(buffer)
 	default:
 		return fmt.Errorf("NAS Encode Fail: MsgType[%d] doesn't exist in GMM Message",
 			a.GmmMessage.GmmHeader.GetMessageType())
 	}
-	return nil
 }
 
 type GsmMessage struct {
@@ -414,110 +413,108 @@ func (a *Message) GsmMessageDecode(byteArray *[]byte) error {
 	case MsgTypePDUSessionEstablishmentRequest:
 		a.GsmMessage.PDUSessionEstablishmentRequest = nasMessage.
 			NewPDUSessionEstablishmentRequest(MsgTypePDUSessionEstablishmentRequest)
-		a.GsmMessage.DecodePDUSessionEstablishmentRequest(byteArray)
+		return a.GsmMessage.DecodePDUSessionEstablishmentRequest(byteArray)
 	case MsgTypePDUSessionEstablishmentAccept:
 		a.GsmMessage.PDUSessionEstablishmentAccept = nasMessage.
 			NewPDUSessionEstablishmentAccept(MsgTypePDUSessionEstablishmentAccept)
-		a.GsmMessage.DecodePDUSessionEstablishmentAccept(byteArray)
+		return a.GsmMessage.DecodePDUSessionEstablishmentAccept(byteArray)
 	case MsgTypePDUSessionEstablishmentReject:
 		a.GsmMessage.PDUSessionEstablishmentReject = nasMessage.
 			NewPDUSessionEstablishmentReject(MsgTypePDUSessionEstablishmentReject)
-		a.GsmMessage.DecodePDUSessionEstablishmentReject(byteArray)
+		return a.GsmMessage.DecodePDUSessionEstablishmentReject(byteArray)
 	case MsgTypePDUSessionAuthenticationCommand:
 		a.GsmMessage.PDUSessionAuthenticationCommand = nasMessage.
 			NewPDUSessionAuthenticationCommand(MsgTypePDUSessionAuthenticationCommand)
-		a.GsmMessage.DecodePDUSessionAuthenticationCommand(byteArray)
+		return a.GsmMessage.DecodePDUSessionAuthenticationCommand(byteArray)
 	case MsgTypePDUSessionAuthenticationComplete:
 		a.GsmMessage.PDUSessionAuthenticationComplete = nasMessage.
 			NewPDUSessionAuthenticationComplete(MsgTypePDUSessionAuthenticationComplete)
-		a.GsmMessage.DecodePDUSessionAuthenticationComplete(byteArray)
+		return a.GsmMessage.DecodePDUSessionAuthenticationComplete(byteArray)
 	case MsgTypePDUSessionAuthenticationResult:
 		a.GsmMessage.PDUSessionAuthenticationResult = nasMessage.
 			NewPDUSessionAuthenticationResult(MsgTypePDUSessionAuthenticationResult)
-		a.GsmMessage.DecodePDUSessionAuthenticationResult(byteArray)
+		return a.GsmMessage.DecodePDUSessionAuthenticationResult(byteArray)
 	case MsgTypePDUSessionModificationRequest:
 		a.GsmMessage.PDUSessionModificationRequest = nasMessage.
 			NewPDUSessionModificationRequest(MsgTypePDUSessionModificationRequest)
-		a.GsmMessage.DecodePDUSessionModificationRequest(byteArray)
+		return a.GsmMessage.DecodePDUSessionModificationRequest(byteArray)
 	case MsgTypePDUSessionModificationReject:
 		a.GsmMessage.PDUSessionModificationReject = nasMessage.
 			NewPDUSessionModificationReject(MsgTypePDUSessionModificationReject)
-		a.GsmMessage.DecodePDUSessionModificationReject(byteArray)
+		return a.GsmMessage.DecodePDUSessionModificationReject(byteArray)
 	case MsgTypePDUSessionModificationCommand:
 		a.GsmMessage.PDUSessionModificationCommand = nasMessage.
 			NewPDUSessionModificationCommand(MsgTypePDUSessionModificationCommand)
-		a.GsmMessage.DecodePDUSessionModificationCommand(byteArray)
+		return a.GsmMessage.DecodePDUSessionModificationCommand(byteArray)
 	case MsgTypePDUSessionModificationComplete:
 		a.GsmMessage.PDUSessionModificationComplete = nasMessage.
 			NewPDUSessionModificationComplete(MsgTypePDUSessionModificationComplete)
-		a.GsmMessage.DecodePDUSessionModificationComplete(byteArray)
+		return a.GsmMessage.DecodePDUSessionModificationComplete(byteArray)
 	case MsgTypePDUSessionModificationCommandReject:
 		a.GsmMessage.PDUSessionModificationCommandReject = nasMessage.
 			NewPDUSessionModificationCommandReject(MsgTypePDUSessionModificationCommandReject)
-		a.GsmMessage.DecodePDUSessionModificationCommandReject(byteArray)
+		return a.GsmMessage.DecodePDUSessionModificationCommandReject(byteArray)
 	case MsgTypePDUSessionReleaseRequest:
 		a.GsmMessage.PDUSessionReleaseRequest = nasMessage.
 			NewPDUSessionReleaseRequest(MsgTypePDUSessionReleaseRequest)
-		a.GsmMessage.DecodePDUSessionReleaseRequest(byteArray)
+		return a.GsmMessage.DecodePDUSessionReleaseRequest(byteArray)
 	case MsgTypePDUSessionReleaseReject:
 		a.GsmMessage.PDUSessionReleaseReject = nasMessage.
 			NewPDUSessionReleaseReject(MsgTypePDUSessionReleaseReject)
-		a.GsmMessage.DecodePDUSessionReleaseReject(byteArray)
+		return a.GsmMessage.DecodePDUSessionReleaseReject(byteArray)
 	case MsgTypePDUSessionReleaseCommand:
 		a.GsmMessage.PDUSessionReleaseCommand = nasMessage.
 			NewPDUSessionReleaseCommand(MsgTypePDUSessionReleaseCommand)
-		a.GsmMessage.DecodePDUSessionReleaseCommand(byteArray)
+		return a.GsmMessage.DecodePDUSessionReleaseCommand(byteArray)
 	case MsgTypePDUSessionReleaseComplete:
 		a.GsmMessage.PDUSessionReleaseComplete = nasMessage.
 			NewPDUSessionReleaseComplete(MsgTypePDUSessionReleaseComplete)
-		a.GsmMessage.DecodePDUSessionReleaseComplete(byteArray)
+		return a.GsmMessage.DecodePDUSessionReleaseComplete(byteArray)
 	case MsgTypeStatus5GSM:
 		a.GsmMessage.Status5GSM = nasMessage.NewStatus5GSM(MsgTypeStatus5GSM)
-		a.GsmMessage.DecodeStatus5GSM(byteArray)
+		return a.GsmMessage.DecodeStatus5GSM(byteArray)
 	default:
 		return fmt.Errorf("NAS Decode Fail: MsgType[%d] doesn't exist in GSM Message",
 			a.GsmMessage.GsmHeader.GetMessageType())
 	}
-	return nil
 }
 
 func (a *Message) GsmMessageEncode(buffer *bytes.Buffer) error {
 	switch a.GsmMessage.GsmHeader.GetMessageType() {
 	case MsgTypePDUSessionEstablishmentRequest:
-		a.GsmMessage.EncodePDUSessionEstablishmentRequest(buffer)
+		return a.GsmMessage.EncodePDUSessionEstablishmentRequest(buffer)
 	case MsgTypePDUSessionEstablishmentAccept:
-		a.GsmMessage.EncodePDUSessionEstablishmentAccept(buffer)
+		return a.GsmMessage.EncodePDUSessionEstablishmentAccept(buffer)
 	case MsgTypePDUSessionEstablishmentReject:
-		a.GsmMessage.EncodePDUSessionEstablishmentReject(buffer)
+		return a.GsmMessage.EncodePDUSessionEstablishmentReject(buffer)
 	case MsgTypePDUSessionAuthenticationCommand:
-		a.GsmMessage.EncodePDUSessionAuthenticationCommand(buffer)
+		return a.GsmMessage.EncodePDUSessionAuthenticationCommand(buffer)
 	case MsgTypePDUSessionAuthenticationComplete:
-		a.GsmMessage.EncodePDUSessionAuthenticationComplete(buffer)
+		return a.GsmMessage.EncodePDUSessionAuthenticationComplete(buffer)
 	case MsgTypePDUSessionAuthenticationResult:
-		a.GsmMessage.EncodePDUSessionAuthenticationResult(buffer)
+		return a.GsmMessage.EncodePDUSessionAuthenticationResult(buffer)
 	case MsgTypePDUSessionModificationRequest:
-		a.GsmMessage.EncodePDUSessionModificationRequest(buffer)
+		return a.GsmMessage.EncodePDUSessionModificationRequest(buffer)
 	case MsgTypePDUSessionModificationReject:
-		a.GsmMessage.EncodePDUSessionModificationReject(buffer)
+		return a.GsmMessage.EncodePDUSessionModificationReject(buffer)
 	case MsgTypePDUSessionModificationCommand:
-		a.GsmMessage.EncodePDUSessionModificationCommand(buffer)
+		return a.GsmMessage.EncodePDUSessionModificationCommand(buffer)
 	case MsgTypePDUSessionModificationComplete:
-		a.GsmMessage.EncodePDUSessionModificationComplete(buffer)
+		return a.GsmMessage.EncodePDUSessionModificationComplete(buffer)
 	case MsgTypePDUSessionModificationCommandReject:
-		a.GsmMessage.EncodePDUSessionModificationCommandReject(buffer)
+		return a.GsmMessage.EncodePDUSessionModificationCommandReject(buffer)
 	case MsgTypePDUSessionReleaseRequest:
-		a.GsmMessage.EncodePDUSessionReleaseRequest(buffer)
+		return a.GsmMessage.EncodePDUSessionReleaseRequest(buffer)
 	case MsgTypePDUSessionReleaseReject:
-		a.GsmMessage.EncodePDUSessionReleaseReject(buffer)
+		return a.GsmMessage.EncodePDUSessionReleaseReject(buffer)
 	case MsgTypePDUSessionReleaseCommand:
-		a.GsmMessage.EncodePDUSessionReleaseCommand(buffer)
+		return a.GsmMessage.EncodePDUSessionReleaseCommand(buffer)
 	case MsgTypePDUSessionReleaseComplete:
-		a.GsmMessage.EncodePDUSessionReleaseComplete(buffer)
+		return a.GsmMessage.EncodePDUSessionReleaseComplete(buffer)
 	case MsgTypeStatus5GSM:
-		a.GsmMessage.EncodeStatus5GSM(buffer)
+		return a.GsmMessage.EncodeStatus5GSM(buffer)
 	default:
 		return fmt.Errorf("NAS Encode Fail: MsgType[%d] doesn't exist in GSM Message",
 			a.GsmMessage.GsmHeader.GetMessageType())
 	}
-	return nil
 }

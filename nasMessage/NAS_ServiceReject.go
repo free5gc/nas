@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -30,38 +31,75 @@ const (
 	ServiceRejectEAPMessageType       uint8 = 0x78
 )
 
-func (a *ServiceReject) EncodeServiceReject(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.ServiceRejectMessageIdentity.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet)
+func (a *ServiceReject) EncodeServiceReject(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceReject/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceReject/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.ServiceRejectMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceReject/ServiceRejectMessageIdentity): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceReject/Cause5GMM): %w", err)
+	}
 	if a.PDUSessionStatus != nil {
-		binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.PDUSessionStatus.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/PDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/PDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.PDUSessionStatus.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/PDUSessionStatus): %w", err)
+		}
 	}
 	if a.T3346Value != nil {
-		binary.Write(buffer, binary.BigEndian, a.T3346Value.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.T3346Value.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.T3346Value.Octet)
+		if err := binary.Write(buffer, binary.BigEndian, a.T3346Value.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/T3346Value): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.T3346Value.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/T3346Value): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.T3346Value.Octet); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/T3346Value): %w", err)
+		}
 	}
 	if a.EAPMessage != nil {
-		binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/EAPMessage): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/EAPMessage): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceReject/EAPMessage): %w", err)
+		}
 	}
+	return nil
 }
 
-func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) {
+func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.ServiceRejectMessageIdentity.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.Cause5GMM.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceReject/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceReject/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.ServiceRejectMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceReject/ServiceRejectMessageIdentity): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceReject/Cause5GMM): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (ServiceReject/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -72,20 +110,33 @@ func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) {
 		switch tmpIeiN {
 		case ServiceRejectPDUSessionStatusType:
 			a.PDUSessionStatus = nasType.NewPDUSessionStatus(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceReject/PDUSessionStatus): %w", err)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceReject/PDUSessionStatus): %w", err)
+			}
 		case ServiceRejectT3346ValueType:
 			a.T3346Value = nasType.NewT3346Value(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.T3346Value.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.T3346Value.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceReject/T3346Value): %w", err)
+			}
 			a.T3346Value.SetLen(a.T3346Value.GetLen())
-			binary.Read(buffer, binary.BigEndian, &a.T3346Value.Octet)
+			if err := binary.Read(buffer, binary.BigEndian, &a.T3346Value.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceReject/T3346Value): %w", err)
+			}
 		case ServiceRejectEAPMessageType:
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceReject/EAPMessage): %w", err)
+			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceReject/EAPMessage): %w", err)
+			}
 		default:
 		}
 	}
+	return nil
 }

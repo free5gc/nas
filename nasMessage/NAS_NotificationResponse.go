@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -25,26 +26,47 @@ const (
 	NotificationResponsePDUSessionStatusType uint8 = 0x50
 )
 
-func (a *NotificationResponse) EncodeNotificationResponse(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.NotificationResponseMessageIdentity.Octet)
-	if a.PDUSessionStatus != nil {
-		binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.PDUSessionStatus.Buffer)
+func (a *NotificationResponse) EncodeNotificationResponse(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (NotificationResponse/ExtendedProtocolDiscriminator): %w", err)
 	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (NotificationResponse/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.NotificationResponseMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (NotificationResponse/NotificationResponseMessageIdentity): %w", err)
+	}
+	if a.PDUSessionStatus != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (NotificationResponse/PDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (NotificationResponse/PDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.PDUSessionStatus.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (NotificationResponse/PDUSessionStatus): %w", err)
+		}
+	}
+	return nil
 }
 
-func (a *NotificationResponse) DecodeNotificationResponse(byteArray *[]byte) {
+func (a *NotificationResponse) DecodeNotificationResponse(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.NotificationResponseMessageIdentity.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (NotificationResponse/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (NotificationResponse/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.NotificationResponseMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (NotificationResponse/NotificationResponseMessageIdentity): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (NotificationResponse/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -55,10 +77,15 @@ func (a *NotificationResponse) DecodeNotificationResponse(byteArray *[]byte) {
 		switch tmpIeiN {
 		case NotificationResponsePDUSessionStatusType:
 			a.PDUSessionStatus = nasType.NewPDUSessionStatus(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (NotificationResponse/PDUSessionStatus): %w", err)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (NotificationResponse/PDUSessionStatus): %w", err)
+			}
 		default:
 		}
 	}
+	return nil
 }

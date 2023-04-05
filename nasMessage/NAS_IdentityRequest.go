@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -21,23 +22,42 @@ func NewIdentityRequest(iei uint8) (identityRequest *IdentityRequest) {
 	return identityRequest
 }
 
-func (a *IdentityRequest) EncodeIdentityRequest(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.IdentityRequestMessageIdentity.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndIdentityType.Octet)
+func (a *IdentityRequest) EncodeIdentityRequest(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (IdentityRequest/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (IdentityRequest/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.IdentityRequestMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (IdentityRequest/IdentityRequestMessageIdentity): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndIdentityType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (IdentityRequest/SpareHalfOctetAndIdentityType): %w", err)
+	}
+	return nil
 }
 
-func (a *IdentityRequest) DecodeIdentityRequest(byteArray *[]byte) {
+func (a *IdentityRequest) DecodeIdentityRequest(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.IdentityRequestMessageIdentity.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndIdentityType.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (IdentityRequest/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (IdentityRequest/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.IdentityRequestMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (IdentityRequest/IdentityRequestMessageIdentity): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndIdentityType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (IdentityRequest/SpareHalfOctetAndIdentityType): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (IdentityRequest/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -49,4 +69,5 @@ func (a *IdentityRequest) DecodeIdentityRequest(byteArray *[]byte) {
 		default:
 		}
 	}
+	return nil
 }

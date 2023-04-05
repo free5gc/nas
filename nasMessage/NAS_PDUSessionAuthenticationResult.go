@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -28,33 +29,64 @@ const (
 	PDUSessionAuthenticationResultExtendedProtocolConfigurationOptionsType uint8 = 0x7B
 )
 
-func (a *PDUSessionAuthenticationResult) EncodePDUSessionAuthenticationResult(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.PDUSessionID.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.PTI.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.PDUSESSIONAUTHENTICATIONRESULTMessageIdentity.Octet)
+func (a *PDUSessionAuthenticationResult) EncodePDUSessionAuthenticationResult(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.PDUSessionID.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/PDUSessionID): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.PTI.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/PTI): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.PDUSESSIONAUTHENTICATIONRESULTMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/PDUSESSIONAUTHENTICATIONRESULTMessageIdentity): %w", err)
+	}
 	if a.EAPMessage != nil {
-		binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
+		}
 	}
 	if a.ExtendedProtocolConfigurationOptions != nil {
-		binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %w", err)
+		}
 	}
+	return nil
 }
 
-func (a *PDUSessionAuthenticationResult) DecodePDUSessionAuthenticationResult(byteArray *[]byte) {
+func (a *PDUSessionAuthenticationResult) DecodePDUSessionAuthenticationResult(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.PDUSessionID.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.PTI.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.PDUSESSIONAUTHENTICATIONRESULTMessageIdentity.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionID.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/PDUSessionID): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.PTI.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/PTI): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.PDUSESSIONAUTHENTICATIONRESULTMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/PDUSESSIONAUTHENTICATIONRESULTMessageIdentity): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -65,15 +97,24 @@ func (a *PDUSessionAuthenticationResult) DecodePDUSessionAuthenticationResult(by
 		switch tmpIeiN {
 		case PDUSessionAuthenticationResultEAPMessageType:
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
+				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
+			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
+			}
 		case PDUSessionAuthenticationResultExtendedProtocolConfigurationOptionsType:
 			a.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Len); err != nil {
+				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %w", err)
+			}
 			a.ExtendedProtocolConfigurationOptions.SetLen(a.ExtendedProtocolConfigurationOptions.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %w", err)
+			}
 		default:
 		}
 	}
+	return nil
 }

@@ -5,6 +5,7 @@ package nasMessage
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 
 	"github.com/free5gc/nas/nasType"
 )
@@ -33,48 +34,99 @@ const (
 	ServiceRequestNASMessageContainerType     uint8 = 0x71
 )
 
-func (a *ServiceRequest) EncodeServiceRequest(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.ServiceRequestMessageIdentity.Octet)
-	binary.Write(buffer, binary.BigEndian, &a.ServiceTypeAndNgksi.Octet)
-	binary.Write(buffer, binary.BigEndian, a.TMSI5GS.GetLen())
-	binary.Write(buffer, binary.BigEndian, &a.TMSI5GS.Octet)
+func (a *ServiceRequest) EncodeServiceRequest(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceRequest/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceRequest/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.ServiceRequestMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceRequest/ServiceRequestMessageIdentity): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.ServiceTypeAndNgksi.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceRequest/ServiceTypeAndNgksi): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, a.TMSI5GS.GetLen()); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceRequest/TMSI5GS): %w", err)
+	}
+	if err := binary.Write(buffer, binary.BigEndian, &a.TMSI5GS.Octet); err != nil {
+		return fmt.Errorf("NAS encode error (ServiceRequest/TMSI5GS): %w", err)
+	}
 	if a.UplinkDataStatus != nil {
-		binary.Write(buffer, binary.BigEndian, a.UplinkDataStatus.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.UplinkDataStatus.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.UplinkDataStatus.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.UplinkDataStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/UplinkDataStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.UplinkDataStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/UplinkDataStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.UplinkDataStatus.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/UplinkDataStatus): %w", err)
+		}
 	}
 	if a.PDUSessionStatus != nil {
-		binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.PDUSessionStatus.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/PDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/PDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.PDUSessionStatus.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/PDUSessionStatus): %w", err)
+		}
 	}
 	if a.AllowedPDUSessionStatus != nil {
-		binary.Write(buffer, binary.BigEndian, a.AllowedPDUSessionStatus.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.AllowedPDUSessionStatus.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.AllowedPDUSessionStatus.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.AllowedPDUSessionStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/AllowedPDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.AllowedPDUSessionStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/AllowedPDUSessionStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.AllowedPDUSessionStatus.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/AllowedPDUSessionStatus): %w", err)
+		}
 	}
 	if a.NASMessageContainer != nil {
-		binary.Write(buffer, binary.BigEndian, a.NASMessageContainer.GetIei())
-		binary.Write(buffer, binary.BigEndian, a.NASMessageContainer.GetLen())
-		binary.Write(buffer, binary.BigEndian, &a.NASMessageContainer.Buffer)
+		if err := binary.Write(buffer, binary.BigEndian, a.NASMessageContainer.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/NASMessageContainer): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.NASMessageContainer.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/NASMessageContainer): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.NASMessageContainer.Buffer); err != nil {
+			return fmt.Errorf("NAS encode error (ServiceRequest/NASMessageContainer): %w", err)
+		}
 	}
+	return nil
 }
 
-func (a *ServiceRequest) DecodeServiceRequest(byteArray *[]byte) {
+func (a *ServiceRequest) DecodeServiceRequest(byteArray *[]byte) error {
 	buffer := bytes.NewBuffer(*byteArray)
-	binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.ServiceRequestMessageIdentity.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.ServiceTypeAndNgksi.Octet)
-	binary.Read(buffer, binary.BigEndian, &a.TMSI5GS.Len)
+	if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceRequest/ExtendedProtocolDiscriminator): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceRequest/SpareHalfOctetAndSecurityHeaderType): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.ServiceRequestMessageIdentity.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceRequest/ServiceRequestMessageIdentity): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.ServiceTypeAndNgksi.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceRequest/ServiceTypeAndNgksi): %w", err)
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &a.TMSI5GS.Len); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceRequest/TMSI5GS): %w", err)
+	}
 	a.TMSI5GS.SetLen(a.TMSI5GS.GetLen())
-	binary.Read(buffer, binary.BigEndian, &a.TMSI5GS.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &a.TMSI5GS.Octet); err != nil {
+		return fmt.Errorf("NAS decode error (ServiceRequest/TMSI5GS): %w", err)
+	}
 	for buffer.Len() > 0 {
 		var ieiN uint8
 		var tmpIeiN uint8
-		binary.Read(buffer, binary.BigEndian, &ieiN)
+		if err := binary.Read(buffer, binary.BigEndian, &ieiN); err != nil {
+			return fmt.Errorf("NAS decode error (ServiceRequest/iei): %w", err)
+		}
 		// fmt.Println(ieiN)
 		if ieiN >= 0x80 {
 			tmpIeiN = (ieiN & 0xf0) >> 4
@@ -85,25 +137,42 @@ func (a *ServiceRequest) DecodeServiceRequest(byteArray *[]byte) {
 		switch tmpIeiN {
 		case ServiceRequestUplinkDataStatusType:
 			a.UplinkDataStatus = nasType.NewUplinkDataStatus(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.UplinkDataStatus.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.UplinkDataStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/UplinkDataStatus): %w", err)
+			}
 			a.UplinkDataStatus.SetLen(a.UplinkDataStatus.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.UplinkDataStatus.Buffer[:a.UplinkDataStatus.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.UplinkDataStatus.Buffer[:a.UplinkDataStatus.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/UplinkDataStatus): %w", err)
+			}
 		case ServiceRequestPDUSessionStatusType:
 			a.PDUSessionStatus = nasType.NewPDUSessionStatus(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/PDUSessionStatus): %w", err)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/PDUSessionStatus): %w", err)
+			}
 		case ServiceRequestAllowedPDUSessionStatusType:
 			a.AllowedPDUSessionStatus = nasType.NewAllowedPDUSessionStatus(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.AllowedPDUSessionStatus.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.AllowedPDUSessionStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/AllowedPDUSessionStatus): %w", err)
+			}
 			a.AllowedPDUSessionStatus.SetLen(a.AllowedPDUSessionStatus.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.AllowedPDUSessionStatus.Buffer[:a.AllowedPDUSessionStatus.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.AllowedPDUSessionStatus.Buffer[:a.AllowedPDUSessionStatus.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/AllowedPDUSessionStatus): %w", err)
+			}
 		case ServiceRequestNASMessageContainerType:
 			a.NASMessageContainer = nasType.NewNASMessageContainer(ieiN)
-			binary.Read(buffer, binary.BigEndian, &a.NASMessageContainer.Len)
+			if err := binary.Read(buffer, binary.BigEndian, &a.NASMessageContainer.Len); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/NASMessageContainer): %w", err)
+			}
 			a.NASMessageContainer.SetLen(a.NASMessageContainer.GetLen())
-			binary.Read(buffer, binary.BigEndian, a.NASMessageContainer.Buffer[:a.NASMessageContainer.GetLen()])
+			if err := binary.Read(buffer, binary.BigEndian, a.NASMessageContainer.Buffer[:a.NASMessageContainer.GetLen()]); err != nil {
+				return fmt.Errorf("NAS decode error (ServiceRequest/NASMessageContainer): %w", err)
+			}
 		default:
 		}
 	}
+	return nil
 }
