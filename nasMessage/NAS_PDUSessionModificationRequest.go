@@ -39,7 +39,7 @@ const (
 	PDUSessionModificationRequestIntegrityProtectionMaximumDataRateType    uint8 = 0x13
 	PDUSessionModificationRequestRequestedQosRulesType                     uint8 = 0x7A
 	PDUSessionModificationRequestRequestedQosFlowDescriptionsType          uint8 = 0x79
-	PDUSessionModificationRequestMappedEPSBearerContextsType               uint8 = 0x7F
+	PDUSessionModificationRequestMappedEPSBearerContextsType               uint8 = 0x75
 	PDUSessionModificationRequestExtendedProtocolConfigurationOptionsType  uint8 = 0x7B
 )
 

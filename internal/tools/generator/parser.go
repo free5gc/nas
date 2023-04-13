@@ -239,10 +239,6 @@ func ParseSpecs() {
 						}
 					}
 					ie.typeName = typeName
-					// XXX
-					if typeName == "MappedEPSBearerContexts" && msgName != "PDUSessionEstablishmentAccept" {
-						ie.iei = 0x7F
-					}
 
 					if half && prevHalf {
 						prevIe := &ies[len(ies)-1]

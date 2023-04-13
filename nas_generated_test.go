@@ -1449,7 +1449,7 @@ var testsGsmMessageLarge = []struct {
 						Buffer: generateBufferSlice(65535),
 					},
 					MappedEPSBearerContexts: &nasType.MappedEPSBearerContexts{
-						Iei:    0x7f,
+						Iei:    0x75,
 						Len:    65535,
 						Buffer: generateBufferSlice(65535),
 					},
@@ -1537,7 +1537,7 @@ var testsGsmMessageLarge = []struct {
 						Buffer: generateBufferSlice(65535),
 					},
 					MappedEPSBearerContexts: &nasType.MappedEPSBearerContexts{
-						Iei:    0x7f,
+						Iei:    0x75,
 						Len:    65535,
 						Buffer: generateBufferSlice(65535),
 					},

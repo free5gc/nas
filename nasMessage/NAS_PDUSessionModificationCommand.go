@@ -36,7 +36,7 @@ const (
 	PDUSessionModificationCommandRQTimerValueType                         uint8 = 0x56
 	PDUSessionModificationCommandAlwaysonPDUSessionIndicationType         uint8 = 0x08
 	PDUSessionModificationCommandAuthorizedQosRulesType                   uint8 = 0x7A
-	PDUSessionModificationCommandMappedEPSBearerContextsType              uint8 = 0x7F
+	PDUSessionModificationCommandMappedEPSBearerContextsType              uint8 = 0x75
 	PDUSessionModificationCommandAuthorizedQosFlowDescriptionsType        uint8 = 0x79
 	PDUSessionModificationCommandExtendedProtocolConfigurationOptionsType uint8 = 0x7B
 )
