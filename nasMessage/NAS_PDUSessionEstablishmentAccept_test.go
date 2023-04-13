@@ -44,8 +44,8 @@ var nasMessagePDUSessionEstablishmentAcceptTable = []nasMessagePDUSessionEstabli
 		},
 		inAuthorizedQosRules: nasType.AuthorizedQosRules{
 			Iei:    0,
-			Len:    1,
-			Buffer: []uint8{0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inSessionAMBR: nasType.SessionAMBR{
 			Iei:   0,
@@ -75,18 +75,18 @@ var nasMessagePDUSessionEstablishmentAcceptTable = []nasMessagePDUSessionEstabli
 		},
 		inMappedEPSBearerContexts: nasType.MappedEPSBearerContexts{
 			Iei:    nasMessage.PDUSessionEstablishmentAcceptMappedEPSBearerContextsType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.PDUSessionEstablishmentAcceptEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inAuthorizedQosFlowDescriptions: nasType.AuthorizedQosFlowDescriptions{
 			Iei:    nasMessage.PDUSessionEstablishmentAcceptAuthorizedQosFlowDescriptionsType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    3,
+			Buffer: []uint8{0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionEstablishmentAcceptExtendedProtocolConfigurationOptionsType,

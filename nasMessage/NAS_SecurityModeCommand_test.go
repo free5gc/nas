@@ -57,8 +57,8 @@ var nasMessageSecurityModeCommandTable = []nasMessageSecurityModeCommandData{
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.SecurityModeCommandEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inABBA: nasType.ABBA{
 			Iei:    nasMessage.SecurityModeCommandABBAType,

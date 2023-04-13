@@ -62,6 +62,9 @@ func (a *DeregistrationRequestUEOriginatingDeregistration) DecodeDeregistrationR
 	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity5GS.Len); err != nil {
 		return fmt.Errorf("NAS decode error (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %w", err)
 	}
+	if a.MobileIdentity5GS.Len < 4 {
+		return fmt.Errorf("invalid ie length (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %d", a.MobileIdentity5GS.Len)
+	}
 	a.MobileIdentity5GS.SetLen(a.MobileIdentity5GS.GetLen())
 	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity5GS.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %w", err)

@@ -113,7 +113,7 @@ func (a *RegistrationReject) DecodeRegistrationReject(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3346Value.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationReject/T3346Value): %w", err)
 			}
-			if a.T3346Value.Len > 1 {
+			if a.T3346Value.Len != 1 {
 				return fmt.Errorf("invalid ie length (RegistrationReject/T3346Value): %d", a.T3346Value.Len)
 			}
 			a.T3346Value.SetLen(a.T3346Value.GetLen())
@@ -125,7 +125,7 @@ func (a *RegistrationReject) DecodeRegistrationReject(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3502Value.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationReject/T3502Value): %w", err)
 			}
-			if a.T3502Value.Len > 1 {
+			if a.T3502Value.Len != 1 {
 				return fmt.Errorf("invalid ie length (RegistrationReject/T3502Value): %d", a.T3502Value.Len)
 			}
 			a.T3502Value.SetLen(a.T3502Value.GetLen())
@@ -136,6 +136,9 @@ func (a *RegistrationReject) DecodeRegistrationReject(byteArray *[]byte) error {
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationReject/EAPMessage): %w", err)
+			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (RegistrationReject/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {

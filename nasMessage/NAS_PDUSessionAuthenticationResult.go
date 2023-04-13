@@ -100,6 +100,9 @@ func (a *PDUSessionAuthenticationResult) DecodePDUSessionAuthenticationResult(by
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
 			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (PDUSessionAuthenticationResult/EAPMessage): %d", a.EAPMessage.Len)
+			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/EAPMessage): %w", err)
@@ -108,6 +111,9 @@ func (a *PDUSessionAuthenticationResult) DecodePDUSessionAuthenticationResult(by
 			a.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %w", err)
+			}
+			if a.ExtendedProtocolConfigurationOptions.Len < 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionAuthenticationResult/ExtendedProtocolConfigurationOptions): %d", a.ExtendedProtocolConfigurationOptions.Len)
 			}
 			a.ExtendedProtocolConfigurationOptions.SetLen(a.ExtendedProtocolConfigurationOptions.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()]); err != nil {

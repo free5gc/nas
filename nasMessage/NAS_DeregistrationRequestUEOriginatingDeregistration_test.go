@@ -32,8 +32,8 @@ var nasMessageDeregistrationRequestUEOriginatingDeregistrationTable = []nasMessa
 		},
 		inMobileIdentity5GS: nasType.MobileIdentity5GS{
 			Iei:    0,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 	},
 }

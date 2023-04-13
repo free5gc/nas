@@ -131,6 +131,9 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 	if err := binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Len); err != nil {
 		return fmt.Errorf("NAS decode error (ULNASTransport/PayloadContainer): %w", err)
 	}
+	if a.PayloadContainer.Len < 1 {
+		return fmt.Errorf("invalid ie length (ULNASTransport/PayloadContainer): %d", a.PayloadContainer.Len)
+	}
 	a.PayloadContainer.SetLen(a.PayloadContainer.GetLen())
 	if err := binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (ULNASTransport/PayloadContainer): %w", err)
@@ -167,7 +170,7 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.SNSSAI.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/SNSSAI): %w", err)
 			}
-			if a.SNSSAI.Len > 8 {
+			if a.SNSSAI.Len < 1 || a.SNSSAI.Len > 8 {
 				return fmt.Errorf("invalid ie length (ULNASTransport/SNSSAI): %d", a.SNSSAI.Len)
 			}
 			a.SNSSAI.SetLen(a.SNSSAI.GetLen())
@@ -179,6 +182,9 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.DNN.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/DNN): %w", err)
 			}
+			if a.DNN.Len < 1 || a.DNN.Len > 100 {
+				return fmt.Errorf("invalid ie length (ULNASTransport/DNN): %d", a.DNN.Len)
+			}
 			a.DNN.SetLen(a.DNN.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.DNN.Buffer[:a.DNN.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/DNN): %w", err)
@@ -187,6 +193,9 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 			a.AdditionalInformation = nasType.NewAdditionalInformation(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.AdditionalInformation.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/AdditionalInformation): %w", err)
+			}
+			if a.AdditionalInformation.Len < 1 {
+				return fmt.Errorf("invalid ie length (ULNASTransport/AdditionalInformation): %d", a.AdditionalInformation.Len)
 			}
 			a.AdditionalInformation.SetLen(a.AdditionalInformation.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.AdditionalInformation.Buffer[:a.AdditionalInformation.GetLen()]); err != nil {

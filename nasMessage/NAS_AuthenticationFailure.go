@@ -87,7 +87,7 @@ func (a *AuthenticationFailure) DecodeAuthenticationFailure(byteArray *[]byte) e
 			if err := binary.Read(buffer, binary.BigEndian, &a.AuthenticationFailureParameter.Len); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationFailure/AuthenticationFailureParameter): %w", err)
 			}
-			if a.AuthenticationFailureParameter.Len > 14 {
+			if a.AuthenticationFailureParameter.Len != 14 {
 				return fmt.Errorf("invalid ie length (AuthenticationFailure/AuthenticationFailureParameter): %d", a.AuthenticationFailureParameter.Len)
 			}
 			a.AuthenticationFailureParameter.SetLen(a.AuthenticationFailureParameter.GetLen())

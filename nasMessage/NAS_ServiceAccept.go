@@ -119,6 +119,9 @@ func (a *ServiceAccept) DecodeServiceAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceAccept/PDUSessionStatus): %w", err)
 			}
+			if a.PDUSessionStatus.Len < 2 || a.PDUSessionStatus.Len > 32 {
+				return fmt.Errorf("invalid ie length (ServiceAccept/PDUSessionStatus): %d", a.PDUSessionStatus.Len)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceAccept/PDUSessionStatus): %w", err)
@@ -127,6 +130,9 @@ func (a *ServiceAccept) DecodeServiceAccept(byteArray *[]byte) error {
 			a.PDUSessionReactivationResult = nasType.NewPDUSessionReactivationResult(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionReactivationResult.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceAccept/PDUSessionReactivationResult): %w", err)
+			}
+			if a.PDUSessionReactivationResult.Len < 2 || a.PDUSessionReactivationResult.Len > 32 {
+				return fmt.Errorf("invalid ie length (ServiceAccept/PDUSessionReactivationResult): %d", a.PDUSessionReactivationResult.Len)
 			}
 			a.PDUSessionReactivationResult.SetLen(a.PDUSessionReactivationResult.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionReactivationResult.Buffer[:a.PDUSessionReactivationResult.GetLen()]); err != nil {
@@ -137,6 +143,9 @@ func (a *ServiceAccept) DecodeServiceAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionReactivationResultErrorCause.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceAccept/PDUSessionReactivationResultErrorCause): %w", err)
 			}
+			if a.PDUSessionReactivationResultErrorCause.Len < 2 || a.PDUSessionReactivationResultErrorCause.Len > 512 {
+				return fmt.Errorf("invalid ie length (ServiceAccept/PDUSessionReactivationResultErrorCause): %d", a.PDUSessionReactivationResultErrorCause.Len)
+			}
 			a.PDUSessionReactivationResultErrorCause.SetLen(a.PDUSessionReactivationResultErrorCause.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionReactivationResultErrorCause.Buffer[:a.PDUSessionReactivationResultErrorCause.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceAccept/PDUSessionReactivationResultErrorCause): %w", err)
@@ -145,6 +154,9 @@ func (a *ServiceAccept) DecodeServiceAccept(byteArray *[]byte) error {
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceAccept/EAPMessage): %w", err)
+			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (ServiceAccept/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {

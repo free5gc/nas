@@ -30,8 +30,8 @@ var nasMessagePDUSessionAuthenticationResultTable = []nasMessagePDUSessionAuthen
 		inPDUSESSIONAUTHENTICATIONRESULTMessageIdentity: 0x01,
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.PDUSessionAuthenticationResultEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionAuthenticationResultExtendedProtocolConfigurationOptionsType,

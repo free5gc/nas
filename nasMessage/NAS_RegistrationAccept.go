@@ -352,7 +352,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 	if err := binary.Read(buffer, binary.BigEndian, &a.RegistrationResult5GS.Len); err != nil {
 		return fmt.Errorf("NAS decode error (RegistrationAccept/RegistrationResult5GS): %w", err)
 	}
-	if a.RegistrationResult5GS.Len > 1 {
+	if a.RegistrationResult5GS.Len != 1 {
 		return fmt.Errorf("invalid ie length (RegistrationAccept/RegistrationResult5GS): %d", a.RegistrationResult5GS.Len)
 	}
 	a.RegistrationResult5GS.SetLen(a.RegistrationResult5GS.GetLen())
@@ -378,7 +378,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.GUTI5G.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/GUTI5G): %w", err)
 			}
-			if a.GUTI5G.Len > 11 {
+			if a.GUTI5G.Len != 11 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/GUTI5G): %d", a.GUTI5G.Len)
 			}
 			a.GUTI5G.SetLen(a.GUTI5G.GetLen())
@@ -390,7 +390,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.EquivalentPlmns.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/EquivalentPlmns): %w", err)
 			}
-			if a.EquivalentPlmns.Len > 45 {
+			if a.EquivalentPlmns.Len < 3 || a.EquivalentPlmns.Len > 45 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/EquivalentPlmns): %d", a.EquivalentPlmns.Len)
 			}
 			a.EquivalentPlmns.SetLen(a.EquivalentPlmns.GetLen())
@@ -402,6 +402,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.TAIList.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/TAIList): %w", err)
 			}
+			if a.TAIList.Len < 7 || a.TAIList.Len > 112 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/TAIList): %d", a.TAIList.Len)
+			}
 			a.TAIList.SetLen(a.TAIList.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.TAIList.Buffer[:a.TAIList.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/TAIList): %w", err)
@@ -410,6 +413,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.AllowedNSSAI = nasType.NewAllowedNSSAI(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.AllowedNSSAI.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/AllowedNSSAI): %w", err)
+			}
+			if a.AllowedNSSAI.Len < 2 || a.AllowedNSSAI.Len > 72 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/AllowedNSSAI): %d", a.AllowedNSSAI.Len)
 			}
 			a.AllowedNSSAI.SetLen(a.AllowedNSSAI.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.AllowedNSSAI.Buffer[:a.AllowedNSSAI.GetLen()]); err != nil {
@@ -420,6 +426,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.RejectedNSSAI.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/RejectedNSSAI): %w", err)
 			}
+			if a.RejectedNSSAI.Len < 2 || a.RejectedNSSAI.Len > 40 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/RejectedNSSAI): %d", a.RejectedNSSAI.Len)
+			}
 			a.RejectedNSSAI.SetLen(a.RejectedNSSAI.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.RejectedNSSAI.Buffer[:a.RejectedNSSAI.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/RejectedNSSAI): %w", err)
@@ -428,6 +437,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.ConfiguredNSSAI = nasType.NewConfiguredNSSAI(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.ConfiguredNSSAI.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/ConfiguredNSSAI): %w", err)
+			}
+			if a.ConfiguredNSSAI.Len < 2 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/ConfiguredNSSAI): %d", a.ConfiguredNSSAI.Len)
 			}
 			a.ConfiguredNSSAI.SetLen(a.ConfiguredNSSAI.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ConfiguredNSSAI.Buffer[:a.ConfiguredNSSAI.GetLen()]); err != nil {
@@ -438,7 +450,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.NetworkFeatureSupport5GS.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/NetworkFeatureSupport5GS): %w", err)
 			}
-			if a.NetworkFeatureSupport5GS.Len > 3 {
+			if a.NetworkFeatureSupport5GS.Len < 1 || a.NetworkFeatureSupport5GS.Len > 3 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/NetworkFeatureSupport5GS): %d", a.NetworkFeatureSupport5GS.Len)
 			}
 			a.NetworkFeatureSupport5GS.SetLen(a.NetworkFeatureSupport5GS.GetLen())
@@ -450,6 +462,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/PDUSessionStatus): %w", err)
 			}
+			if a.PDUSessionStatus.Len < 2 || a.PDUSessionStatus.Len > 32 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/PDUSessionStatus): %d", a.PDUSessionStatus.Len)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/PDUSessionStatus): %w", err)
@@ -458,6 +473,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.PDUSessionReactivationResult = nasType.NewPDUSessionReactivationResult(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionReactivationResult.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/PDUSessionReactivationResult): %w", err)
+			}
+			if a.PDUSessionReactivationResult.Len < 2 || a.PDUSessionReactivationResult.Len > 32 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/PDUSessionReactivationResult): %d", a.PDUSessionReactivationResult.Len)
 			}
 			a.PDUSessionReactivationResult.SetLen(a.PDUSessionReactivationResult.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionReactivationResult.Buffer[:a.PDUSessionReactivationResult.GetLen()]); err != nil {
@@ -468,6 +486,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionReactivationResultErrorCause.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/PDUSessionReactivationResultErrorCause): %w", err)
 			}
+			if a.PDUSessionReactivationResultErrorCause.Len < 2 || a.PDUSessionReactivationResultErrorCause.Len > 512 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/PDUSessionReactivationResultErrorCause): %d", a.PDUSessionReactivationResultErrorCause.Len)
+			}
 			a.PDUSessionReactivationResultErrorCause.SetLen(a.PDUSessionReactivationResultErrorCause.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionReactivationResultErrorCause.Buffer[:a.PDUSessionReactivationResultErrorCause.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/PDUSessionReactivationResultErrorCause): %w", err)
@@ -476,6 +497,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.LADNInformation = nasType.NewLADNInformation(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.LADNInformation.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/LADNInformation): %w", err)
+			}
+			if a.LADNInformation.Len < 9 || a.LADNInformation.Len > 1712 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/LADNInformation): %d", a.LADNInformation.Len)
 			}
 			a.LADNInformation.SetLen(a.LADNInformation.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.LADNInformation.Buffer[:a.LADNInformation.GetLen()]); err != nil {
@@ -492,6 +516,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.ServiceAreaList.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/ServiceAreaList): %w", err)
 			}
+			if a.ServiceAreaList.Len < 4 || a.ServiceAreaList.Len > 112 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/ServiceAreaList): %d", a.ServiceAreaList.Len)
+			}
 			a.ServiceAreaList.SetLen(a.ServiceAreaList.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ServiceAreaList.Buffer[:a.ServiceAreaList.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/ServiceAreaList): %w", err)
@@ -501,7 +528,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3512Value.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/T3512Value): %w", err)
 			}
-			if a.T3512Value.Len > 1 {
+			if a.T3512Value.Len != 1 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/T3512Value): %d", a.T3512Value.Len)
 			}
 			a.T3512Value.SetLen(a.T3512Value.GetLen())
@@ -513,7 +540,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.Non3GppDeregistrationTimerValue.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/Non3GppDeregistrationTimerValue): %w", err)
 			}
-			if a.Non3GppDeregistrationTimerValue.Len > 1 {
+			if a.Non3GppDeregistrationTimerValue.Len != 1 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/Non3GppDeregistrationTimerValue): %d", a.Non3GppDeregistrationTimerValue.Len)
 			}
 			a.Non3GppDeregistrationTimerValue.SetLen(a.Non3GppDeregistrationTimerValue.GetLen())
@@ -525,7 +552,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3502Value.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/T3502Value): %w", err)
 			}
-			if a.T3502Value.Len > 1 {
+			if a.T3502Value.Len != 1 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/T3502Value): %d", a.T3502Value.Len)
 			}
 			a.T3502Value.SetLen(a.T3502Value.GetLen())
@@ -537,6 +564,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.EmergencyNumberList.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/EmergencyNumberList): %w", err)
 			}
+			if a.EmergencyNumberList.Len < 3 || a.EmergencyNumberList.Len > 48 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/EmergencyNumberList): %d", a.EmergencyNumberList.Len)
+			}
 			a.EmergencyNumberList.SetLen(a.EmergencyNumberList.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EmergencyNumberList.Buffer[:a.EmergencyNumberList.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/EmergencyNumberList): %w", err)
@@ -545,6 +575,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.ExtendedEmergencyNumberList = nasType.NewExtendedEmergencyNumberList(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedEmergencyNumberList.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/ExtendedEmergencyNumberList): %w", err)
+			}
+			if a.ExtendedEmergencyNumberList.Len < 4 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/ExtendedEmergencyNumberList): %d", a.ExtendedEmergencyNumberList.Len)
 			}
 			a.ExtendedEmergencyNumberList.SetLen(a.ExtendedEmergencyNumberList.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedEmergencyNumberList.Buffer[:a.ExtendedEmergencyNumberList.GetLen()]); err != nil {
@@ -555,6 +588,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.SORTransparentContainer.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/SORTransparentContainer): %w", err)
 			}
+			if a.SORTransparentContainer.Len < 17 || a.SORTransparentContainer.Len > 2045 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/SORTransparentContainer): %d", a.SORTransparentContainer.Len)
+			}
 			a.SORTransparentContainer.SetLen(a.SORTransparentContainer.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.SORTransparentContainer.Buffer[:a.SORTransparentContainer.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/SORTransparentContainer): %w", err)
@@ -563,6 +599,9 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/EAPMessage): %w", err)
+			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
@@ -585,7 +624,7 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.NegotiatedDRXParameters.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/NegotiatedDRXParameters): %w", err)
 			}
-			if a.NegotiatedDRXParameters.Len > 1 {
+			if a.NegotiatedDRXParameters.Len != 1 {
 				return fmt.Errorf("invalid ie length (RegistrationAccept/NegotiatedDRXParameters): %d", a.NegotiatedDRXParameters.Len)
 			}
 			a.NegotiatedDRXParameters.SetLen(a.NegotiatedDRXParameters.GetLen())

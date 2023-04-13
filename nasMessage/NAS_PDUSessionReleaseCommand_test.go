@@ -40,8 +40,8 @@ var nasMessagePDUSessionReleaseCommandTable = []nasMessagePDUSessionReleaseComma
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.PDUSessionReleaseCommandEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionReleaseCommandExtendedProtocolConfigurationOptionsType,

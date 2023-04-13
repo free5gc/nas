@@ -80,6 +80,9 @@ func (a *RegistrationComplete) DecodeRegistrationComplete(byteArray *[]byte) err
 			if err := binary.Read(buffer, binary.BigEndian, &a.SORTransparentContainer.Len); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationComplete/SORTransparentContainer): %w", err)
 			}
+			if a.SORTransparentContainer.Len < 17 || a.SORTransparentContainer.Len > 2045 {
+				return fmt.Errorf("invalid ie length (RegistrationComplete/SORTransparentContainer): %d", a.SORTransparentContainer.Len)
+			}
 			a.SORTransparentContainer.SetLen(a.SORTransparentContainer.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.SORTransparentContainer.Buffer[:a.SORTransparentContainer.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationComplete/SORTransparentContainer): %w", err)

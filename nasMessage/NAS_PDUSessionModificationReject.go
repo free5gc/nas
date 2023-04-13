@@ -107,7 +107,7 @@ func (a *PDUSessionModificationReject) DecodePDUSessionModificationReject(byteAr
 			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionModificationReject/BackoffTimerValue): %w", err)
 			}
-			if a.BackoffTimerValue.Len > 1 {
+			if a.BackoffTimerValue.Len != 1 {
 				return fmt.Errorf("invalid ie length (PDUSessionModificationReject/BackoffTimerValue): %d", a.BackoffTimerValue.Len)
 			}
 			a.BackoffTimerValue.SetLen(a.BackoffTimerValue.GetLen())
@@ -118,6 +118,9 @@ func (a *PDUSessionModificationReject) DecodePDUSessionModificationReject(byteAr
 			a.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionModificationReject/ExtendedProtocolConfigurationOptions): %w", err)
+			}
+			if a.ExtendedProtocolConfigurationOptions.Len < 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionModificationReject/ExtendedProtocolConfigurationOptions): %d", a.ExtendedProtocolConfigurationOptions.Len)
 			}
 			a.ExtendedProtocolConfigurationOptions.SetLen(a.ExtendedProtocolConfigurationOptions.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()]); err != nil {

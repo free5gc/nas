@@ -45,8 +45,8 @@ var nasMessagePDUSessionEstablishmentRejectTable = []nasMessagePDUSessionEstabli
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.PDUSessionEstablishmentRejectEAPMessageType,
-			Len:    1,
-			Buffer: []uint8{0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionEstablishmentRejectExtendedProtocolConfigurationOptionsType,

@@ -52,8 +52,8 @@ var nasMessageRegistrationRequestTable = []nasMessageRegistrationRequestData{
 		inNgksi:                              0x01,
 		inRegistrationType5GS:                0x01,
 		inMobileIdentity5GS: nasType.MobileIdentity5GS{
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inNoncurrentNativeNASKeySetIdentifier: nasType.NoncurrentNativeNASKeySetIdentifier{
 			Octet: 0xC0,

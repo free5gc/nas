@@ -157,7 +157,7 @@ func (a *PDUSessionEstablishmentRequest) DecodePDUSessionEstablishmentRequest(by
 			if err := binary.Read(buffer, binary.BigEndian, &a.Capability5GSM.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentRequest/Capability5GSM): %w", err)
 			}
-			if a.Capability5GSM.Len > 13 {
+			if a.Capability5GSM.Len < 1 || a.Capability5GSM.Len > 13 {
 				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentRequest/Capability5GSM): %d", a.Capability5GSM.Len)
 			}
 			a.Capability5GSM.SetLen(a.Capability5GSM.GetLen())
@@ -177,6 +177,9 @@ func (a *PDUSessionEstablishmentRequest) DecodePDUSessionEstablishmentRequest(by
 			if err := binary.Read(buffer, binary.BigEndian, &a.SMPDUDNRequestContainer.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentRequest/SMPDUDNRequestContainer): %w", err)
 			}
+			if a.SMPDUDNRequestContainer.Len < 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentRequest/SMPDUDNRequestContainer): %d", a.SMPDUDNRequestContainer.Len)
+			}
 			a.SMPDUDNRequestContainer.SetLen(a.SMPDUDNRequestContainer.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.SMPDUDNRequestContainer.Buffer[:a.SMPDUDNRequestContainer.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentRequest/SMPDUDNRequestContainer): %w", err)
@@ -185,6 +188,9 @@ func (a *PDUSessionEstablishmentRequest) DecodePDUSessionEstablishmentRequest(by
 			a.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentRequest/ExtendedProtocolConfigurationOptions): %w", err)
+			}
+			if a.ExtendedProtocolConfigurationOptions.Len < 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentRequest/ExtendedProtocolConfigurationOptions): %d", a.ExtendedProtocolConfigurationOptions.Len)
 			}
 			a.ExtendedProtocolConfigurationOptions.SetLen(a.ExtendedProtocolConfigurationOptions.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()]); err != nil {

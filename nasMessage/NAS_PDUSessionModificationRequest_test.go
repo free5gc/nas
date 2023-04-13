@@ -56,18 +56,18 @@ var nasMessagePDUSessionModificationRequestTable = []nasMessagePDUSessionModific
 		},
 		inRequestedQosRules: nasType.RequestedQosRules{
 			Iei:    nasMessage.PDUSessionModificationRequestRequestedQosRulesType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inRequestedQosFlowDescriptions: nasType.RequestedQosFlowDescriptions{
 			Iei:    nasMessage.PDUSessionModificationRequestRequestedQosFlowDescriptionsType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    3,
+			Buffer: []uint8{0x01, 0x01, 0x01},
 		},
 		inMappedEPSBearerContexts: nasType.MappedEPSBearerContexts{
 			Iei:    nasMessage.PDUSessionModificationRequestMappedEPSBearerContextsType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionModificationRequestExtendedProtocolConfigurationOptionsType,

@@ -113,6 +113,9 @@ func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceReject/PDUSessionStatus): %w", err)
 			}
+			if a.PDUSessionStatus.Len < 2 || a.PDUSessionStatus.Len > 32 {
+				return fmt.Errorf("invalid ie length (ServiceReject/PDUSessionStatus): %d", a.PDUSessionStatus.Len)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceReject/PDUSessionStatus): %w", err)
@@ -122,7 +125,7 @@ func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3346Value.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceReject/T3346Value): %w", err)
 			}
-			if a.T3346Value.Len > 1 {
+			if a.T3346Value.Len != 1 {
 				return fmt.Errorf("invalid ie length (ServiceReject/T3346Value): %d", a.T3346Value.Len)
 			}
 			a.T3346Value.SetLen(a.T3346Value.GetLen())
@@ -133,6 +136,9 @@ func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) error {
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceReject/EAPMessage): %w", err)
+			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (ServiceReject/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {

@@ -55,6 +55,9 @@ func (a *IdentityResponse) DecodeIdentityResponse(byteArray *[]byte) error {
 	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity.Len); err != nil {
 		return fmt.Errorf("NAS decode error (IdentityResponse/MobileIdentity): %w", err)
 	}
+	if a.MobileIdentity.Len < 1 {
+		return fmt.Errorf("invalid ie length (IdentityResponse/MobileIdentity): %d", a.MobileIdentity.Len)
+	}
 	a.MobileIdentity.SetLen(a.MobileIdentity.GetLen())
 	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (IdentityResponse/MobileIdentity): %w", err)

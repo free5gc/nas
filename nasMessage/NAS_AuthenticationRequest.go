@@ -101,6 +101,9 @@ func (a *AuthenticationRequest) DecodeAuthenticationRequest(byteArray *[]byte) e
 	if err := binary.Read(buffer, binary.BigEndian, &a.ABBA.Len); err != nil {
 		return fmt.Errorf("NAS decode error (AuthenticationRequest/ABBA): %w", err)
 	}
+	if a.ABBA.Len < 2 {
+		return fmt.Errorf("invalid ie length (AuthenticationRequest/ABBA): %d", a.ABBA.Len)
+	}
 	a.ABBA.SetLen(a.ABBA.GetLen())
 	if err := binary.Read(buffer, binary.BigEndian, &a.ABBA.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (AuthenticationRequest/ABBA): %w", err)
@@ -129,7 +132,7 @@ func (a *AuthenticationRequest) DecodeAuthenticationRequest(byteArray *[]byte) e
 			if err := binary.Read(buffer, binary.BigEndian, &a.AuthenticationParameterAUTN.Len); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationRequest/AuthenticationParameterAUTN): %w", err)
 			}
-			if a.AuthenticationParameterAUTN.Len > 16 {
+			if a.AuthenticationParameterAUTN.Len != 16 {
 				return fmt.Errorf("invalid ie length (AuthenticationRequest/AuthenticationParameterAUTN): %d", a.AuthenticationParameterAUTN.Len)
 			}
 			a.AuthenticationParameterAUTN.SetLen(a.AuthenticationParameterAUTN.GetLen())
@@ -140,6 +143,9 @@ func (a *AuthenticationRequest) DecodeAuthenticationRequest(byteArray *[]byte) e
 			a.EAPMessage = nasType.NewEAPMessage(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationRequest/EAPMessage): %w", err)
+			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (AuthenticationRequest/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {

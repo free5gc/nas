@@ -80,6 +80,9 @@ func (a *NotificationResponse) DecodeNotificationResponse(byteArray *[]byte) err
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUSessionStatus.Len); err != nil {
 				return fmt.Errorf("NAS decode error (NotificationResponse/PDUSessionStatus): %w", err)
 			}
+			if a.PDUSessionStatus.Len < 2 || a.PDUSessionStatus.Len > 32 {
+				return fmt.Errorf("invalid ie length (NotificationResponse/PDUSessionStatus): %d", a.PDUSessionStatus.Len)
+			}
 			a.PDUSessionStatus.SetLen(a.PDUSessionStatus.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUSessionStatus.Buffer[:a.PDUSessionStatus.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (NotificationResponse/PDUSessionStatus): %w", err)

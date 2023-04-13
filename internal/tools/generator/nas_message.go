@@ -143,9 +143,6 @@ func GenerateNasMessage() {
 							panic(fmt.Sprintf("Invalid minimal length %s/%s", msgName, ie.typeName))
 						}
 						maxLength := ie.maxLength - headLen
-						// XXX
-						minLength = 0
-						maxLength = math.MaxInt
 						bufMaxLength := math.MaxInt
 						if dataFieldName != "" {
 							switch dateFieldType.Kind() {

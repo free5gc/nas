@@ -127,7 +127,7 @@ func (a *PDUSessionEstablishmentReject) DecodePDUSessionEstablishmentReject(byte
 			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentReject/BackoffTimerValue): %w", err)
 			}
-			if a.BackoffTimerValue.Len > 1 {
+			if a.BackoffTimerValue.Len != 1 {
 				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentReject/BackoffTimerValue): %d", a.BackoffTimerValue.Len)
 			}
 			a.BackoffTimerValue.SetLen(a.BackoffTimerValue.GetLen())
@@ -142,6 +142,9 @@ func (a *PDUSessionEstablishmentReject) DecodePDUSessionEstablishmentReject(byte
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentReject/EAPMessage): %w", err)
 			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentReject/EAPMessage): %d", a.EAPMessage.Len)
+			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentReject/EAPMessage): %w", err)
@@ -150,6 +153,9 @@ func (a *PDUSessionEstablishmentReject) DecodePDUSessionEstablishmentReject(byte
 			a.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentReject/ExtendedProtocolConfigurationOptions): %w", err)
+			}
+			if a.ExtendedProtocolConfigurationOptions.Len < 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentReject/ExtendedProtocolConfigurationOptions): %d", a.ExtendedProtocolConfigurationOptions.Len)
 			}
 			a.ExtendedProtocolConfigurationOptions.SetLen(a.ExtendedProtocolConfigurationOptions.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()]); err != nil {

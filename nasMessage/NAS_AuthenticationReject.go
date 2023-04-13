@@ -80,6 +80,9 @@ func (a *AuthenticationReject) DecodeAuthenticationReject(byteArray *[]byte) err
 			if err := binary.Read(buffer, binary.BigEndian, &a.EAPMessage.Len); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationReject/EAPMessage): %w", err)
 			}
+			if a.EAPMessage.Len < 4 || a.EAPMessage.Len > 1500 {
+				return fmt.Errorf("invalid ie length (AuthenticationReject/EAPMessage): %d", a.EAPMessage.Len)
+			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationReject/EAPMessage): %w", err)
