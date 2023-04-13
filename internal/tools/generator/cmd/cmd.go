@@ -8,4 +8,6 @@ func main() {
 	generator.GenerateNasMessage()
 
 	generator.GenerateNasEncDec()
+
+	generator.GenerateTestLarge()
 }

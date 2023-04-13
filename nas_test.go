@@ -3,10 +3,14 @@ package nas
 import (
 	"bytes"
 	"encoding/hex"
+	"io"
+	"math"
+	"os"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var hexString = "7e00560102000021e440b883d63a9f9c56b3703217152eba2010068f241c77748000b2180e54a9760068"
@@ -43,4 +47,64 @@ func TestPlainNas(t *testing.T) {
 	if !reflect.DeepEqual(data, buff) {
 		t.Errorf("Expect : 0x%0x\nOutput: 0x%0x", data, buff)
 	}
+}
+
+func TestGmmMessageLarge(t *testing.T) {
+	for _, tt := range testsGmmMessageLarge {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			fData, err := os.Open("testdata/GmmMessageLarge/" + tt.name)
+			require.NoError(t, err)
+			data, err := io.ReadAll(fData)
+			require.NoError(t, err)
+			var msg Message
+			err = msg.GmmMessageDecode(&data)
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, msg)
+			}
+			buf := new(bytes.Buffer)
+			err = tt.want.GmmMessageEncode(buf)
+			if assert.NoError(t, err) {
+				assert.Equal(t, data, buf.Bytes())
+			}
+		})
+	}
+}
+
+func TestGsmMessageLarge(t *testing.T) {
+	for _, tt := range testsGsmMessageLarge {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			fData, err := os.Open("testdata/GsmMessageLarge/" + tt.name)
+			require.NoError(t, err)
+			data, err := io.ReadAll(fData)
+			require.NoError(t, err)
+			var msg Message
+			err = msg.GsmMessageDecode(&data)
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.want, msg)
+			}
+			buf := new(bytes.Buffer)
+			err = tt.want.GsmMessageEncode(buf)
+			if assert.NoError(t, err) {
+				assert.Equal(t, data, buf.Bytes())
+			}
+		})
+	}
+}
+
+var bufGenerateBufferSlice []uint8
+
+func generateBufferSlice(l int) []uint8 {
+	bufGenerateBufferSlice = make([]byte, 256)
+	for i := 0; i < 256; i++ {
+		bufGenerateBufferSlice[i] = byte(i)
+	}
+	for len(bufGenerateBufferSlice) < math.MaxUint16 {
+		bufGenerateBufferSlice = append(bufGenerateBufferSlice, bufGenerateBufferSlice...)
+	}
+
+	return bufGenerateBufferSlice[:l]
 }
