@@ -17,4 +17,4 @@ fi
 
 ls nasMessage/*go | grep -v "_test" | grep -v "NAS_EPD" | grep -v "NAS_CommInfoIE" |  xargs rm -f
 go run internal/tools/generator_sub.go
-go run internal/tools/generator.go internal/tools/generator_types.go
+go run internal/tools/generator/cmd/cmd.go
