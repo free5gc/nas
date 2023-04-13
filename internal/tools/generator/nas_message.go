@@ -138,45 +138,52 @@ func GenerateNasMessage() {
 					if ie.lengthSize != 0 {
 						putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.Len", ie.typeName))
 						headLen += ie.lengthSize
-						minLength := ie.minLength - headLen
-						if minLength < 0 {
-							panic(fmt.Sprintf("Invalid minimal length %s/%s", msgName, ie.typeName))
-						}
-						maxLength := ie.maxLength - headLen
-						bufMaxLength := math.MaxInt
-						if dataFieldName != "" {
-							switch dateFieldType.Kind() {
-							case reflect.Uint8:
-								bufMaxLength = 1
-							case reflect.Array:
-								bufMaxLength = dateFieldType.Len()
-							}
-						}
-						if maxLength > bufMaxLength {
-							maxLength = bufMaxLength
-						}
-						if minLength > maxLength {
-							panic(fmt.Sprintf("Invalid length %s/%s", msgName, ie.typeName))
-						}
-						var check []string
-						if minLength == maxLength {
-							check = append(check, fmt.Sprintf("a.%s.Len != %d", ie.typeName, maxLength))
-						} else {
-							if minLength > 0 {
-								check = append(check, fmt.Sprintf("a.%s.Len < %d", ie.typeName, minLength))
-							}
-							typeMax := math.MaxInt8
-							if ie.lengthSize == 2 {
-								typeMax = math.MaxInt16
-							}
-							if maxLength <= typeMax {
-								check = append(check, fmt.Sprintf("a.%s.Len > %d", ie.typeName, maxLength))
-							}
-						}
-						if len(check) != 0 {
-							fmt.Fprintf(fOut, "if %s {\n", strings.Join(check, " || "))
+						if ie.minLength == length7or11or15 {
+							fmt.Fprintf(fOut, "if a.%s.Len != %d && a.%s.Len != %d && a.%s.Len != %d {\n",
+								ie.typeName, 7-headLen, ie.typeName, 11-headLen, ie.typeName, 15-headLen)
 							fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n", msgName, ie.typeName, ie.typeName)
 							fmt.Fprintln(fOut, "}")
+						} else {
+							minLength := ie.minLength - headLen
+							if minLength < 0 {
+								panic(fmt.Sprintf("Invalid minimal length %s/%s", msgName, ie.typeName))
+							}
+							maxLength := ie.maxLength - headLen
+							bufMaxLength := math.MaxInt
+							if dataFieldName != "" {
+								switch dateFieldType.Kind() {
+								case reflect.Uint8:
+									bufMaxLength = 1
+								case reflect.Array:
+									bufMaxLength = dateFieldType.Len()
+								}
+							}
+							if maxLength > bufMaxLength {
+								maxLength = bufMaxLength
+							}
+							if minLength > maxLength {
+								panic(fmt.Sprintf("Invalid length %s/%s", msgName, ie.typeName))
+							}
+							var check []string
+							if minLength == maxLength {
+								check = append(check, fmt.Sprintf("a.%s.Len != %d", ie.typeName, maxLength))
+							} else {
+								if minLength > 0 {
+									check = append(check, fmt.Sprintf("a.%s.Len < %d", ie.typeName, minLength))
+								}
+								typeMax := math.MaxInt8
+								if ie.lengthSize == 2 {
+									typeMax = math.MaxInt16
+								}
+								if maxLength <= typeMax {
+									check = append(check, fmt.Sprintf("a.%s.Len > %d", ie.typeName, maxLength))
+								}
+							}
+							if len(check) != 0 {
+								fmt.Fprintf(fOut, "if %s {\n", strings.Join(check, " || "))
+								fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n", msgName, ie.typeName, ie.typeName)
+								fmt.Fprintln(fOut, "}")
+							}
 						}
 						fmt.Fprintf(fOut, "a.%s.SetLen(a.%s.GetLen())\n", ie.typeName, ie.typeName)
 					}
@@ -191,7 +198,7 @@ func GenerateNasMessage() {
 					} else {
 						if dateFieldType.Kind() == reflect.Uint8 && ie.iei < 16 && !ie.mandatory {
 							fmt.Fprintf(fOut, "a.%s.Octet = ieiN\n", ie.typeName)
-						} else if ie.minLength == ie.maxLength &&
+						} else if ie.minLength == ie.maxLength && ie.maxLength != length7or11or15 &&
 							ie.typeName != "IMEISV" &&
 							ie.typeName != "AdditionalGUTI" &&
 							ie.typeName != "GUTI5G" &&

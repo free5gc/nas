@@ -238,7 +238,7 @@ func (a *PDUSessionEstablishmentAccept) DecodePDUSessionEstablishmentAccept(byte
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUAddress.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentAccept/PDUAddress): %w", err)
 			}
-			if a.PDUAddress.Len < 5 || a.PDUAddress.Len > 13 {
+			if a.PDUAddress.Len != 5 && a.PDUAddress.Len != 9 && a.PDUAddress.Len != 13 {
 				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentAccept/PDUAddress): %d", a.PDUAddress.Len)
 			}
 			a.PDUAddress.SetLen(a.PDUAddress.GetLen())

@@ -20,6 +20,8 @@ type ieEntry struct {
 	maxLength  int
 }
 
+const length7or11or15 = -1
+
 type msgEntry struct {
 	msgName string
 	section string
@@ -151,9 +153,8 @@ func ParseSpecs() {
 						if lenSplit[0] == "1/2" {
 							half = true
 						} else if lenSplit[0] == "7, 11 or 15" {
-							// XXX
-							ie.minLength = 7
-							ie.maxLength = 15
+							ie.minLength = length7or11or15
+							ie.maxLength = length7or11or15
 						} else {
 							if i, err := strconv.ParseInt(lenSplit[0], 10, strconv.IntSize); err != nil {
 								panic(err)

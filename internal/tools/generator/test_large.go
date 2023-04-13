@@ -73,6 +73,9 @@ func GenerateTestLarge() {
 						fmt.Fprintf(fOut, "Iei: 0x%02x,\n", ie.iei)
 					}
 					lenWrite := ie.maxLength
+					if ie.maxLength == length7or11or15 {
+						lenWrite = 15
+					}
 					if !ie.mandatory {
 						if ie.iei < 16 {
 							binary.Write(fData, binary.BigEndian, uint8(ie.iei<<4))
