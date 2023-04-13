@@ -204,6 +204,9 @@ func (a *PDUSessionEstablishmentAccept) DecodePDUSessionEstablishmentAccept(byte
 	if err := binary.Read(buffer, binary.BigEndian, &a.SessionAMBR.Len); err != nil {
 		return fmt.Errorf("NAS decode error (PDUSessionEstablishmentAccept/SessionAMBR): %w", err)
 	}
+	if a.SessionAMBR.Len > 6 {
+		return fmt.Errorf("invalid ie length (PDUSessionEstablishmentAccept/SessionAMBR): %d", a.SessionAMBR.Len)
+	}
 	a.SessionAMBR.SetLen(a.SessionAMBR.GetLen())
 	if err := binary.Read(buffer, binary.BigEndian, &a.SessionAMBR.Octet); err != nil {
 		return fmt.Errorf("NAS decode error (PDUSessionEstablishmentAccept/SessionAMBR): %w", err)
@@ -232,6 +235,9 @@ func (a *PDUSessionEstablishmentAccept) DecodePDUSessionEstablishmentAccept(byte
 			if err := binary.Read(buffer, binary.BigEndian, &a.PDUAddress.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentAccept/PDUAddress): %w", err)
 			}
+			if a.PDUAddress.Len > 13 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentAccept/PDUAddress): %d", a.PDUAddress.Len)
+			}
 			a.PDUAddress.SetLen(a.PDUAddress.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.PDUAddress.Octet[:a.PDUAddress.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentAccept/PDUAddress): %w", err)
@@ -245,6 +251,9 @@ func (a *PDUSessionEstablishmentAccept) DecodePDUSessionEstablishmentAccept(byte
 			a.SNSSAI = nasType.NewSNSSAI(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.SNSSAI.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentAccept/SNSSAI): %w", err)
+			}
+			if a.SNSSAI.Len > 8 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentAccept/SNSSAI): %d", a.SNSSAI.Len)
 			}
 			a.SNSSAI.SetLen(a.SNSSAI.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.SNSSAI.Octet[:a.SNSSAI.GetLen()]); err != nil {

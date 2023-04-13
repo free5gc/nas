@@ -40,7 +40,7 @@ var nasMessageServiceRejectTable = []nasMessageServiceRejectData{
 		},
 		inT3346Value: nasType.T3346Value{
 			Iei:   nasMessage.ServiceRejectT3346ValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inEAPMessage: nasType.EAPMessage{

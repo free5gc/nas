@@ -172,6 +172,9 @@ func (a *SecurityModeCommand) DecodeSecurityModeCommand(byteArray *[]byte) error
 			if err := binary.Read(buffer, binary.BigEndian, &a.Additional5GSecurityInformation.Len); err != nil {
 				return fmt.Errorf("NAS decode error (SecurityModeCommand/Additional5GSecurityInformation): %w", err)
 			}
+			if a.Additional5GSecurityInformation.Len > 1 {
+				return fmt.Errorf("invalid ie length (SecurityModeCommand/Additional5GSecurityInformation): %d", a.Additional5GSecurityInformation.Len)
+			}
 			a.Additional5GSecurityInformation.SetLen(a.Additional5GSecurityInformation.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, &a.Additional5GSecurityInformation.Octet); err != nil {
 				return fmt.Errorf("NAS decode error (SecurityModeCommand/Additional5GSecurityInformation): %w", err)

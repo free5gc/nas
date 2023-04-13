@@ -167,6 +167,9 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.SNSSAI.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/SNSSAI): %w", err)
 			}
+			if a.SNSSAI.Len > 8 {
+				return fmt.Errorf("invalid ie length (ULNASTransport/SNSSAI): %d", a.SNSSAI.Len)
+			}
 			a.SNSSAI.SetLen(a.SNSSAI.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.SNSSAI.Octet[:a.SNSSAI.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/SNSSAI): %w", err)

@@ -153,6 +153,9 @@ func (a *DLNASTransport) DecodeDLNASTransport(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Len); err != nil {
 				return fmt.Errorf("NAS decode error (DLNASTransport/BackoffTimerValue): %w", err)
 			}
+			if a.BackoffTimerValue.Len > 1 {
+				return fmt.Errorf("invalid ie length (DLNASTransport/BackoffTimerValue): %d", a.BackoffTimerValue.Len)
+			}
 			a.BackoffTimerValue.SetLen(a.BackoffTimerValue.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet); err != nil {
 				return fmt.Errorf("NAS decode error (DLNASTransport/BackoffTimerValue): %w", err)

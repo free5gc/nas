@@ -86,7 +86,7 @@ var nasMessageConfigurationUpdateCommandTable = []nasMessageConfigurationUpdateC
 		},
 		inNetworkDaylightSavingTime: nasType.NetworkDaylightSavingTime{
 			Iei:   nasMessage.ConfigurationUpdateCommandNetworkDaylightSavingTimeType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inLADNInformation: nasType.LADNInformation{

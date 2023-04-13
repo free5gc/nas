@@ -93,6 +93,9 @@ func (a *AuthenticationResponse) DecodeAuthenticationResponse(byteArray *[]byte)
 			if err := binary.Read(buffer, binary.BigEndian, &a.AuthenticationResponseParameter.Len); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationResponse/AuthenticationResponseParameter): %w", err)
 			}
+			if a.AuthenticationResponseParameter.Len > 16 {
+				return fmt.Errorf("invalid ie length (AuthenticationResponse/AuthenticationResponseParameter): %d", a.AuthenticationResponseParameter.Len)
+			}
 			a.AuthenticationResponseParameter.SetLen(a.AuthenticationResponseParameter.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.AuthenticationResponseParameter.Octet[:a.AuthenticationResponseParameter.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationResponse/AuthenticationResponseParameter): %w", err)

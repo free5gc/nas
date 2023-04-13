@@ -261,6 +261,9 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 			if err := binary.Read(buffer, binary.BigEndian, &a.GUTI5G.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/GUTI5G): %w", err)
 			}
+			if a.GUTI5G.Len > 11 {
+				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/GUTI5G): %d", a.GUTI5G.Len)
+			}
 			a.GUTI5G.SetLen(a.GUTI5G.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.GUTI5G.Octet[:a.GUTI5G.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/GUTI5G): %w", err)
@@ -324,6 +327,9 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 			a.NetworkDaylightSavingTime = nasType.NewNetworkDaylightSavingTime(ieiN)
 			if err := binary.Read(buffer, binary.BigEndian, &a.NetworkDaylightSavingTime.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/NetworkDaylightSavingTime): %w", err)
+			}
+			if a.NetworkDaylightSavingTime.Len > 1 {
+				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/NetworkDaylightSavingTime): %d", a.NetworkDaylightSavingTime.Len)
 			}
 			a.NetworkDaylightSavingTime.SetLen(a.NetworkDaylightSavingTime.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, &a.NetworkDaylightSavingTime.Octet); err != nil {

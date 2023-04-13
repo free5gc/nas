@@ -157,6 +157,9 @@ func (a *PDUSessionEstablishmentRequest) DecodePDUSessionEstablishmentRequest(by
 			if err := binary.Read(buffer, binary.BigEndian, &a.Capability5GSM.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentRequest/Capability5GSM): %w", err)
 			}
+			if a.Capability5GSM.Len > 13 {
+				return fmt.Errorf("invalid ie length (PDUSessionEstablishmentRequest/Capability5GSM): %d", a.Capability5GSM.Len)
+			}
 			a.Capability5GSM.SetLen(a.Capability5GSM.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.Capability5GSM.Octet[:a.Capability5GSM.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionEstablishmentRequest/Capability5GSM): %w", err)

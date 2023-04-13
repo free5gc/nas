@@ -171,6 +171,9 @@ func (a *PDUSessionModificationCommand) DecodePDUSessionModificationCommand(byte
 			if err := binary.Read(buffer, binary.BigEndian, &a.SessionAMBR.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionModificationCommand/SessionAMBR): %w", err)
 			}
+			if a.SessionAMBR.Len > 6 {
+				return fmt.Errorf("invalid ie length (PDUSessionModificationCommand/SessionAMBR): %d", a.SessionAMBR.Len)
+			}
 			a.SessionAMBR.SetLen(a.SessionAMBR.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.SessionAMBR.Octet[:a.SessionAMBR.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionModificationCommand/SessionAMBR): %w", err)

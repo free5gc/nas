@@ -93,6 +93,9 @@ func (a *SecurityModeComplete) DecodeSecurityModeComplete(byteArray *[]byte) err
 			if err := binary.Read(buffer, binary.BigEndian, &a.IMEISV.Len); err != nil {
 				return fmt.Errorf("NAS decode error (SecurityModeComplete/IMEISV): %w", err)
 			}
+			if a.IMEISV.Len > 9 {
+				return fmt.Errorf("invalid ie length (SecurityModeComplete/IMEISV): %d", a.IMEISV.Len)
+			}
 			a.IMEISV.SetLen(a.IMEISV.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.IMEISV.Octet[:a.IMEISV.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (SecurityModeComplete/IMEISV): %w", err)

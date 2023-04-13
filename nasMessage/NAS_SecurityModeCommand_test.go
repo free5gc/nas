@@ -52,7 +52,7 @@ var nasMessageSecurityModeCommandTable = []nasMessageSecurityModeCommandData{
 		},
 		inAdditional5GSecurityInformation: nasType.Additional5GSecurityInformation{
 			Iei:   nasMessage.SecurityModeCommandAdditional5GSecurityInformationType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inEAPMessage: nasType.EAPMessage{

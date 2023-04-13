@@ -117,6 +117,9 @@ func (a *ServiceRequest) DecodeServiceRequest(byteArray *[]byte) error {
 	if err := binary.Read(buffer, binary.BigEndian, &a.TMSI5GS.Len); err != nil {
 		return fmt.Errorf("NAS decode error (ServiceRequest/TMSI5GS): %w", err)
 	}
+	if a.TMSI5GS.Len > 7 {
+		return fmt.Errorf("invalid ie length (ServiceRequest/TMSI5GS): %d", a.TMSI5GS.Len)
+	}
 	a.TMSI5GS.SetLen(a.TMSI5GS.GetLen())
 	if err := binary.Read(buffer, binary.BigEndian, &a.TMSI5GS.Octet); err != nil {
 		return fmt.Errorf("NAS decode error (ServiceRequest/TMSI5GS): %w", err)

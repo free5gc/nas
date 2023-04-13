@@ -37,7 +37,7 @@ var nasMessagePDUSessionEstablishmentRejectTable = []nasMessagePDUSessionEstabli
 		},
 		inBackoffTimerValue: nasType.BackoffTimerValue{
 			Iei:   nasMessage.PDUSessionEstablishmentRejectBackoffTimerValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inAllowedSSCMode: nasType.AllowedSSCMode{

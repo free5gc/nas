@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 	"io"
+	"math"
 	"reflect"
 	"strings"
 )
@@ -128,12 +129,58 @@ func GenerateNasMessage() {
 				}
 
 				if ie.mandatory == mandatoryPart {
+					headLen := 0
 					if !ie.mandatory {
 						fmt.Fprintf(fOut, "case %s%sType:\n", msgName, ie.typeName)
 						fmt.Fprintf(fOut, "a.%s = nasType.New%s(ieiN)\n", ie.typeName, ie.typeName)
+						headLen++
 					}
 					if ie.lengthSize != 0 {
 						putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.Len", ie.typeName))
+						headLen += ie.lengthSize
+						minLength := ie.minLength - headLen
+						if minLength < 0 {
+							panic(fmt.Sprintf("Invalid minimal length %s/%s", msgName, ie.typeName))
+						}
+						maxLength := ie.maxLength - headLen
+						// XXX
+						minLength = 0
+						maxLength = math.MaxInt
+						bufMaxLength := math.MaxInt
+						if dataFieldName != "" {
+							switch dateFieldType.Kind() {
+							case reflect.Uint8:
+								bufMaxLength = 1
+							case reflect.Array:
+								bufMaxLength = dateFieldType.Len()
+							}
+						}
+						if maxLength > bufMaxLength {
+							maxLength = bufMaxLength
+						}
+						if minLength > maxLength {
+							panic(fmt.Sprintf("Invalid length %s/%s", msgName, ie.typeName))
+						}
+						var check []string
+						if minLength == maxLength {
+							check = append(check, fmt.Sprintf("a.%s.Len != %d", ie.typeName, maxLength))
+						} else {
+							if minLength > 0 {
+								check = append(check, fmt.Sprintf("a.%s.Len < %d", ie.typeName, minLength))
+							}
+							typeMax := math.MaxInt8
+							if ie.lengthSize == 2 {
+								typeMax = math.MaxInt16
+							}
+							if maxLength <= typeMax {
+								check = append(check, fmt.Sprintf("a.%s.Len > %d", ie.typeName, maxLength))
+							}
+						}
+						if len(check) != 0 {
+							fmt.Fprintf(fOut, "if %s {\n", strings.Join(check, " || "))
+							fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n", msgName, ie.typeName, ie.typeName)
+							fmt.Fprintln(fOut, "}")
+						}
 						fmt.Fprintf(fOut, "a.%s.SetLen(a.%s.GetLen())\n", ie.typeName, ie.typeName)
 					}
 					if dataFieldName == "" {

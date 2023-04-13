@@ -122,6 +122,9 @@ func (a *ServiceReject) DecodeServiceReject(byteArray *[]byte) error {
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3346Value.Len); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceReject/T3346Value): %w", err)
 			}
+			if a.T3346Value.Len > 1 {
+				return fmt.Errorf("invalid ie length (ServiceReject/T3346Value): %d", a.T3346Value.Len)
+			}
 			a.T3346Value.SetLen(a.T3346Value.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, &a.T3346Value.Octet); err != nil {
 				return fmt.Errorf("NAS decode error (ServiceReject/T3346Value): %w", err)

@@ -35,7 +35,7 @@ var nasMessagePDUSessionReleaseCommandTable = []nasMessagePDUSessionReleaseComma
 		},
 		inBackoffTimerValue: nasType.BackoffTimerValue{
 			Iei:   nasMessage.PDUSessionReleaseCommandBackoffTimerValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inEAPMessage: nasType.EAPMessage{

@@ -107,6 +107,9 @@ func (a *PDUSessionModificationReject) DecodePDUSessionModificationReject(byteAr
 			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Len); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionModificationReject/BackoffTimerValue): %w", err)
 			}
+			if a.BackoffTimerValue.Len > 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionModificationReject/BackoffTimerValue): %d", a.BackoffTimerValue.Len)
+			}
 			a.BackoffTimerValue.SetLen(a.BackoffTimerValue.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionModificationReject/BackoffTimerValue): %w", err)
