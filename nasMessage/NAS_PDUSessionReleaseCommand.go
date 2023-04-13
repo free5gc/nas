@@ -18,6 +18,7 @@ type PDUSessionReleaseCommand struct {
 	nasType.Cause5GSM
 	*nasType.BackoffTimerValue
 	*nasType.EAPMessage
+	*nasType.CongestionReattemptIndicator5GSM
 	*nasType.ExtendedProtocolConfigurationOptions
 }
 
@@ -29,6 +30,7 @@ func NewPDUSessionReleaseCommand(iei uint8) (pDUSessionReleaseCommand *PDUSessio
 const (
 	PDUSessionReleaseCommandBackoffTimerValueType                    uint8 = 0x37
 	PDUSessionReleaseCommandEAPMessageType                           uint8 = 0x78
+	PDUSessionReleaseCommandCongestionReattemptIndicator5GSMType     uint8 = 0x61
 	PDUSessionReleaseCommandExtendedProtocolConfigurationOptionsType uint8 = 0x7B
 )
 
@@ -68,6 +70,17 @@ func (a *PDUSessionReleaseCommand) EncodePDUSessionReleaseCommand(buffer *bytes.
 		}
 		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/EAPMessage): %w", err)
+		}
+	}
+	if a.CongestionReattemptIndicator5GSM != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.CongestionReattemptIndicator5GSM.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.CongestionReattemptIndicator5GSM.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, &a.CongestionReattemptIndicator5GSM.Octet); err != nil {
+			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
 		}
 	}
 	if a.ExtendedProtocolConfigurationOptions != nil {
@@ -138,6 +151,18 @@ func (a *PDUSessionReleaseCommand) DecodePDUSessionReleaseCommand(byteArray *[]b
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionReleaseCommand/EAPMessage): %w", err)
+			}
+		case PDUSessionReleaseCommandCongestionReattemptIndicator5GSMType:
+			a.CongestionReattemptIndicator5GSM = nasType.NewCongestionReattemptIndicator5GSM(ieiN)
+			if err := binary.Read(buffer, binary.BigEndian, &a.CongestionReattemptIndicator5GSM.Len); err != nil {
+				return fmt.Errorf("NAS decode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
+			}
+			if a.CongestionReattemptIndicator5GSM.Len != 1 {
+				return fmt.Errorf("invalid ie length (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %d", a.CongestionReattemptIndicator5GSM.Len)
+			}
+			a.CongestionReattemptIndicator5GSM.SetLen(a.CongestionReattemptIndicator5GSM.GetLen())
+			if err := binary.Read(buffer, binary.BigEndian, &a.CongestionReattemptIndicator5GSM.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
 			}
 		case PDUSessionReleaseCommandExtendedProtocolConfigurationOptionsType:
 			a.ExtendedProtocolConfigurationOptions = nasType.NewExtendedProtocolConfigurationOptions(ieiN)

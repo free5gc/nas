@@ -58,6 +58,9 @@ func GenerateNasMessage() {
 		fmt.Fprintf(fOut, "func (a *%s) Encode%s(buffer *bytes.Buffer) error {\n", msgName, msgName)
 		for _, ie := range ies {
 			ieType := nasTypeTable[ie.typeName]
+			if ieType == nil {
+				panic(fmt.Sprintf("Type %s is not exist", ie.typeName))
+			}
 			dataFieldName := ""
 			var dateFieldType reflect.Type
 			for _, n := range []string{"Buffer", "Octet"} {

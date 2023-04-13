@@ -196,15 +196,6 @@ func ParseSpecs() {
 							} else {
 								continue skipIE
 							}
-						case "Non-3GPP NW policies":
-							// XXX
-							continue skipIE
-						case "EPS bearer context status":
-							// XXX
-							continue skipIE
-						case "5GSM congestion re-attempt indicator":
-							// XXX
-							continue skipIE
 						case "5GMM STATUS message identity":
 							typeName = "STATUSMessageIdentity5GMM"
 						case "5GSM STATUS message identity":

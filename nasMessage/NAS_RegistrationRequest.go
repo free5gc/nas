@@ -36,6 +36,7 @@ type RegistrationRequest struct {
 	*nasType.NetworkSlicingIndication
 	*nasType.UpdateType5GS
 	*nasType.NASMessageContainer
+	*nasType.EPSBearerContextStatus
 }
 
 func NewRegistrationRequest(iei uint8) (registrationRequest *RegistrationRequest) {
@@ -64,6 +65,7 @@ const (
 	RegistrationRequestNetworkSlicingIndicationType            uint8 = 0x09
 	RegistrationRequestUpdateType5GSType                       uint8 = 0x53
 	RegistrationRequestNASMessageContainerType                 uint8 = 0x71
+	RegistrationRequestEPSBearerContextStatusType              uint8 = 0x60
 )
 
 func (a *RegistrationRequest) EncodeRegistrationRequest(buffer *bytes.Buffer) error {
@@ -282,6 +284,17 @@ func (a *RegistrationRequest) EncodeRegistrationRequest(buffer *bytes.Buffer) er
 		}
 		if err := binary.Write(buffer, binary.BigEndian, &a.NASMessageContainer.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationRequest/NASMessageContainer): %w", err)
+		}
+	}
+	if a.EPSBearerContextStatus != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.EPSBearerContextStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationRequest/EPSBearerContextStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.EPSBearerContextStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationRequest/EPSBearerContextStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.EPSBearerContextStatus.Octet[:a.EPSBearerContextStatus.GetLen()]); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationRequest/EPSBearerContextStatus): %w", err)
 		}
 	}
 	return nil
@@ -530,6 +543,18 @@ func (a *RegistrationRequest) DecodeRegistrationRequest(byteArray *[]byte) error
 			a.NASMessageContainer.SetLen(a.NASMessageContainer.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, a.NASMessageContainer.Buffer[:a.NASMessageContainer.GetLen()]); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationRequest/NASMessageContainer): %w", err)
+			}
+		case RegistrationRequestEPSBearerContextStatusType:
+			a.EPSBearerContextStatus = nasType.NewEPSBearerContextStatus(ieiN)
+			if err := binary.Read(buffer, binary.BigEndian, &a.EPSBearerContextStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (RegistrationRequest/EPSBearerContextStatus): %w", err)
+			}
+			if a.EPSBearerContextStatus.Len != 2 {
+				return fmt.Errorf("invalid ie length (RegistrationRequest/EPSBearerContextStatus): %d", a.EPSBearerContextStatus.Len)
+			}
+			a.EPSBearerContextStatus.SetLen(a.EPSBearerContextStatus.GetLen())
+			if err := binary.Read(buffer, binary.BigEndian, &a.EPSBearerContextStatus.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (RegistrationRequest/EPSBearerContextStatus): %w", err)
 			}
 		default:
 		}

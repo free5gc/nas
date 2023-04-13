@@ -39,6 +39,8 @@ type RegistrationAccept struct {
 	*nasType.NSSAIInclusionMode
 	*nasType.OperatordefinedAccessCategoryDefinitions
 	*nasType.NegotiatedDRXParameters
+	*nasType.Non3GppNwPolicies
+	*nasType.EPSBearerContextStatus
 }
 
 func NewRegistrationAccept(iei uint8) (registrationAccept *RegistrationAccept) {
@@ -71,6 +73,8 @@ const (
 	RegistrationAcceptNSSAIInclusionModeType                       uint8 = 0x0A
 	RegistrationAcceptOperatordefinedAccessCategoryDefinitionsType uint8 = 0x76
 	RegistrationAcceptNegotiatedDRXParametersType                  uint8 = 0x51
+	RegistrationAcceptNon3GppNwPoliciesType                        uint8 = 0x0D
+	RegistrationAcceptEPSBearerContextStatusType                   uint8 = 0x60
 )
 
 func (a *RegistrationAccept) EncodeRegistrationAccept(buffer *bytes.Buffer) error {
@@ -333,6 +337,22 @@ func (a *RegistrationAccept) EncodeRegistrationAccept(buffer *bytes.Buffer) erro
 		}
 		if err := binary.Write(buffer, binary.BigEndian, &a.NegotiatedDRXParameters.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationAccept/NegotiatedDRXParameters): %w", err)
+		}
+	}
+	if a.Non3GppNwPolicies != nil {
+		if err := binary.Write(buffer, binary.BigEndian, &a.Non3GppNwPolicies.Octet); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationAccept/Non3GppNwPolicies): %w", err)
+		}
+	}
+	if a.EPSBearerContextStatus != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.EPSBearerContextStatus.GetIei()); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationAccept/EPSBearerContextStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.EPSBearerContextStatus.GetLen()); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationAccept/EPSBearerContextStatus): %w", err)
+		}
+		if err := binary.Write(buffer, binary.BigEndian, a.EPSBearerContextStatus.Octet[:a.EPSBearerContextStatus.GetLen()]); err != nil {
+			return fmt.Errorf("NAS encode error (RegistrationAccept/EPSBearerContextStatus): %w", err)
 		}
 	}
 	return nil
@@ -630,6 +650,21 @@ func (a *RegistrationAccept) DecodeRegistrationAccept(byteArray *[]byte) error {
 			a.NegotiatedDRXParameters.SetLen(a.NegotiatedDRXParameters.GetLen())
 			if err := binary.Read(buffer, binary.BigEndian, &a.NegotiatedDRXParameters.Octet); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationAccept/NegotiatedDRXParameters): %w", err)
+			}
+		case RegistrationAcceptNon3GppNwPoliciesType:
+			a.Non3GppNwPolicies = nasType.NewNon3GppNwPolicies(ieiN)
+			a.Non3GppNwPolicies.Octet = ieiN
+		case RegistrationAcceptEPSBearerContextStatusType:
+			a.EPSBearerContextStatus = nasType.NewEPSBearerContextStatus(ieiN)
+			if err := binary.Read(buffer, binary.BigEndian, &a.EPSBearerContextStatus.Len); err != nil {
+				return fmt.Errorf("NAS decode error (RegistrationAccept/EPSBearerContextStatus): %w", err)
+			}
+			if a.EPSBearerContextStatus.Len != 2 {
+				return fmt.Errorf("invalid ie length (RegistrationAccept/EPSBearerContextStatus): %d", a.EPSBearerContextStatus.Len)
+			}
+			a.EPSBearerContextStatus.SetLen(a.EPSBearerContextStatus.GetLen())
+			if err := binary.Read(buffer, binary.BigEndian, &a.EPSBearerContextStatus.Octet); err != nil {
+				return fmt.Errorf("NAS decode error (RegistrationAccept/EPSBearerContextStatus): %w", err)
 			}
 		default:
 		}

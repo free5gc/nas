@@ -277,6 +277,11 @@ var testsGmmMessageLarge = []struct {
 						Len:    65535,
 						Buffer: generateBufferSlice(65535),
 					},
+					EPSBearerContextStatus: &nasType.EPSBearerContextStatus{
+						Iei:   0x60,
+						Len:   2,
+						Octet: [2]uint8{0x00, 0x01},
+					},
 				},
 			},
 		},
@@ -413,6 +418,14 @@ var testsGmmMessageLarge = []struct {
 						Iei:   0x51,
 						Len:   1,
 						Octet: 0x00,
+					},
+					Non3GppNwPolicies: &nasType.Non3GppNwPolicies{
+						Octet: nasMessage.RegistrationAcceptNon3GppNwPoliciesType << 4,
+					},
+					EPSBearerContextStatus: &nasType.EPSBearerContextStatus{
+						Iei:   0x60,
+						Len:   2,
+						Octet: [2]uint8{0x00, 0x01},
 					},
 				},
 			},
@@ -1297,6 +1310,11 @@ var testsGsmMessageLarge = []struct {
 						Len:    1500,
 						Buffer: generateBufferSlice(1500),
 					},
+					CongestionReattemptIndicator5GSM: &nasType.CongestionReattemptIndicator5GSM{
+						Iei:   0x61,
+						Len:   1,
+						Octet: 0x00,
+					},
 					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
 						Iei:    0x7b,
 						Len:    65535,
@@ -1485,6 +1503,11 @@ var testsGsmMessageLarge = []struct {
 					},
 					BackoffTimerValue: &nasType.BackoffTimerValue{
 						Iei:   0x37,
+						Len:   1,
+						Octet: 0x00,
+					},
+					CongestionReattemptIndicator5GSM: &nasType.CongestionReattemptIndicator5GSM{
+						Iei:   0x61,
 						Len:   1,
 						Octet: 0x00,
 					},
@@ -1703,6 +1726,11 @@ var testsGsmMessageLarge = []struct {
 						Iei:    0x78,
 						Len:    1500,
 						Buffer: generateBufferSlice(1500),
+					},
+					CongestionReattemptIndicator5GSM: &nasType.CongestionReattemptIndicator5GSM{
+						Iei:   0x61,
+						Len:   1,
+						Octet: 0x00,
 					},
 					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
 						Iei:    0x7b,
