@@ -100,7 +100,8 @@ func GenerateNasMessage() {
 				(ie.typeName == "SessionAMBR" && ie.mandatory) || ie.typeName == "TMSI5GS" {
 				putReadWrite(fOut, true, msgName, ie.typeName, fmt.Sprintf("&a.%s.%s", ie.typeName, dataFieldName))
 			} else {
-				putReadWrite(fOut, true, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
+				putReadWrite(fOut, true, msgName, ie.typeName,
+					fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
 			}
 			if !ie.mandatory {
 				fmt.Fprintln(fOut, "}")
@@ -156,7 +157,8 @@ func GenerateNasMessage() {
 						if ie.minLength == length7or11or15 {
 							fmt.Fprintf(fOut, "if a.%s.Len != %d && a.%s.Len != %d && a.%s.Len != %d {\n",
 								ie.typeName, 7-headLen, ie.typeName, 11-headLen, ie.typeName, 15-headLen)
-							fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n", msgName, ie.typeName, ie.typeName)
+							fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n",
+								msgName, ie.typeName, ie.typeName)
 							fmt.Fprintln(fOut, "}")
 						} else {
 							// Calculate minimal and maximum length without type and length field
@@ -199,7 +201,8 @@ func GenerateNasMessage() {
 							}
 							if len(check) != 0 {
 								fmt.Fprintf(fOut, "if %s {\n", strings.Join(check, " || "))
-								fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n", msgName, ie.typeName, ie.typeName)
+								fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n",
+									msgName, ie.typeName, ie.typeName)
 								fmt.Fprintln(fOut, "}")
 							}
 						}
@@ -212,7 +215,8 @@ func GenerateNasMessage() {
 						if ie.mandatory {
 							putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.%s", ie.typeName, dataFieldName))
 						} else {
-							putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
+							putReadWrite(fOut, false, msgName, ie.typeName,
+								fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
 						}
 					} else {
 						if dateFieldType.Kind() == reflect.Uint8 && ie.iei < 16 && !ie.mandatory {
@@ -227,7 +231,8 @@ func GenerateNasMessage() {
 							!(ie.typeName == "SessionAMBR" && !ie.mandatory) {
 							putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.%s", ie.typeName, dataFieldName))
 						} else {
-							putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]", ie.typeName, dataFieldName, ie.typeName))
+							putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("a.%s.%s[:a.%s.GetLen()]",
+								ie.typeName, dataFieldName, ie.typeName))
 						}
 					}
 				}

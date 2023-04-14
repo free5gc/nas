@@ -30,9 +30,11 @@ type msgEntry struct {
 	IEs        []ieEntry
 }
 
-var msgDefs map[string]*msgEntry
-var type2Msg []*msgEntry
-var msgOrder []*msgEntry
+var (
+	msgDefs  map[string]*msgEntry
+	type2Msg []*msgEntry
+	msgOrder []*msgEntry
+)
 
 // Parse spec.csv and construct table of NAS messages and these IEs
 func ParseSpecs() {
@@ -44,9 +46,9 @@ func ParseSpecs() {
 		panic(err)
 	}
 	defer func() {
-		err := fCsv.Close()
-		if err != nil {
-			panic(err)
+		errClose := fCsv.Close()
+		if errClose != nil {
+			panic(errClose)
 		}
 	}()
 
@@ -83,16 +85,16 @@ func ParseSpecs() {
 				// Convert message name to struct name
 				structName := convertMessageName(messageName, &deregFlag)
 
-				fields, err := csv.Read()
+				topFields, err := csv.Read()
 				if err != nil {
 					panic(err)
 				}
-				if fields[0] != "IEI" ||
-					fields[1] != "Information Element" ||
-					fields[2] != "Type/Reference" ||
-					fields[3] != "Presence" ||
-					fields[4] != "Format" ||
-					fields[5] != "Length" {
+				if topFields[0] != "IEI" ||
+					topFields[1] != "Information Element" ||
+					topFields[2] != "Type/Reference" ||
+					topFields[3] != "Presence" ||
+					topFields[4] != "Format" ||
+					topFields[5] != "Length" {
 					panic("Invalid fields")
 				}
 				var ies []ieEntry
@@ -100,24 +102,24 @@ func ParseSpecs() {
 				// Read IEs in table
 			skipIE:
 				for {
-					fields, err := csv.Read()
+					ieFields, err := csv.Read()
 					if err != nil {
 						panic(err)
 					}
-					if len(fields) == 1 {
+					if len(ieFields) == 1 {
 						// End of table
-						prevFields = fields
+						prevFields = ieFields
 						break
 					}
 
 					// Parse column in table
 					var ie ieEntry
-					iei := fields[0]
-					ieName := fields[1]
+					iei := ieFields[0]
+					ieName := ieFields[1]
 					// typeRef := fields[2]
-					presence := fields[3]
-					format := fields[4]
-					length := fields[5]
+					presence := ieFields[3]
+					format := ieFields[4]
+					length := ieFields[5]
 
 					switch presence {
 					case "M":
@@ -246,14 +248,16 @@ func ParseSpecs() {
 						default:
 							for _, word := range words {
 								switch word {
-								case "NAS", "ABBA", "EAP", "TAI", "NSSAI", "LADN", "MICO", "DL", "UL", "SMS", "DNN", "TRANSPORT", "ID", "5G", "5GS", "5GSM", "5GMM", "PDU", "PTI", "SSC", "AMBR", "RQ", "EPS", "SM", "DN", "SOR", "DRX", "UE", "GUTI", "IMEISV":
+								case "NAS", "ABBA", "EAP", "TAI", "NSSAI", "LADN", "MICO", "DL", "UL", "SMS",
+									"DNN", "TRANSPORT", "ID", "5G", "5GS", "5GSM", "5GMM", "PDU", "PTI", "SSC",
+									"AMBR", "RQ", "EPS", "SM", "DN", "SOR", "DRX", "UE", "GUTI", "IMEISV":
 									typeName += word
 								case "S-NSSAI":
 									typeName += "SNSSAI"
 								case "Non-3GPP":
 									typeName += "Non3Gpp"
 								default:
-									typeName += strings.Title(strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(word, "'", ""), "-", "")))
+									typeName += titleCase(strings.ReplaceAll(strings.ReplaceAll(word, "'", ""), "-", ""))
 								}
 							}
 						}
@@ -295,19 +299,19 @@ func ParseSpecs() {
 					isGMM = true
 				}
 				for {
-					fields, err := csv.Read()
+					idFields, err := csv.Read()
 					if err != nil {
 						panic(err)
 					}
-					if len(fields) == 1 {
-						prevFields = fields
+					if len(idFields) == 1 {
+						prevFields = idFields
 						break
 					}
-					if len(fields) == 10 {
+					if len(idFields) == 10 {
 						ok := true
 						var msgType uint8
 						for i := 0; i < 8; i++ {
-							switch fields[i] {
+							switch idFields[i] {
 							case "0":
 							case "1":
 								msgType += (1 << (7 - i))
@@ -316,7 +320,7 @@ func ParseSpecs() {
 							}
 						}
 						if ok {
-							msgName := convertMessageName(fields[9], nil)
+							msgName := convertMessageName(idFields[9], nil)
 							msgDefs[msgName].isGMM = isGMM
 							msgDefs[msgName].msgType = msgType
 							type2Msg[msgType] = msgDefs[msgName]
@@ -367,9 +371,16 @@ func convertMessageName(msgNameInDoc string, deregFlag *bool) string {
 			case "PDU", "5GMM", "5GSM", "5GS", "UL", "DL", "NAS":
 				msgName += word
 			default:
-				msgName += strings.Title(strings.ToLower(word))
+				msgName += titleCase(word)
 			}
 		}
 	}
 	return msgName
+}
+
+func titleCase(s string) string {
+	if s == "" {
+		return ""
+	}
+	return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
 }

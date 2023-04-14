@@ -34,7 +34,7 @@ func (o *outputFile) Close() (err error) {
 	// Output to file
 	out, err := format.Source(o.Bytes())
 	if err != nil {
-		return fmt.Errorf("format error: %w\n%s\n", err, string(o.Bytes()))
+		return fmt.Errorf("format error: %w\n%s\n", err, o.String())
 	}
 	fWrite, err := os.Create(o.name)
 	if err != nil {

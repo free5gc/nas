@@ -79,9 +79,13 @@ func GenerateTestLarge() {
 					}
 					if !ie.mandatory {
 						if ie.iei < 16 {
-							binary.Write(fData, binary.BigEndian, uint8(ie.iei<<4))
+							if err := binary.Write(fData, binary.BigEndian, uint8(ie.iei<<4)); err != nil {
+								panic(err)
+							}
 						} else {
-							binary.Write(fData, binary.BigEndian, uint8(ie.iei))
+							if err := binary.Write(fData, binary.BigEndian, uint8(ie.iei)); err != nil {
+								panic(err)
+							}
 						}
 						lenWrite--
 					}
@@ -92,12 +96,16 @@ func GenerateTestLarge() {
 						if lenWrite > math.MaxUint8 {
 							lenWrite = math.MaxUint8
 						}
-						binary.Write(fData, binary.BigEndian, uint8(lenWrite))
+						if err := binary.Write(fData, binary.BigEndian, uint8(lenWrite)); err != nil {
+							panic(err)
+						}
 					case 2:
 						if lenWrite > math.MaxUint16 {
 							lenWrite = math.MaxUint16
 						}
-						binary.Write(fData, binary.BigEndian, uint16(lenWrite))
+						if err := binary.Write(fData, binary.BigEndian, uint16(lenWrite)); err != nil {
+							panic(err)
+						}
 					default:
 						panic(fmt.Sprintf("Invalid lengthSize %d", ie.lengthSize))
 					}
@@ -105,17 +113,25 @@ func GenerateTestLarge() {
 						fmt.Fprintf(fOut, "Len: %d,\n", lenWrite)
 					}
 					if strings.Contains(ie.typeName, "MessageIdentity") {
-						binary.Write(fData, binary.BigEndian, msgDef.msgType)
+						if err := binary.Write(fData, binary.BigEndian, msgDef.msgType); err != nil {
+							panic(err)
+						}
 					} else {
 						switch ie.typeName {
 						case "ExtendedProtocolDiscriminator":
 							if isGMM {
-								binary.Write(fData, binary.BigEndian, uint8(0x7E))
+								if err := binary.Write(fData, binary.BigEndian, uint8(0x7E)); err != nil {
+									panic(err)
+								}
 							} else {
-								binary.Write(fData, binary.BigEndian, uint8(0x2E))
+								if err := binary.Write(fData, binary.BigEndian, uint8(0x2E)); err != nil {
+									panic(err)
+								}
 							}
 						default:
-							binary.Write(fData, binary.BigEndian, largeBuf[:lenWrite])
+							if err := binary.Write(fData, binary.BigEndian, largeBuf[:lenWrite]); err != nil {
+								panic(err)
+							}
 						}
 					}
 					if (lenWrite != 0 && dataFieldName != "") || (!ie.mandatory && ie.maxLength == 1) {
@@ -159,7 +175,10 @@ func GenerateTestLarge() {
 				fmt.Fprintln(fOut, "},")
 				fmt.Fprintln(fOut, "},")
 				fmt.Fprintln(fOut, "},")
-				fData.Close()
+
+				if err := fData.Close(); err != nil {
+					panic(err)
+				}
 			}
 		}
 		fmt.Fprintln(fOut, "}")

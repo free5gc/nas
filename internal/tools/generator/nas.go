@@ -48,19 +48,22 @@ func GenerateNasEncDec() {
 		fmt.Fprintf(fOut, "func (a *Message) %sMessageDecode(byteArray *[]byte) error {\n", gmmGsm)
 		fmt.Fprintf(fOut, "buffer := bytes.NewBuffer(*byteArray)\n")
 		fmt.Fprintf(fOut, "a.%sMessage = New%sMessage()\n", gmmGsm, gmmGsm)
-		fmt.Fprintf(fOut, "if err := binary.Read(buffer, binary.BigEndian, &a.%sMessage.%sHeader); err != nil {\n", gmmGsm, gmmGsm)
+		fmt.Fprintf(fOut, "if err := binary.Read(buffer, binary.BigEndian, &a.%sMessage.%sHeader); err != nil {\n",
+			gmmGsm, gmmGsm)
 		fmt.Fprintf(fOut, "return fmt.Errorf(\"%s NAS decode Fail: read fail - %%+v\", err)\n", strings.ToUpper(gmmGsm))
 		fmt.Fprintf(fOut, "}\n")
 		fmt.Fprintf(fOut, "switch a.%sMessage.%sHeader.GetMessageType() {\n", gmmGsm, gmmGsm)
 		for _, msgDef := range type2Msg {
 			if msgDef != nil && msgDef.isGMM == isGMM {
 				fmt.Fprintf(fOut, "case MsgType%s:\n", msgDef.structName)
-				fmt.Fprintf(fOut, "a.%sMessage.%s = nasMessage.New%s(MsgType%s)\n", gmmGsm, msgDef.structName, msgDef.structName, msgDef.structName)
+				fmt.Fprintf(fOut, "a.%sMessage.%s = nasMessage.New%s(MsgType%s)\n",
+					gmmGsm, msgDef.structName, msgDef.structName, msgDef.structName)
 				fmt.Fprintf(fOut, "return a.%sMessage.Decode%s(byteArray)\n", gmmGsm, msgDef.structName)
 			}
 		}
 		fmt.Fprintf(fOut, "default:\n")
-		fmt.Fprintf(fOut, "return fmt.Errorf(\"NAS decode Fail: MsgType[%%d] doesn't exist in %s Message\",\n", strings.ToUpper(gmmGsm))
+		fmt.Fprintf(fOut, "return fmt.Errorf(\"NAS decode Fail: MsgType[%%d] doesn't exist in %s Message\",\n",
+			strings.ToUpper(gmmGsm))
 		fmt.Fprintf(fOut, "a.%sMessage.%sHeader.GetMessageType())\n", gmmGsm, gmmGsm)
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "}")
@@ -76,7 +79,8 @@ func GenerateNasEncDec() {
 			}
 		}
 		fmt.Fprintf(fOut, "default:\n")
-		fmt.Fprintf(fOut, "return fmt.Errorf(\"NAS Encode Fail: MsgType[%%d] doesn't exist in %s Message\",\n", strings.ToUpper(gmmGsm))
+		fmt.Fprintf(fOut, "return fmt.Errorf(\"NAS Encode Fail: MsgType[%%d] doesn't exist in %s Message\",\n",
+			strings.ToUpper(gmmGsm))
 		fmt.Fprintf(fOut, "a.%sMessage.%sHeader.GetMessageType())\n", gmmGsm, gmmGsm)
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "}")
