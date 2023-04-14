@@ -23,17 +23,18 @@ type ieEntry struct {
 const length7or11or15 = -1
 
 type msgEntry struct {
-	msgName string
-	section string
-	isGMM   bool
-	msgType uint8
-	IEs     []ieEntry
+	structName string
+	section    string
+	isGMM      bool
+	msgType    uint8
+	IEs        []ieEntry
 }
 
 var msgDefs map[string]*msgEntry
 var type2Msg []*msgEntry
 var msgOrder []*msgEntry
 
+// Parse spec.csv and construct table of NAS messages and these IEs
 func ParseSpecs() {
 	msgDefs = make(map[string]*msgEntry)
 	type2Msg = make([]*msgEntry, 256)
@@ -57,6 +58,7 @@ func ParseSpecs() {
 	var prevFields []string
 	for {
 		var fields []string
+		// CSV parse and scan title of table
 		if prevFields == nil {
 			fields, err = csv.Read()
 			if err == io.EOF {
@@ -70,12 +72,16 @@ func ParseSpecs() {
 		}
 		if len(fields) == 1 {
 			if m := regMessageContent.FindStringSubmatch(fields[0]); m != nil {
-				section := strings.Join(strings.Split(m[1], ".")[:3], ".")
+				// Table for message content
+				sectionNumber := m[1]
+				messageName := m[2]
+				section := strings.Join(strings.Split(sectionNumber, ".")[:3], ".")
 				if section == "8.2.2341" {
 					// XXX
 					section = "8.2.24"
 				}
-				msgName := convertMessageName(m[2], &deregFlag)
+				// Convert message name to struct name
+				structName := convertMessageName(messageName, &deregFlag)
 
 				fields, err := csv.Read()
 				if err != nil {
@@ -91,6 +97,7 @@ func ParseSpecs() {
 				}
 				var ies []ieEntry
 				prevHalf := false
+				// Read IEs in table
 			skipIE:
 				for {
 					fields, err := csv.Read()
@@ -98,30 +105,43 @@ func ParseSpecs() {
 						panic(err)
 					}
 					if len(fields) == 1 {
+						// End of table
 						prevFields = fields
 						break
 					}
+
+					// Parse column in table
 					var ie ieEntry
-					switch fields[3] {
+					iei := fields[0]
+					ieName := fields[1]
+					// typeRef := fields[2]
+					presence := fields[3]
+					format := fields[4]
+					length := fields[5]
+
+					switch presence {
 					case "M":
-						if fields[0] != "" {
+						// mandatory IE
+						if iei != "" {
 							panic("IEI must be empty")
 						}
 						ie.mandatory = true
-						switch fields[4] {
+						// parse format value
+						switch format {
 						case "V":
 						case "LV":
 							ie.lengthSize = 1
 						case "LV-E":
 							ie.lengthSize = 2
 						default:
-							panic(fmt.Sprintf("Invalid format %s", fields[4]))
+							panic(fmt.Sprintf("Invalid format %s", format))
 						}
 					case "O", "C":
-						iei := fields[0]
+						// not mandatory IE
 						if iei == "" {
 							panic("IEI must not be empty")
 						}
+						// parse IEI value
 						if len(iei) > 1 && iei[1] == '-' {
 							if i, err := strconv.ParseUint(iei[0:1], 16, 4); err != nil {
 								panic(err)
@@ -135,24 +155,30 @@ func ParseSpecs() {
 								ie.iei = int(i)
 							}
 						}
-						switch fields[4] {
+						// parse format value
+						switch format {
 						case "TV":
 						case "TLV":
 							ie.lengthSize = 1
 						case "TLV-E":
 							ie.lengthSize = 2
 						default:
-							panic(fmt.Sprintf("Invalid format %s", fields[4]))
+							panic(fmt.Sprintf("Invalid format %s", format))
 						}
 					default:
-						panic(fmt.Sprintf("Invalid presence %s", fields[3]))
+						panic(fmt.Sprintf("Invalid presence %s", presence))
 					}
+
+					// parse length field
 					half := false
-					lenSplit := strings.Split(fields[5], "-")
+					lenSplit := strings.Split(length, "-")
 					if len(lenSplit) == 1 {
+						// Fixed length
 						if lenSplit[0] == "1/2" {
+							// half octet IE
 							half = true
 						} else if lenSplit[0] == "7, 11 or 15" {
+							// Special case (PDU address IE)
 							ie.minLength = length7or11or15
 							ie.maxLength = length7or11or15
 						} else {
@@ -164,12 +190,14 @@ func ParseSpecs() {
 							}
 						}
 					} else {
+						// Length range
 						if i, err := strconv.ParseInt(lenSplit[0], 10, strconv.IntSize); err != nil {
 							panic(err)
 						} else {
 							ie.minLength = int(i)
 						}
 						if lenSplit[1] == "n" {
+							// length is not limited
 							ie.maxLength = math.MaxInt
 						} else {
 							if i, err := strconv.ParseInt(lenSplit[1], 10, strconv.IntSize); err != nil {
@@ -180,7 +208,8 @@ func ParseSpecs() {
 						}
 					}
 
-					ieCell := strings.TrimSpace(fields[1])
+					// Convert IE name text to go type for IE
+					ieCell := strings.TrimSpace(ieName)
 					words := strings.Split(ieCell, " ")
 					typeName := ""
 					if words[0][0] == '5' {
@@ -232,6 +261,7 @@ func ParseSpecs() {
 					ie.typeName = typeName
 
 					if half && prevHalf {
+						// Merge IEs have half octet size
 						prevIe := &ies[len(ies)-1]
 						if prevIe.minLength != 0 {
 							panic("Merge non half IEs")
@@ -252,13 +282,14 @@ func ParseSpecs() {
 					}
 				}
 				msg := &msgEntry{
-					msgName: msgName,
-					section: section,
-					IEs:     ies,
+					structName: structName,
+					section:    section,
+					IEs:        ies,
 				}
-				msgDefs[msgName] = msg
+				msgDefs[structName] = msg
 				msgOrder = append(msgOrder, msg)
 			} else if m := regMessageType.FindStringSubmatch(fields[0]); m != nil {
+				// Parse message ID table
 				isGMM := false
 				if m[1] == "5GS mobility management" {
 					isGMM = true
@@ -300,6 +331,7 @@ func ParseSpecs() {
 	msgDefs["SecurityProtected5GSNASMessage"].isGMM = true
 }
 
+// covert message name in TS document to struct name in generated code
 func convertMessageName(msgNameInDoc string, deregFlag *bool) string {
 	words := strings.Split(msgNameInDoc, " ")
 	msgName := ""

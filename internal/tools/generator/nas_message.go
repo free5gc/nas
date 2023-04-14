@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Generate NAS decoder and encoder in nasMessage package
 func GenerateNasMessage() {
 	for msgName, msgDef := range msgDefs {
 		ies := msgDef.IEs
@@ -21,6 +22,7 @@ func GenerateNasMessage() {
 			"\"github.com/free5gc/nas/nasType\"",
 		})
 
+		// struct definition
 		fmt.Fprintf(fOut, "type %s struct {\n", msgName)
 		for _, ie := range ies {
 			if ie.mandatory {
@@ -32,12 +34,14 @@ func GenerateNasMessage() {
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "")
 
+		// NewXXX function
 		fmt.Fprintf(fOut, "func New%s(iei uint8) (%s *%s) {\n", msgName, lmsgName, msgName)
 		fmt.Fprintf(fOut, "%s = &%s{}\n", lmsgName, msgName)
 		fmt.Fprintf(fOut, "return %s\n", lmsgName)
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "")
 
+		// constant definition for IEI values
 		hasOptionalIEs := false
 		for _, ie := range ies {
 			if !ie.mandatory {
@@ -55,6 +59,7 @@ func GenerateNasMessage() {
 			fmt.Fprintln(fOut, "")
 		}
 
+		// Encoder
 		fmt.Fprintf(fOut, "func (a *%s) Encode%s(buffer *bytes.Buffer) error {\n", msgName, msgName)
 		for _, ie := range ies {
 			ieType := nasTypeTable[ie.typeName]
@@ -70,12 +75,14 @@ func GenerateNasMessage() {
 					break
 				}
 			}
+			// encode IEI
 			if !ie.mandatory {
 				fmt.Fprintf(fOut, "if a.%s != nil {\n", ie.typeName)
 				if ie.iei >= 16 {
 					putReadWrite(fOut, true, msgName, ie.typeName, fmt.Sprintf("a.%s.GetIei()", ie.typeName))
 				}
 			}
+			// encode length
 			if ie.lengthSize != 0 {
 				if lenField, exist := ieType.FieldByName("Len"); !exist {
 					panic(fmt.Sprintf("Len is not exist %s", ie.typeName))
@@ -86,6 +93,7 @@ func GenerateNasMessage() {
 				}
 				putReadWrite(fOut, true, msgName, ie.typeName, fmt.Sprintf("a.%s.GetLen()", ie.typeName))
 			}
+			// encode value
 			if dataFieldName == "" {
 				putReadWrite(fOut, true, msgName, ie.typeName, fmt.Sprintf("&a.%s", ie.typeName))
 			} else if dataFieldName == "Buffer" || dateFieldType.Kind() == reflect.Uint8 || ie.lengthSize == 0 ||
@@ -102,9 +110,11 @@ func GenerateNasMessage() {
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "")
 
+		// decoder
 		fmt.Fprintf(fOut, "func (a *%s) Decode%s(byteArray *[]byte) error {\n", msgName, msgName)
 		fmt.Fprintln(fOut, "buffer := bytes.NewBuffer(*byteArray)")
 		for _, mandatoryPart := range []bool{true, false} {
+			// parse IEI in top of optional part
 			if !mandatoryPart {
 				fmt.Fprintln(fOut, "for buffer.Len() > 0 {")
 				fmt.Fprintln(fOut, "var ieiN uint8")
@@ -134,11 +144,13 @@ func GenerateNasMessage() {
 				if ie.mandatory == mandatoryPart {
 					headLen := 0
 					if !ie.mandatory {
+						// allocate optional IE
 						fmt.Fprintf(fOut, "case %s%sType:\n", msgName, ie.typeName)
 						fmt.Fprintf(fOut, "a.%s = nasType.New%s(ieiN)\n", ie.typeName, ie.typeName)
 						headLen++
 					}
 					if ie.lengthSize != 0 {
+						// Read and check length
 						putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("&a.%s.Len", ie.typeName))
 						headLen += ie.lengthSize
 						if ie.minLength == length7or11or15 {
@@ -147,6 +159,7 @@ func GenerateNasMessage() {
 							fmt.Fprintf(fOut, "return fmt.Errorf(\"invalid ie length (%s/%s): %%d\", a.%s.Len)\n", msgName, ie.typeName, ie.typeName)
 							fmt.Fprintln(fOut, "}")
 						} else {
+							// Calculate minimal and maximum length without type and length field
 							minLength := ie.minLength - headLen
 							if minLength < 0 {
 								panic(fmt.Sprintf("Invalid minimal length %s/%s", msgName, ie.typeName))
@@ -154,6 +167,7 @@ func GenerateNasMessage() {
 							maxLength := ie.maxLength - headLen
 							bufMaxLength := math.MaxInt
 							if dataFieldName != "" {
+								// Limit value type size
 								switch dateFieldType.Kind() {
 								case reflect.Uint8:
 									bufMaxLength = 1
@@ -168,6 +182,7 @@ func GenerateNasMessage() {
 								panic(fmt.Sprintf("Invalid length %s/%s", msgName, ie.typeName))
 							}
 							var check []string
+							// generate length check code
 							if minLength == maxLength {
 								check = append(check, fmt.Sprintf("a.%s.Len != %d", ie.typeName, maxLength))
 							} else {
@@ -190,6 +205,7 @@ func GenerateNasMessage() {
 						}
 						fmt.Fprintf(fOut, "a.%s.SetLen(a.%s.GetLen())\n", ie.typeName, ie.typeName)
 					}
+					// Read value
 					if dataFieldName == "" {
 						putReadWrite(fOut, false, msgName, ie.typeName, fmt.Sprintf("&a.%s", ie.typeName))
 					} else if dataFieldName == "Buffer" {
@@ -226,10 +242,13 @@ func GenerateNasMessage() {
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "")
 
-		fOut.Close()
+		if err := fOut.Close(); err != nil {
+			panic(err)
+		}
 	}
 }
 
+// Generate code for read and write with error check
 func putReadWrite(f io.Writer, write bool, msgName string, ieName string, value string) {
 	var rw string
 	var encDec string

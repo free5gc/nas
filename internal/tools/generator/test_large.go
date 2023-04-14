@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Generate test data
 func GenerateTestLarge() {
 	largeBuf := make([]byte, 256)
 	for i := 0; i < 256; i++ {
@@ -36,9 +37,9 @@ func GenerateTestLarge() {
 		fmt.Fprintln(fOut, "want Message")
 		fmt.Fprintln(fOut, "}{")
 		for _, msgDef := range msgOrder {
-			if msgDef != nil && msgDef.isGMM == isGMM && msgDef.msgName != "SecurityProtected5GSNASMessage" {
+			if msgDef != nil && msgDef.isGMM == isGMM && msgDef.structName != "SecurityProtected5GSNASMessage" {
 				fmt.Fprintln(fOut, "{")
-				fmt.Fprintf(fOut, "name: \"%s\",\n", msgDef.msgName)
+				fmt.Fprintf(fOut, "name: \"%s\",\n", msgDef.structName)
 				fmt.Fprintf(fOut, "want: Message{\n")
 				fmt.Fprintf(fOut, "%sMessage: &%sMessage{\n", gmmGsm, gmmGsm)
 				if isGMM {
@@ -46,8 +47,8 @@ func GenerateTestLarge() {
 				} else {
 					fmt.Fprintf(fOut, "GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0x%02x}},\n", msgDef.msgType)
 				}
-				fmt.Fprintf(fOut, "%s: &nasMessage.%s{\n", msgDef.msgName, msgDef.msgName)
-				fData, err := os.Create("testdata/" + gmmGsm + "MessageLarge/" + msgDef.msgName)
+				fmt.Fprintf(fOut, "%s: &nasMessage.%s{\n", msgDef.structName, msgDef.structName)
+				fData, err := os.Create("testdata/" + gmmGsm + "MessageLarge/" + msgDef.structName)
 				if err != nil {
 					panic(err)
 				}
@@ -122,7 +123,7 @@ func GenerateTestLarge() {
 						switch dateFieldType.Kind() {
 						case reflect.Uint8:
 							if strings.Contains(ie.typeName, "MessageIdentity") {
-								fmt.Fprintf(fOut, "MsgType%s", msgDef.msgName)
+								fmt.Fprintf(fOut, "MsgType%s", msgDef.structName)
 							} else if ie.typeName == "ExtendedProtocolDiscriminator" {
 								if isGMM {
 									fmt.Fprintf(fOut, "nasMessage.Epd5GSMobilityManagementMessage")
@@ -130,7 +131,7 @@ func GenerateTestLarge() {
 									fmt.Fprintf(fOut, "nasMessage.Epd5GSSessionManagementMessage")
 								}
 							} else if !ie.mandatory && ie.maxLength == 1 {
-								fmt.Fprintf(fOut, "nasMessage.%s%sType", msgDef.msgName, ie.typeName)
+								fmt.Fprintf(fOut, "nasMessage.%s%sType", msgDef.structName, ie.typeName)
 								if ie.iei < 16 {
 									fmt.Fprintf(fOut, " << 4")
 								}
@@ -165,5 +166,7 @@ func GenerateTestLarge() {
 		fmt.Fprintln(fOut, "")
 	}
 
-	fOut.Close()
+	if err := fOut.Close(); err != nil {
+		panic(err)
+	}
 }

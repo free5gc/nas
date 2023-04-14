@@ -11,6 +11,7 @@ import (
 	"github.com/free5gc/nas/internal/tools/generator"
 )
 
+// Generate table of types in nasType package
 func main() {
 	dirs, err := os.ReadDir("nasType")
 	if err != nil {
@@ -26,6 +27,7 @@ func main() {
 	fmt.Fprintln(fOut, "var nasTypeTable map[string]reflect.Type = map[string]reflect.Type{")
 	for _, dir := range dirs {
 		name := dir.Name()
+		// Assume one type by one file
 		if strings.HasPrefix(name, "NAS_") && strings.HasSuffix(name, ".go") && !strings.HasSuffix(name, "_test.go") {
 			name := strings.TrimPrefix(name, "NAS_")
 			name = strings.TrimSuffix(name, ".go")
@@ -34,5 +36,7 @@ func main() {
 	}
 	fmt.Fprintln(fOut, "}")
 
-	fOut.Close()
+	if err := fOut.Close(); err != nil {
+		panic(err)
+	}
 }

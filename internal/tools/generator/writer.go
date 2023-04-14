@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Writer and formatter of golang source file
 type outputFile struct {
 	*bytes.Buffer
 	name string
@@ -29,24 +30,25 @@ func NewOutputFile(name string, pkgName string, imports []string) *outputFile {
 	return &o
 }
 
-func (o *outputFile) Close() {
+func (o *outputFile) Close() (err error) {
 	// Output to file
-	if false {
-		os.Stdout.Write(o.Bytes())
-		return
-	}
 	out, err := format.Source(o.Bytes())
 	if err != nil {
-		fmt.Println(string(o.Bytes()))
-		panic(err)
+		return fmt.Errorf("format error: %w\n%s\n", err, string(o.Bytes()))
 	}
 	fWrite, err := os.Create(o.name)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer fWrite.Close()
+	defer func() {
+		errClose := fWrite.Close()
+		if errClose != nil && err == nil {
+			err = errClose
+		}
+	}()
 	_, err = fWrite.Write(out)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }

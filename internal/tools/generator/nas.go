@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Generate nas_generated.go
 func GenerateNasEncDec() {
 	fOut := NewOutputFile("nas_generated.go", "nas", []string{
 		"\"bytes\"",
@@ -22,25 +23,28 @@ func GenerateNasEncDec() {
 			gmmGsm = "Gsm"
 		}
 
+		// Generate (Gmm|Gsm)Message struct
 		fmt.Fprintf(fOut, "type %sMessage struct {\n", gmmGsm)
 		fmt.Fprintf(fOut, "%sHeader\n", gmmGsm)
 		for _, msgDef := range msgOrder {
 			if msgDef != nil && msgDef.isGMM == isGMM {
-				fmt.Fprintf(fOut, "*nasMessage.%s // %s\n", msgDef.msgName, msgDef.section)
+				fmt.Fprintf(fOut, "*nasMessage.%s // %s\n", msgDef.structName, msgDef.section)
 			}
 		}
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "")
 
+		// Generate constant for message ID
 		fmt.Fprintln(fOut, "const (")
 		for msgType, msgDef := range type2Msg {
 			if msgDef != nil && msgDef.isGMM == isGMM {
-				fmt.Fprintf(fOut, "MsgType%s uint8 = %d\n", msgDef.msgName, msgType)
+				fmt.Fprintf(fOut, "MsgType%s uint8 = %d\n", msgDef.structName, msgType)
 			}
 		}
 		fmt.Fprintln(fOut, ")")
 		fmt.Fprintln(fOut, "")
 
+		// Generate (Gmm|Gsm)MessageDecode functions
 		fmt.Fprintf(fOut, "func (a *Message) %sMessageDecode(byteArray *[]byte) error {\n", gmmGsm)
 		fmt.Fprintf(fOut, "buffer := bytes.NewBuffer(*byteArray)\n")
 		fmt.Fprintf(fOut, "a.%sMessage = New%sMessage()\n", gmmGsm, gmmGsm)
@@ -50,9 +54,9 @@ func GenerateNasEncDec() {
 		fmt.Fprintf(fOut, "switch a.%sMessage.%sHeader.GetMessageType() {\n", gmmGsm, gmmGsm)
 		for _, msgDef := range type2Msg {
 			if msgDef != nil && msgDef.isGMM == isGMM {
-				fmt.Fprintf(fOut, "case MsgType%s:\n", msgDef.msgName)
-				fmt.Fprintf(fOut, "a.%sMessage.%s = nasMessage.New%s(MsgType%s)\n", gmmGsm, msgDef.msgName, msgDef.msgName, msgDef.msgName)
-				fmt.Fprintf(fOut, "return a.%sMessage.Decode%s(byteArray)\n", gmmGsm, msgDef.msgName)
+				fmt.Fprintf(fOut, "case MsgType%s:\n", msgDef.structName)
+				fmt.Fprintf(fOut, "a.%sMessage.%s = nasMessage.New%s(MsgType%s)\n", gmmGsm, msgDef.structName, msgDef.structName, msgDef.structName)
+				fmt.Fprintf(fOut, "return a.%sMessage.Decode%s(byteArray)\n", gmmGsm, msgDef.structName)
 			}
 		}
 		fmt.Fprintf(fOut, "default:\n")
@@ -62,12 +66,13 @@ func GenerateNasEncDec() {
 		fmt.Fprintln(fOut, "}")
 		fmt.Fprintln(fOut, "")
 
+		// Generate (Gmm|Gsm)MessageEncode functions
 		fmt.Fprintf(fOut, "func (a *Message) %sMessageEncode(buffer *bytes.Buffer) error {\n", gmmGsm)
 		fmt.Fprintf(fOut, "switch a.%sMessage.%sHeader.GetMessageType() {\n", gmmGsm, gmmGsm)
 		for _, msgDef := range type2Msg {
 			if msgDef != nil && msgDef.isGMM == isGMM {
-				fmt.Fprintf(fOut, "case MsgType%s:\n", msgDef.msgName)
-				fmt.Fprintf(fOut, "return a.%sMessage.Encode%s(buffer)\n", gmmGsm, msgDef.msgName)
+				fmt.Fprintf(fOut, "case MsgType%s:\n", msgDef.structName)
+				fmt.Fprintf(fOut, "return a.%sMessage.Encode%s(buffer)\n", gmmGsm, msgDef.structName)
 			}
 		}
 		fmt.Fprintf(fOut, "default:\n")
@@ -78,5 +83,7 @@ func GenerateNasEncDec() {
 		fmt.Fprintln(fOut, "")
 	}
 
-	fOut.Close()
+	if err := fOut.Close(); err != nil {
+		panic(err)
+	}
 }
