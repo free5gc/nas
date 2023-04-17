@@ -49,12 +49,12 @@ func TestPlainNas(t *testing.T) {
 	}
 }
 
-func TestGmmMessageLarge(t *testing.T) {
-	for _, tt := range testsGmmMessageLarge {
+func TestGmmMessage(t *testing.T) {
+	for _, tt := range testsGmmMessage {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			fData, err := os.Open("testdata/GmmMessageLarge/" + tt.name)
+			fData, err := os.Open("testdata/GmmMessage/" + tt.name)
 			require.NoError(t, err)
 			data, err := io.ReadAll(fData)
 			require.NoError(t, err)
@@ -72,12 +72,12 @@ func TestGmmMessageLarge(t *testing.T) {
 	}
 }
 
-func TestGsmMessageLarge(t *testing.T) {
-	for _, tt := range testsGsmMessageLarge {
+func TestGsmMessage(t *testing.T) {
+	for _, tt := range testsGsmMessage {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			fData, err := os.Open("testdata/GsmMessageLarge/" + tt.name)
+			fData, err := os.Open("testdata/GsmMessage/" + tt.name)
 			require.NoError(t, err)
 			data, err := io.ReadAll(fData)
 			require.NoError(t, err)

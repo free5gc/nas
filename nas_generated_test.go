@@ -7,12 +7,12 @@ import (
 	"github.com/free5gc/nas/nasType"
 )
 
-var testsGmmMessageLarge = []struct {
+var testsGmmMessage = []struct {
 	name string
 	want Message
 }{
 	{
-		name: "AuthenticationRequest",
+		name: "MaxAuthenticationRequest",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x56}},
@@ -52,7 +52,47 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "AuthenticationResponse",
+		name: "MinAuthenticationRequest",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x56}},
+				AuthenticationRequest: &nasMessage.AuthenticationRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					AuthenticationRequestMessageIdentity: nasType.AuthenticationRequestMessageIdentity{
+						Octet: MsgTypeAuthenticationRequest,
+					},
+					SpareHalfOctetAndNgksi: nasType.SpareHalfOctetAndNgksi{
+						Octet: 0x00,
+					},
+					ABBA: nasType.ABBA{
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					AuthenticationParameterRAND: &nasType.AuthenticationParameterRAND{
+						Iei:   0x21,
+						Octet: [16]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f},
+					},
+					AuthenticationParameterAUTN: &nasType.AuthenticationParameterAUTN{
+						Iei:   0x20,
+						Len:   16,
+						Octet: [16]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f},
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxAuthenticationResponse",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x57}},
@@ -81,7 +121,36 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "AuthenticationResult",
+		name: "MinAuthenticationResponse",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x57}},
+				AuthenticationResponse: &nasMessage.AuthenticationResponse{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					AuthenticationResponseMessageIdentity: nasType.AuthenticationResponseMessageIdentity{
+						Octet: MsgTypeAuthenticationResponse,
+					},
+					AuthenticationResponseParameter: &nasType.AuthenticationResponseParameter{
+						Iei:   0x2d,
+						Len:   16,
+						Octet: [16]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f},
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxAuthenticationResult",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5a}},
@@ -112,7 +181,38 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "AuthenticationFailure",
+		name: "MinAuthenticationResult",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5a}},
+				AuthenticationResult: &nasMessage.AuthenticationResult{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					AuthenticationResultMessageIdentity: nasType.AuthenticationResultMessageIdentity{
+						Octet: MsgTypeAuthenticationResult,
+					},
+					SpareHalfOctetAndNgksi: nasType.SpareHalfOctetAndNgksi{
+						Octet: 0x00,
+					},
+					EAPMessage: nasType.EAPMessage{
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					ABBA: &nasType.ABBA{
+						Iei:    0x38,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxAuthenticationFailure",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x59}},
@@ -139,7 +239,34 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "AuthenticationReject",
+		name: "MinAuthenticationFailure",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x59}},
+				AuthenticationFailure: &nasMessage.AuthenticationFailure{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					AuthenticationFailureMessageIdentity: nasType.AuthenticationFailureMessageIdentity{
+						Octet: MsgTypeAuthenticationFailure,
+					},
+					Cause5GMM: nasType.Cause5GMM{
+						Octet: 0x00,
+					},
+					AuthenticationFailureParameter: &nasType.AuthenticationFailureParameter{
+						Iei:   0x30,
+						Len:   14,
+						Octet: [14]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxAuthenticationReject",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x58}},
@@ -163,7 +290,31 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "RegistrationRequest",
+		name: "MinAuthenticationReject",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x58}},
+				AuthenticationReject: &nasMessage.AuthenticationReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					AuthenticationRejectMessageIdentity: nasType.AuthenticationRejectMessageIdentity{
+						Octet: MsgTypeAuthenticationReject,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxRegistrationRequest",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x41}},
@@ -287,7 +438,131 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "RegistrationAccept",
+		name: "MinRegistrationRequest",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x41}},
+				RegistrationRequest: &nasMessage.RegistrationRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					RegistrationRequestMessageIdentity: nasType.RegistrationRequestMessageIdentity{
+						Octet: MsgTypeRegistrationRequest,
+					},
+					NgksiAndRegistrationType5GS: nasType.NgksiAndRegistrationType5GS{
+						Octet: 0x00,
+					},
+					MobileIdentity5GS: nasType.MobileIdentity5GS{
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					NoncurrentNativeNASKeySetIdentifier: &nasType.NoncurrentNativeNASKeySetIdentifier{
+						Octet: nasMessage.RegistrationRequestNoncurrentNativeNASKeySetIdentifierType << 4,
+					},
+					Capability5GMM: &nasType.Capability5GMM{
+						Iei:   0x10,
+						Len:   1,
+						Octet: [13]uint8{0x00},
+					},
+					UESecurityCapability: &nasType.UESecurityCapability{
+						Iei:    0x2e,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					RequestedNSSAI: &nasType.RequestedNSSAI{
+						Iei:    0x2f,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					LastVisitedRegisteredTAI: &nasType.LastVisitedRegisteredTAI{
+						Iei:   0x52,
+						Octet: [6]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05},
+					},
+					S1UENetworkCapability: &nasType.S1UENetworkCapability{
+						Iei:    0x17,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					UplinkDataStatus: &nasType.UplinkDataStatus{
+						Iei:    0x40,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					PDUSessionStatus: &nasType.PDUSessionStatus{
+						Iei:    0x50,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					MICOIndication: &nasType.MICOIndication{
+						Octet: nasMessage.RegistrationRequestMICOIndicationType << 4,
+					},
+					UEStatus: &nasType.UEStatus{
+						Iei:   0x2b,
+						Len:   1,
+						Octet: 0x00,
+					},
+					AdditionalGUTI: &nasType.AdditionalGUTI{
+						Iei:   0x77,
+						Len:   11,
+						Octet: [11]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a},
+					},
+					AllowedPDUSessionStatus: &nasType.AllowedPDUSessionStatus{
+						Iei:    0x25,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					UesUsageSetting: &nasType.UesUsageSetting{
+						Iei:   0x18,
+						Len:   1,
+						Octet: 0x00,
+					},
+					RequestedDRXParameters: &nasType.RequestedDRXParameters{
+						Iei:   0x51,
+						Len:   1,
+						Octet: 0x00,
+					},
+					EPSNASMessageContainer: &nasType.EPSNASMessageContainer{
+						Iei:    0x70,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					LADNIndication: &nasType.LADNIndication{
+						Iei:    0x74,
+						Len:    0,
+						Buffer: []uint8{},
+					},
+					PayloadContainer: &nasType.PayloadContainer{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					NetworkSlicingIndication: &nasType.NetworkSlicingIndication{
+						Octet: nasMessage.RegistrationRequestNetworkSlicingIndicationType << 4,
+					},
+					UpdateType5GS: &nasType.UpdateType5GS{
+						Iei:   0x53,
+						Len:   1,
+						Octet: 0x00,
+					},
+					NASMessageContainer: &nasType.NASMessageContainer{
+						Iei:    0x71,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					EPSBearerContextStatus: &nasType.EPSBearerContextStatus{
+						Iei:   0x60,
+						Len:   2,
+						Octet: [2]uint8{0x00, 0x01},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxRegistrationAccept",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x42}},
@@ -432,7 +707,152 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "RegistrationComplete",
+		name: "MinRegistrationAccept",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x42}},
+				RegistrationAccept: &nasMessage.RegistrationAccept{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					RegistrationAcceptMessageIdentity: nasType.RegistrationAcceptMessageIdentity{
+						Octet: MsgTypeRegistrationAccept,
+					},
+					RegistrationResult5GS: nasType.RegistrationResult5GS{
+						Len:   1,
+						Octet: 0x00,
+					},
+					GUTI5G: &nasType.GUTI5G{
+						Iei:   0x77,
+						Len:   11,
+						Octet: [11]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a},
+					},
+					EquivalentPlmns: &nasType.EquivalentPlmns{
+						Iei:   0x4a,
+						Len:   3,
+						Octet: [45]uint8{0x00, 0x01, 0x02},
+					},
+					TAIList: &nasType.TAIList{
+						Iei:    0x54,
+						Len:    7,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06},
+					},
+					AllowedNSSAI: &nasType.AllowedNSSAI{
+						Iei:    0x15,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					RejectedNSSAI: &nasType.RejectedNSSAI{
+						Iei:    0x11,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					ConfiguredNSSAI: &nasType.ConfiguredNSSAI{
+						Iei:    0x31,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					NetworkFeatureSupport5GS: &nasType.NetworkFeatureSupport5GS{
+						Iei:   0x21,
+						Len:   1,
+						Octet: [3]uint8{0x00},
+					},
+					PDUSessionStatus: &nasType.PDUSessionStatus{
+						Iei:    0x50,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					PDUSessionReactivationResult: &nasType.PDUSessionReactivationResult{
+						Iei:    0x26,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					PDUSessionReactivationResultErrorCause: &nasType.PDUSessionReactivationResultErrorCause{
+						Iei:    0x72,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					LADNInformation: &nasType.LADNInformation{
+						Iei:    0x79,
+						Len:    9,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08},
+					},
+					MICOIndication: &nasType.MICOIndication{
+						Octet: nasMessage.RegistrationAcceptMICOIndicationType << 4,
+					},
+					NetworkSlicingIndication: &nasType.NetworkSlicingIndication{
+						Octet: nasMessage.RegistrationAcceptNetworkSlicingIndicationType << 4,
+					},
+					ServiceAreaList: &nasType.ServiceAreaList{
+						Iei:    0x27,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					T3512Value: &nasType.T3512Value{
+						Iei:   0x5e,
+						Len:   1,
+						Octet: 0x00,
+					},
+					Non3GppDeregistrationTimerValue: &nasType.Non3GppDeregistrationTimerValue{
+						Iei:   0x5d,
+						Len:   1,
+						Octet: 0x00,
+					},
+					T3502Value: &nasType.T3502Value{
+						Iei:   0x16,
+						Len:   1,
+						Octet: 0x00,
+					},
+					EmergencyNumberList: &nasType.EmergencyNumberList{
+						Iei:    0x34,
+						Len:    3,
+						Buffer: []uint8{0x00, 0x01, 0x02},
+					},
+					ExtendedEmergencyNumberList: &nasType.ExtendedEmergencyNumberList{
+						Iei:    0x7a,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					SORTransparentContainer: &nasType.SORTransparentContainer{
+						Iei:    0x73,
+						Len:    17,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10},
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					NSSAIInclusionMode: &nasType.NSSAIInclusionMode{
+						Octet: nasMessage.RegistrationAcceptNSSAIInclusionModeType << 4,
+					},
+					OperatordefinedAccessCategoryDefinitions: &nasType.OperatordefinedAccessCategoryDefinitions{
+						Iei:    0x76,
+						Len:    0,
+						Buffer: []uint8{},
+					},
+					NegotiatedDRXParameters: &nasType.NegotiatedDRXParameters{
+						Iei:   0x51,
+						Len:   1,
+						Octet: 0x00,
+					},
+					Non3GppNwPolicies: &nasType.Non3GppNwPolicies{
+						Octet: nasMessage.RegistrationAcceptNon3GppNwPoliciesType << 4,
+					},
+					EPSBearerContextStatus: &nasType.EPSBearerContextStatus{
+						Iei:   0x60,
+						Len:   2,
+						Octet: [2]uint8{0x00, 0x01},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxRegistrationComplete",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x43}},
@@ -456,7 +876,31 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "RegistrationReject",
+		name: "MinRegistrationComplete",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x43}},
+				RegistrationComplete: &nasMessage.RegistrationComplete{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					RegistrationCompleteMessageIdentity: nasType.RegistrationCompleteMessageIdentity{
+						Octet: MsgTypeRegistrationComplete,
+					},
+					SORTransparentContainer: &nasType.SORTransparentContainer{
+						Iei:    0x73,
+						Len:    17,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxRegistrationReject",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x44}},
@@ -493,7 +937,44 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "ULNASTransport",
+		name: "MinRegistrationReject",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x44}},
+				RegistrationReject: &nasMessage.RegistrationReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					RegistrationRejectMessageIdentity: nasType.RegistrationRejectMessageIdentity{
+						Octet: MsgTypeRegistrationReject,
+					},
+					Cause5GMM: nasType.Cause5GMM{
+						Octet: 0x00,
+					},
+					T3346Value: &nasType.T3346Value{
+						Iei:   0x5f,
+						Len:   1,
+						Octet: 0x00,
+					},
+					T3502Value: &nasType.T3502Value{
+						Iei:   0x16,
+						Len:   1,
+						Octet: 0x00,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxULNASTransport",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x67}},
@@ -545,7 +1026,59 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "DLNASTransport",
+		name: "MinULNASTransport",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x67}},
+				ULNASTransport: &nasMessage.ULNASTransport{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					ULNASTRANSPORTMessageIdentity: nasType.ULNASTRANSPORTMessageIdentity{
+						Octet: MsgTypeULNASTransport,
+					},
+					SpareHalfOctetAndPayloadContainerType: nasType.SpareHalfOctetAndPayloadContainerType{
+						Octet: 0x00,
+					},
+					PayloadContainer: nasType.PayloadContainer{
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					PduSessionID2Value: &nasType.PduSessionID2Value{
+						Iei:   0x12,
+						Octet: 0x00,
+					},
+					OldPDUSessionID: &nasType.OldPDUSessionID{
+						Iei:   0x59,
+						Octet: 0x00,
+					},
+					RequestType: &nasType.RequestType{
+						Octet: nasMessage.ULNASTransportRequestTypeType << 4,
+					},
+					SNSSAI: &nasType.SNSSAI{
+						Iei:   0x22,
+						Len:   1,
+						Octet: [8]uint8{0x00},
+					},
+					DNN: &nasType.DNN{
+						Iei:    0x25,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					AdditionalInformation: &nasType.AdditionalInformation{
+						Iei:    0x24,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxDLNASTransport",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x68}},
@@ -589,7 +1122,51 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "DeregistrationRequestUEOriginatingDeregistration",
+		name: "MinDLNASTransport",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x68}},
+				DLNASTransport: &nasMessage.DLNASTransport{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					DLNASTRANSPORTMessageIdentity: nasType.DLNASTRANSPORTMessageIdentity{
+						Octet: MsgTypeDLNASTransport,
+					},
+					SpareHalfOctetAndPayloadContainerType: nasType.SpareHalfOctetAndPayloadContainerType{
+						Octet: 0x00,
+					},
+					PayloadContainer: nasType.PayloadContainer{
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					PduSessionID2Value: &nasType.PduSessionID2Value{
+						Iei:   0x12,
+						Octet: 0x00,
+					},
+					AdditionalInformation: &nasType.AdditionalInformation{
+						Iei:    0x24,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					Cause5GMM: &nasType.Cause5GMM{
+						Iei:   0x58,
+						Octet: 0x00,
+					},
+					BackoffTimerValue: &nasType.BackoffTimerValue{
+						Iei:   0x37,
+						Len:   1,
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxDeregistrationRequestUEOriginatingDeregistration",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x45}},
@@ -615,7 +1192,33 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "DeregistrationAcceptUEOriginatingDeregistration",
+		name: "MinDeregistrationRequestUEOriginatingDeregistration",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x45}},
+				DeregistrationRequestUEOriginatingDeregistration: &nasMessage.DeregistrationRequestUEOriginatingDeregistration{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					DeregistrationRequestMessageIdentity: nasType.DeregistrationRequestMessageIdentity{
+						Octet: MsgTypeDeregistrationRequestUEOriginatingDeregistration,
+					},
+					NgksiAndDeregistrationType: nasType.NgksiAndDeregistrationType{
+						Octet: 0x00,
+					},
+					MobileIdentity5GS: nasType.MobileIdentity5GS{
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxDeregistrationAcceptUEOriginatingDeregistration",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x46}},
@@ -634,7 +1237,26 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "DeregistrationRequestUETerminatedDeregistration",
+		name: "MinDeregistrationAcceptUEOriginatingDeregistration",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x46}},
+				DeregistrationAcceptUEOriginatingDeregistration: &nasMessage.DeregistrationAcceptUEOriginatingDeregistration{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					DeregistrationAcceptMessageIdentity: nasType.DeregistrationAcceptMessageIdentity{
+						Octet: MsgTypeDeregistrationAcceptUEOriginatingDeregistration,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxDeregistrationRequestUETerminatedDeregistration",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x47}},
@@ -665,7 +1287,38 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "DeregistrationAcceptUETerminatedDeregistration",
+		name: "MinDeregistrationRequestUETerminatedDeregistration",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x47}},
+				DeregistrationRequestUETerminatedDeregistration: &nasMessage.DeregistrationRequestUETerminatedDeregistration{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					DeregistrationRequestMessageIdentity: nasType.DeregistrationRequestMessageIdentity{
+						Octet: MsgTypeDeregistrationRequestUETerminatedDeregistration,
+					},
+					SpareHalfOctetAndDeregistrationType: nasType.SpareHalfOctetAndDeregistrationType{
+						Octet: 0x00,
+					},
+					Cause5GMM: &nasType.Cause5GMM{
+						Iei:   0x58,
+						Octet: 0x00,
+					},
+					T3346Value: &nasType.T3346Value{
+						Iei:   0x5f,
+						Len:   1,
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxDeregistrationAcceptUETerminatedDeregistration",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x48}},
@@ -684,7 +1337,26 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "ServiceRequest",
+		name: "MinDeregistrationAcceptUETerminatedDeregistration",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x48}},
+				DeregistrationAcceptUETerminatedDeregistration: &nasMessage.DeregistrationAcceptUETerminatedDeregistration{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					DeregistrationAcceptMessageIdentity: nasType.DeregistrationAcceptMessageIdentity{
+						Octet: MsgTypeDeregistrationAcceptUETerminatedDeregistration,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxServiceRequest",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x4c}},
@@ -730,7 +1402,53 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "ServiceAccept",
+		name: "MinServiceRequest",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x4c}},
+				ServiceRequest: &nasMessage.ServiceRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					ServiceRequestMessageIdentity: nasType.ServiceRequestMessageIdentity{
+						Octet: MsgTypeServiceRequest,
+					},
+					ServiceTypeAndNgksi: nasType.ServiceTypeAndNgksi{
+						Octet: 0x00,
+					},
+					TMSI5GS: nasType.TMSI5GS{
+						Len:   7,
+						Octet: [7]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06},
+					},
+					UplinkDataStatus: &nasType.UplinkDataStatus{
+						Iei:    0x40,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					PDUSessionStatus: &nasType.PDUSessionStatus{
+						Iei:    0x50,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					AllowedPDUSessionStatus: &nasType.AllowedPDUSessionStatus{
+						Iei:    0x25,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					NASMessageContainer: &nasType.NASMessageContainer{
+						Iei:    0x71,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxServiceAccept",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x4e}},
@@ -769,7 +1487,46 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "ServiceReject",
+		name: "MinServiceAccept",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x4e}},
+				ServiceAccept: &nasMessage.ServiceAccept{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					ServiceAcceptMessageIdentity: nasType.ServiceAcceptMessageIdentity{
+						Octet: MsgTypeServiceAccept,
+					},
+					PDUSessionStatus: &nasType.PDUSessionStatus{
+						Iei:    0x50,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					PDUSessionReactivationResult: &nasType.PDUSessionReactivationResult{
+						Iei:    0x26,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					PDUSessionReactivationResultErrorCause: &nasType.PDUSessionReactivationResultErrorCause{
+						Iei:    0x72,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxServiceReject",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x4d}},
@@ -806,7 +1563,44 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "ConfigurationUpdateCommand",
+		name: "MinServiceReject",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x4d}},
+				ServiceReject: &nasMessage.ServiceReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					ServiceRejectMessageIdentity: nasType.ServiceRejectMessageIdentity{
+						Octet: MsgTypeServiceReject,
+					},
+					Cause5GMM: nasType.Cause5GMM{
+						Octet: 0x00,
+					},
+					PDUSessionStatus: &nasType.PDUSessionStatus{
+						Iei:    0x50,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					T3346Value: &nasType.T3346Value{
+						Iei:   0x5f,
+						Len:   1,
+						Octet: 0x00,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxConfigurationUpdateCommand",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x54}},
@@ -900,7 +1694,101 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "ConfigurationUpdateComplete",
+		name: "MinConfigurationUpdateCommand",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x54}},
+				ConfigurationUpdateCommand: &nasMessage.ConfigurationUpdateCommand{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					ConfigurationUpdateCommandMessageIdentity: nasType.ConfigurationUpdateCommandMessageIdentity{
+						Octet: MsgTypeConfigurationUpdateCommand,
+					},
+					ConfigurationUpdateIndication: &nasType.ConfigurationUpdateIndication{
+						Octet: nasMessage.ConfigurationUpdateCommandConfigurationUpdateIndicationType << 4,
+					},
+					GUTI5G: &nasType.GUTI5G{
+						Iei:   0x77,
+						Len:   11,
+						Octet: [11]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a},
+					},
+					TAIList: &nasType.TAIList{
+						Iei:    0x54,
+						Len:    7,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06},
+					},
+					AllowedNSSAI: &nasType.AllowedNSSAI{
+						Iei:    0x15,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					ServiceAreaList: &nasType.ServiceAreaList{
+						Iei:    0x27,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					FullNameForNetwork: &nasType.FullNameForNetwork{
+						Iei:    0x43,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					ShortNameForNetwork: &nasType.ShortNameForNetwork{
+						Iei:    0x45,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					LocalTimeZone: &nasType.LocalTimeZone{
+						Iei:   0x46,
+						Octet: 0x00,
+					},
+					UniversalTimeAndLocalTimeZone: &nasType.UniversalTimeAndLocalTimeZone{
+						Iei:   0x47,
+						Octet: [7]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06},
+					},
+					NetworkDaylightSavingTime: &nasType.NetworkDaylightSavingTime{
+						Iei:   0x49,
+						Len:   1,
+						Octet: 0x00,
+					},
+					LADNInformation: &nasType.LADNInformation{
+						Iei:    0x79,
+						Len:    0,
+						Buffer: []uint8{},
+					},
+					MICOIndication: &nasType.MICOIndication{
+						Octet: nasMessage.ConfigurationUpdateCommandMICOIndicationType << 4,
+					},
+					NetworkSlicingIndication: &nasType.NetworkSlicingIndication{
+						Octet: nasMessage.ConfigurationUpdateCommandNetworkSlicingIndicationType << 4,
+					},
+					ConfiguredNSSAI: &nasType.ConfiguredNSSAI{
+						Iei:    0x31,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					RejectedNSSAI: &nasType.RejectedNSSAI{
+						Iei:    0x11,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					OperatordefinedAccessCategoryDefinitions: &nasType.OperatordefinedAccessCategoryDefinitions{
+						Iei:    0x76,
+						Len:    0,
+						Buffer: []uint8{},
+					},
+					SMSIndication: &nasType.SMSIndication{
+						Octet: nasMessage.ConfigurationUpdateCommandSMSIndicationType << 4,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxConfigurationUpdateComplete",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x55}},
@@ -919,7 +1807,26 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "IdentityRequest",
+		name: "MinConfigurationUpdateComplete",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x55}},
+				ConfigurationUpdateComplete: &nasMessage.ConfigurationUpdateComplete{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					ConfigurationUpdateCompleteMessageIdentity: nasType.ConfigurationUpdateCompleteMessageIdentity{
+						Octet: MsgTypeConfigurationUpdateComplete,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxIdentityRequest",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5b}},
@@ -941,7 +1848,29 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "IdentityResponse",
+		name: "MinIdentityRequest",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5b}},
+				IdentityRequest: &nasMessage.IdentityRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					IdentityRequestMessageIdentity: nasType.IdentityRequestMessageIdentity{
+						Octet: MsgTypeIdentityRequest,
+					},
+					SpareHalfOctetAndIdentityType: nasType.SpareHalfOctetAndIdentityType{
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxIdentityResponse",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5c}},
@@ -964,7 +1893,30 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "Notification",
+		name: "MinIdentityResponse",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5c}},
+				IdentityResponse: &nasMessage.IdentityResponse{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					IdentityResponseMessageIdentity: nasType.IdentityResponseMessageIdentity{
+						Octet: MsgTypeIdentityResponse,
+					},
+					MobileIdentity: nasType.MobileIdentity{
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxNotification",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x65}},
@@ -986,7 +1938,29 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "NotificationResponse",
+		name: "MinNotification",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x65}},
+				Notification: &nasMessage.Notification{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					NotificationMessageIdentity: nasType.NotificationMessageIdentity{
+						Octet: MsgTypeNotification,
+					},
+					SpareHalfOctetAndAccessType: nasType.SpareHalfOctetAndAccessType{
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxNotificationResponse",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x66}},
@@ -1010,7 +1984,31 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "SecurityModeCommand",
+		name: "MinNotificationResponse",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x66}},
+				NotificationResponse: &nasMessage.NotificationResponse{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					NotificationResponseMessageIdentity: nasType.NotificationResponseMessageIdentity{
+						Octet: MsgTypeNotificationResponse,
+					},
+					PDUSessionStatus: &nasType.PDUSessionStatus{
+						Iei:    0x50,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxSecurityModeCommand",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5d}},
@@ -1066,7 +2064,63 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "SecurityModeComplete",
+		name: "MinSecurityModeCommand",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5d}},
+				SecurityModeCommand: &nasMessage.SecurityModeCommand{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					SecurityModeCommandMessageIdentity: nasType.SecurityModeCommandMessageIdentity{
+						Octet: MsgTypeSecurityModeCommand,
+					},
+					SelectedNASSecurityAlgorithms: nasType.SelectedNASSecurityAlgorithms{
+						Octet: 0x00,
+					},
+					SpareHalfOctetAndNgksi: nasType.SpareHalfOctetAndNgksi{
+						Octet: 0x00,
+					},
+					ReplayedUESecurityCapabilities: nasType.ReplayedUESecurityCapabilities{
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					IMEISVRequest: &nasType.IMEISVRequest{
+						Octet: nasMessage.SecurityModeCommandIMEISVRequestType << 4,
+					},
+					SelectedEPSNASSecurityAlgorithms: &nasType.SelectedEPSNASSecurityAlgorithms{
+						Iei:   0x57,
+						Octet: 0x00,
+					},
+					Additional5GSecurityInformation: &nasType.Additional5GSecurityInformation{
+						Iei:   0x36,
+						Len:   1,
+						Octet: 0x00,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					ABBA: &nasType.ABBA{
+						Iei:    0x38,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+					ReplayedS1UESecurityCapabilities: &nasType.ReplayedS1UESecurityCapabilities{
+						Iei:    0x19,
+						Len:    2,
+						Buffer: []uint8{0x00, 0x01},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxSecurityModeComplete",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5e}},
@@ -1095,7 +2149,36 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "SecurityModeReject",
+		name: "MinSecurityModeComplete",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5e}},
+				SecurityModeComplete: &nasMessage.SecurityModeComplete{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					SecurityModeCompleteMessageIdentity: nasType.SecurityModeCompleteMessageIdentity{
+						Octet: MsgTypeSecurityModeComplete,
+					},
+					IMEISV: &nasType.IMEISV{
+						Iei:   0x77,
+						Len:   9,
+						Octet: [9]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08},
+					},
+					NASMessageContainer: &nasType.NASMessageContainer{
+						Iei:    0x71,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxSecurityModeReject",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5f}},
@@ -1117,7 +2200,51 @@ var testsGmmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "Status5GMM",
+		name: "MinSecurityModeReject",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x5f}},
+				SecurityModeReject: &nasMessage.SecurityModeReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					SecurityModeRejectMessageIdentity: nasType.SecurityModeRejectMessageIdentity{
+						Octet: MsgTypeSecurityModeReject,
+					},
+					Cause5GMM: nasType.Cause5GMM{
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxStatus5GMM",
+		want: Message{
+			GmmMessage: &GmmMessage{
+				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x64}},
+				Status5GMM: &nasMessage.Status5GMM{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSMobilityManagementMessage,
+					},
+					SpareHalfOctetAndSecurityHeaderType: nasType.SpareHalfOctetAndSecurityHeaderType{
+						Octet: 0x00,
+					},
+					STATUSMessageIdentity5GMM: nasType.STATUSMessageIdentity5GMM{
+						Octet: MsgTypeStatus5GMM,
+					},
+					Cause5GMM: nasType.Cause5GMM{
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MinStatus5GMM",
 		want: Message{
 			GmmMessage: &GmmMessage{
 				GmmHeader: GmmHeader{Octet: [3]uint8{0x7e, 0x00, 0x64}},
@@ -1140,12 +2267,12 @@ var testsGmmMessageLarge = []struct {
 	},
 }
 
-var testsGsmMessageLarge = []struct {
+var testsGsmMessage = []struct {
 	name string
 	want Message
 }{
 	{
-		name: "PDUSessionEstablishmentRequest",
+		name: "MaxPDUSessionEstablishmentRequest",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc1}},
@@ -1198,7 +2325,60 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionEstablishmentAccept",
+		name: "MinPDUSessionEstablishmentRequest",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc1}},
+				PDUSessionEstablishmentRequest: &nasMessage.PDUSessionEstablishmentRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONESTABLISHMENTREQUESTMessageIdentity: nasType.PDUSESSIONESTABLISHMENTREQUESTMessageIdentity{
+						Octet: MsgTypePDUSessionEstablishmentRequest,
+					},
+					IntegrityProtectionMaximumDataRate: nasType.IntegrityProtectionMaximumDataRate{
+						Octet: [2]uint8{0x00, 0x01},
+					},
+					PDUSessionType: &nasType.PDUSessionType{
+						Octet: nasMessage.PDUSessionEstablishmentRequestPDUSessionTypeType << 4,
+					},
+					SSCMode: &nasType.SSCMode{
+						Octet: nasMessage.PDUSessionEstablishmentRequestSSCModeType << 4,
+					},
+					Capability5GSM: &nasType.Capability5GSM{
+						Iei:   0x28,
+						Len:   1,
+						Octet: [13]uint8{0x00},
+					},
+					MaximumNumberOfSupportedPacketFilters: &nasType.MaximumNumberOfSupportedPacketFilters{
+						Iei:   0x55,
+						Octet: [2]uint8{0x00, 0x01},
+					},
+					AlwaysonPDUSessionRequested: &nasType.AlwaysonPDUSessionRequested{
+						Octet: nasMessage.PDUSessionEstablishmentRequestAlwaysonPDUSessionRequestedType << 4,
+					},
+					SMPDUDNRequestContainer: &nasType.SMPDUDNRequestContainer{
+						Iei:    0x39,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionEstablishmentAccept",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc2}},
@@ -1277,7 +2457,86 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionEstablishmentReject",
+		name: "MinPDUSessionEstablishmentAccept",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc2}},
+				PDUSessionEstablishmentAccept: &nasMessage.PDUSessionEstablishmentAccept{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONESTABLISHMENTACCEPTMessageIdentity: nasType.PDUSESSIONESTABLISHMENTACCEPTMessageIdentity{
+						Octet: MsgTypePDUSessionEstablishmentAccept,
+					},
+					SelectedSSCModeAndSelectedPDUSessionType: nasType.SelectedSSCModeAndSelectedPDUSessionType{
+						Octet: 0x00,
+					},
+					AuthorizedQosRules: nasType.AuthorizedQosRules{
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					SessionAMBR: nasType.SessionAMBR{
+						Len:   6,
+						Octet: [6]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05},
+					},
+					Cause5GSM: &nasType.Cause5GSM{
+						Iei:   0x59,
+						Octet: 0x00,
+					},
+					PDUAddress: &nasType.PDUAddress{
+						Iei:   0x29,
+						Len:   5,
+						Octet: [13]uint8{0x00, 0x01, 0x02, 0x03, 0x04},
+					},
+					RQTimerValue: &nasType.RQTimerValue{
+						Iei:   0x56,
+						Octet: 0x00,
+					},
+					SNSSAI: &nasType.SNSSAI{
+						Iei:   0x22,
+						Len:   1,
+						Octet: [8]uint8{0x00},
+					},
+					AlwaysonPDUSessionIndication: &nasType.AlwaysonPDUSessionIndication{
+						Octet: nasMessage.PDUSessionEstablishmentAcceptAlwaysonPDUSessionIndicationType << 4,
+					},
+					MappedEPSBearerContexts: &nasType.MappedEPSBearerContexts{
+						Iei:    0x75,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					AuthorizedQosFlowDescriptions: &nasType.AuthorizedQosFlowDescriptions{
+						Iei:    0x79,
+						Len:    3,
+						Buffer: []uint8{0x00, 0x01, 0x02},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+					DNN: &nasType.DNN{
+						Iei:    0x25,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionEstablishmentReject",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc3}},
@@ -1325,7 +2584,55 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionAuthenticationCommand",
+		name: "MinPDUSessionEstablishmentReject",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc3}},
+				PDUSessionEstablishmentReject: &nasMessage.PDUSessionEstablishmentReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONESTABLISHMENTREJECTMessageIdentity: nasType.PDUSESSIONESTABLISHMENTREJECTMessageIdentity{
+						Octet: MsgTypePDUSessionEstablishmentReject,
+					},
+					Cause5GSM: nasType.Cause5GSM{
+						Octet: 0x00,
+					},
+					BackoffTimerValue: &nasType.BackoffTimerValue{
+						Iei:   0x37,
+						Len:   1,
+						Octet: 0x00,
+					},
+					AllowedSSCMode: &nasType.AllowedSSCMode{
+						Octet: nasMessage.PDUSessionEstablishmentRejectAllowedSSCModeType << 4,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					CongestionReattemptIndicator5GSM: &nasType.CongestionReattemptIndicator5GSM{
+						Iei:   0x61,
+						Len:   1,
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionAuthenticationCommand",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc5}},
@@ -1356,7 +2663,38 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionAuthenticationComplete",
+		name: "MinPDUSessionAuthenticationCommand",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc5}},
+				PDUSessionAuthenticationCommand: &nasMessage.PDUSessionAuthenticationCommand{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONAUTHENTICATIONCOMMANDMessageIdentity: nasType.PDUSESSIONAUTHENTICATIONCOMMANDMessageIdentity{
+						Octet: MsgTypePDUSessionAuthenticationCommand,
+					},
+					EAPMessage: nasType.EAPMessage{
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionAuthenticationComplete",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc6}},
@@ -1387,7 +2725,38 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionAuthenticationResult",
+		name: "MinPDUSessionAuthenticationComplete",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc6}},
+				PDUSessionAuthenticationComplete: &nasMessage.PDUSessionAuthenticationComplete{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONAUTHENTICATIONCOMPLETEMessageIdentity: nasType.PDUSESSIONAUTHENTICATIONCOMPLETEMessageIdentity{
+						Octet: MsgTypePDUSessionAuthenticationComplete,
+					},
+					EAPMessage: nasType.EAPMessage{
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionAuthenticationResult",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc7}},
@@ -1419,7 +2788,39 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionModificationRequest",
+		name: "MinPDUSessionAuthenticationResult",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc7}},
+				PDUSessionAuthenticationResult: &nasMessage.PDUSessionAuthenticationResult{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONAUTHENTICATIONRESULTMessageIdentity: nasType.PDUSESSIONAUTHENTICATIONRESULTMessageIdentity{
+						Octet: MsgTypePDUSessionAuthenticationResult,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionModificationRequest",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc9}},
@@ -1481,7 +2882,69 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionModificationReject",
+		name: "MinPDUSessionModificationRequest",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xc9}},
+				PDUSessionModificationRequest: &nasMessage.PDUSessionModificationRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONMODIFICATIONREQUESTMessageIdentity: nasType.PDUSESSIONMODIFICATIONREQUESTMessageIdentity{
+						Octet: MsgTypePDUSessionModificationRequest,
+					},
+					Capability5GSM: &nasType.Capability5GSM{
+						Iei:   0x28,
+						Len:   1,
+						Octet: [13]uint8{0x00},
+					},
+					Cause5GSM: &nasType.Cause5GSM{
+						Iei:   0x59,
+						Octet: 0x00,
+					},
+					MaximumNumberOfSupportedPacketFilters: &nasType.MaximumNumberOfSupportedPacketFilters{
+						Iei:   0x55,
+						Octet: [2]uint8{0x00, 0x01},
+					},
+					AlwaysonPDUSessionRequested: &nasType.AlwaysonPDUSessionRequested{
+						Octet: nasMessage.PDUSessionModificationRequestAlwaysonPDUSessionRequestedType << 4,
+					},
+					IntegrityProtectionMaximumDataRate: &nasType.IntegrityProtectionMaximumDataRate{
+						Iei:   0x13,
+						Octet: [2]uint8{0x00, 0x01},
+					},
+					RequestedQosRules: &nasType.RequestedQosRules{
+						Iei:    0x7a,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					RequestedQosFlowDescriptions: &nasType.RequestedQosFlowDescriptions{
+						Iei:    0x79,
+						Len:    3,
+						Buffer: []uint8{0x00, 0x01, 0x02},
+					},
+					MappedEPSBearerContexts: &nasType.MappedEPSBearerContexts{
+						Iei:    0x75,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionModificationReject",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xca}},
@@ -1521,7 +2984,47 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionModificationCommand",
+		name: "MinPDUSessionModificationReject",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xca}},
+				PDUSessionModificationReject: &nasMessage.PDUSessionModificationReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONMODIFICATIONREJECTMessageIdentity: nasType.PDUSESSIONMODIFICATIONREJECTMessageIdentity{
+						Octet: MsgTypePDUSessionModificationReject,
+					},
+					Cause5GSM: nasType.Cause5GSM{
+						Octet: 0x00,
+					},
+					BackoffTimerValue: &nasType.BackoffTimerValue{
+						Iei:   0x37,
+						Len:   1,
+						Octet: 0x00,
+					},
+					CongestionReattemptIndicator5GSM: &nasType.CongestionReattemptIndicator5GSM{
+						Iei:   0x61,
+						Len:   1,
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionModificationCommand",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xcb}},
@@ -1579,7 +3082,65 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionModificationComplete",
+		name: "MinPDUSessionModificationCommand",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xcb}},
+				PDUSessionModificationCommand: &nasMessage.PDUSessionModificationCommand{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONMODIFICATIONCOMMANDMessageIdentity: nasType.PDUSESSIONMODIFICATIONCOMMANDMessageIdentity{
+						Octet: MsgTypePDUSessionModificationCommand,
+					},
+					Cause5GSM: &nasType.Cause5GSM{
+						Iei:   0x59,
+						Octet: 0x00,
+					},
+					SessionAMBR: &nasType.SessionAMBR{
+						Iei:   0x2a,
+						Len:   6,
+						Octet: [6]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05},
+					},
+					RQTimerValue: &nasType.RQTimerValue{
+						Iei:   0x56,
+						Octet: 0x00,
+					},
+					AlwaysonPDUSessionIndication: &nasType.AlwaysonPDUSessionIndication{
+						Octet: nasMessage.PDUSessionModificationCommandAlwaysonPDUSessionIndicationType << 4,
+					},
+					AuthorizedQosRules: &nasType.AuthorizedQosRules{
+						Iei:    0x7a,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					MappedEPSBearerContexts: &nasType.MappedEPSBearerContexts{
+						Iei:    0x75,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					AuthorizedQosFlowDescriptions: &nasType.AuthorizedQosFlowDescriptions{
+						Iei:    0x79,
+						Len:    3,
+						Buffer: []uint8{0x00, 0x01, 0x02},
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionModificationComplete",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xcc}},
@@ -1606,7 +3167,34 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionModificationCommandReject",
+		name: "MinPDUSessionModificationComplete",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xcc}},
+				PDUSessionModificationComplete: &nasMessage.PDUSessionModificationComplete{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONMODIFICATIONCOMPLETEMessageIdentity: nasType.PDUSESSIONMODIFICATIONCOMPLETEMessageIdentity{
+						Octet: MsgTypePDUSessionModificationComplete,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionModificationCommandReject",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xcd}},
@@ -1636,7 +3224,37 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionReleaseRequest",
+		name: "MinPDUSessionModificationCommandReject",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xcd}},
+				PDUSessionModificationCommandReject: &nasMessage.PDUSessionModificationCommandReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONMODIFICATIONCOMMANDREJECTMessageIdentity: nasType.PDUSESSIONMODIFICATIONCOMMANDREJECTMessageIdentity{
+						Octet: MsgTypePDUSessionModificationCommandReject,
+					},
+					Cause5GSM: nasType.Cause5GSM{
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionReleaseRequest",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd1}},
@@ -1667,7 +3285,38 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionReleaseReject",
+		name: "MinPDUSessionReleaseRequest",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd1}},
+				PDUSessionReleaseRequest: &nasMessage.PDUSessionReleaseRequest{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONRELEASEREQUESTMessageIdentity: nasType.PDUSESSIONRELEASEREQUESTMessageIdentity{
+						Octet: MsgTypePDUSessionReleaseRequest,
+					},
+					Cause5GSM: &nasType.Cause5GSM{
+						Iei:   0x59,
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionReleaseReject",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd2}},
@@ -1697,7 +3346,37 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionReleaseCommand",
+		name: "MinPDUSessionReleaseReject",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd2}},
+				PDUSessionReleaseReject: &nasMessage.PDUSessionReleaseReject{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONRELEASEREJECTMessageIdentity: nasType.PDUSESSIONRELEASEREJECTMessageIdentity{
+						Octet: MsgTypePDUSessionReleaseReject,
+					},
+					Cause5GSM: nasType.Cause5GSM{
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionReleaseCommand",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd3}},
@@ -1742,7 +3421,52 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "PDUSessionReleaseComplete",
+		name: "MinPDUSessionReleaseCommand",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd3}},
+				PDUSessionReleaseCommand: &nasMessage.PDUSessionReleaseCommand{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONRELEASECOMMANDMessageIdentity: nasType.PDUSESSIONRELEASECOMMANDMessageIdentity{
+						Octet: MsgTypePDUSessionReleaseCommand,
+					},
+					Cause5GSM: nasType.Cause5GSM{
+						Octet: 0x00,
+					},
+					BackoffTimerValue: &nasType.BackoffTimerValue{
+						Iei:   0x37,
+						Len:   1,
+						Octet: 0x00,
+					},
+					EAPMessage: &nasType.EAPMessage{
+						Iei:    0x78,
+						Len:    4,
+						Buffer: []uint8{0x00, 0x01, 0x02, 0x03},
+					},
+					CongestionReattemptIndicator5GSM: &nasType.CongestionReattemptIndicator5GSM{
+						Iei:   0x61,
+						Len:   1,
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxPDUSessionReleaseComplete",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd4}},
@@ -1773,7 +3497,63 @@ var testsGsmMessageLarge = []struct {
 		},
 	},
 	{
-		name: "Status5GSM",
+		name: "MinPDUSessionReleaseComplete",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd4}},
+				PDUSessionReleaseComplete: &nasMessage.PDUSessionReleaseComplete{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					PDUSESSIONRELEASECOMPLETEMessageIdentity: nasType.PDUSESSIONRELEASECOMPLETEMessageIdentity{
+						Octet: MsgTypePDUSessionReleaseComplete,
+					},
+					Cause5GSM: &nasType.Cause5GSM{
+						Iei:   0x59,
+						Octet: 0x00,
+					},
+					ExtendedProtocolConfigurationOptions: &nasType.ExtendedProtocolConfigurationOptions{
+						Iei:    0x7b,
+						Len:    1,
+						Buffer: []uint8{0x00},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MaxStatus5GSM",
+		want: Message{
+			GsmMessage: &GsmMessage{
+				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd6}},
+				Status5GSM: &nasMessage.Status5GSM{
+					ExtendedProtocolDiscriminator: nasType.ExtendedProtocolDiscriminator{
+						Octet: nasMessage.Epd5GSSessionManagementMessage,
+					},
+					PDUSessionID: nasType.PDUSessionID{
+						Octet: 0x00,
+					},
+					PTI: nasType.PTI{
+						Octet: 0x00,
+					},
+					STATUSMessageIdentity5GSM: nasType.STATUSMessageIdentity5GSM{
+						Octet: MsgTypeStatus5GSM,
+					},
+					Cause5GSM: nasType.Cause5GSM{
+						Octet: 0x00,
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "MinStatus5GSM",
 		want: Message{
 			GsmMessage: &GsmMessage{
 				GsmHeader: GsmHeader{Octet: [4]uint8{0x2e, 0x00, 0x00, 0xd6}},

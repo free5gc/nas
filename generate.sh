@@ -15,8 +15,8 @@ if [ ! -f spec.csv ] ; then
     python3 internal/tools/extract.py
 fi
 
-rm -rf testdata/GmmMessageLarge testdata/GsmMessageLarge
-mkdir -p testdata/GmmMessageLarge testdata/GsmMessageLarge
+rm -rf testdata/GmmMessage testdata/GsmMessage
+mkdir -p testdata/GmmMessage testdata/GsmMessage
 ls nasMessage/*go | grep -v "_test" | grep -v "NAS_EPD" | grep -v "NAS_CommInfoIE" |  xargs rm -f
 go run internal/tools/generator_sub.go
 go run internal/tools/generator/cmd/cmd.go
