@@ -3,6 +3,7 @@ package generator
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"reflect"
@@ -204,6 +205,33 @@ func GenerateTestLarge() {
 
 					if err := fData.Close(); err != nil {
 						panic(err)
+					}
+
+					if !isMax {
+						fData, err = os.Open("testdata/" + gmmGsm + "Message/" + minMax + msgDef.structName)
+						if err != nil {
+							panic(err)
+						}
+						data, err := io.ReadAll(fData)
+						if err != nil {
+							panic(err)
+						}
+						if err := fData.Close(); err != nil {
+							panic(err)
+						}
+						fFuzz, err := os.Create("testdata/fuzz/Fuzz" + gmmGsm + "MessageDecode/msg" + msgDef.structName)
+						if err != nil {
+							panic(err)
+						}
+						fmt.Fprintf(fFuzz, "go test fuzz v1\n")
+						fmt.Fprintf(fFuzz, "[]byte(\"")
+						for _, b := range data {
+							fmt.Fprintf(fFuzz, "\\x%02x", b)
+						}
+						fmt.Fprintf(fFuzz, "\")\n")
+						if err := fFuzz.Close(); err != nil {
+							panic(err)
+						}
 					}
 				}
 			}

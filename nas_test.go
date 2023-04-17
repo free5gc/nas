@@ -58,6 +58,8 @@ func TestGmmMessage(t *testing.T) {
 			require.NoError(t, err)
 			data, err := io.ReadAll(fData)
 			require.NoError(t, err)
+			err = fData.Close()
+			require.NoError(t, err)
 			var msg Message
 			err = msg.GmmMessageDecode(&data)
 			if assert.NoError(t, err) {
@@ -80,6 +82,8 @@ func TestGsmMessage(t *testing.T) {
 			fData, err := os.Open("testdata/GsmMessage/" + tt.name)
 			require.NoError(t, err)
 			data, err := io.ReadAll(fData)
+			require.NoError(t, err)
+			err = fData.Close()
 			require.NoError(t, err)
 			var msg Message
 			err = msg.GsmMessageDecode(&data)

@@ -17,6 +17,7 @@ fi
 
 rm -rf testdata/GmmMessage testdata/GsmMessage
 mkdir -p testdata/GmmMessage testdata/GsmMessage
+rm -f testdata/fuzz/FuzzGmmMessageDecode/msg* testdata/fuzz/FuzzGsmMessageDecode/msg*
 ls nasMessage/*go | grep -v "_test" | grep -v "NAS_EPD" | grep -v "NAS_CommInfoIE" |  xargs rm -f
 go run internal/tools/generator_sub.go
 go run internal/tools/generator/cmd/cmd.go
