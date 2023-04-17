@@ -23,16 +23,16 @@ func NewSecurityModeReject(iei uint8) (securityModeReject *SecurityModeReject) {
 }
 
 func (a *SecurityModeReject) EncodeSecurityModeReject(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityModeReject/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityModeReject/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SecurityModeRejectMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SecurityModeRejectMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityModeReject/SecurityModeRejectMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.Cause5GMM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityModeReject/Cause5GMM): %w", err)
 	}
 	return nil

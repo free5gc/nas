@@ -27,13 +27,13 @@ const (
 )
 
 func (a *AuthenticationReject) EncodeAuthenticationReject(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationReject/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationReject/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.AuthenticationRejectMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationRejectMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationReject/AuthenticationRejectMessageIdentity): %w", err)
 	}
 	if a.EAPMessage != nil {
@@ -43,7 +43,7 @@ func (a *AuthenticationReject) EncodeAuthenticationReject(buffer *bytes.Buffer) 
 		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationReject/EAPMessage): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationReject/EAPMessage): %w", err)
 		}
 	}
@@ -84,7 +84,7 @@ func (a *AuthenticationReject) DecodeAuthenticationReject(byteArray *[]byte) err
 				return fmt.Errorf("invalid ie length (AuthenticationReject/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationReject/EAPMessage): %w", err)
 			}
 		default:

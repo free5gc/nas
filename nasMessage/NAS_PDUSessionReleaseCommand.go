@@ -35,19 +35,19 @@ const (
 )
 
 func (a *PDUSessionReleaseCommand) EncodePDUSessionReleaseCommand(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.PDUSessionID.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionID.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/PDUSessionID): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.PTI.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.PTI.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/PTI): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.PDUSESSIONRELEASECOMMANDMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.PDUSESSIONRELEASECOMMANDMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/PDUSESSIONRELEASECOMMANDMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GSM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.Cause5GSM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/Cause5GSM): %w", err)
 	}
 	if a.BackoffTimerValue != nil {
@@ -57,7 +57,7 @@ func (a *PDUSessionReleaseCommand) EncodePDUSessionReleaseCommand(buffer *bytes.
 		if err := binary.Write(buffer, binary.BigEndian, a.BackoffTimerValue.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/BackoffTimerValue): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.BackoffTimerValue.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.BackoffTimerValue.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/BackoffTimerValue): %w", err)
 		}
 	}
@@ -68,7 +68,7 @@ func (a *PDUSessionReleaseCommand) EncodePDUSessionReleaseCommand(buffer *bytes.
 		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/EAPMessage): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/EAPMessage): %w", err)
 		}
 	}
@@ -79,7 +79,7 @@ func (a *PDUSessionReleaseCommand) EncodePDUSessionReleaseCommand(buffer *bytes.
 		if err := binary.Write(buffer, binary.BigEndian, a.CongestionReattemptIndicator5GSM.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.CongestionReattemptIndicator5GSM.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.CongestionReattemptIndicator5GSM.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/CongestionReattemptIndicator5GSM): %w", err)
 		}
 	}
@@ -90,7 +90,7 @@ func (a *PDUSessionReleaseCommand) EncodePDUSessionReleaseCommand(buffer *bytes.
 		if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/ExtendedProtocolConfigurationOptions): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolConfigurationOptions.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (PDUSessionReleaseCommand/ExtendedProtocolConfigurationOptions): %w", err)
 		}
 	}
@@ -149,7 +149,7 @@ func (a *PDUSessionReleaseCommand) DecodePDUSessionReleaseCommand(byteArray *[]b
 				return fmt.Errorf("invalid ie length (PDUSessionReleaseCommand/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionReleaseCommand/EAPMessage): %w", err)
 			}
 		case PDUSessionReleaseCommandCongestionReattemptIndicator5GSMType:
@@ -173,7 +173,7 @@ func (a *PDUSessionReleaseCommand) DecodePDUSessionReleaseCommand(byteArray *[]b
 				return fmt.Errorf("invalid ie length (PDUSessionReleaseCommand/ExtendedProtocolConfigurationOptions): %d", a.ExtendedProtocolConfigurationOptions.Len)
 			}
 			a.ExtendedProtocolConfigurationOptions.SetLen(a.ExtendedProtocolConfigurationOptions.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer[:a.ExtendedProtocolConfigurationOptions.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.ExtendedProtocolConfigurationOptions.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (PDUSessionReleaseCommand/ExtendedProtocolConfigurationOptions): %w", err)
 			}
 		default:

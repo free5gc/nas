@@ -23,16 +23,16 @@ func NewStatus5GMM(iei uint8) (status5GMM *Status5GMM) {
 }
 
 func (a *Status5GMM) EncodeStatus5GMM(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GMM/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GMM/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.STATUSMessageIdentity5GMM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.STATUSMessageIdentity5GMM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GMM/STATUSMessageIdentity5GMM): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.Cause5GMM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GMM/Cause5GMM): %w", err)
 	}
 	return nil

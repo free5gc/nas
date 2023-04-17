@@ -22,13 +22,13 @@ func NewDeregistrationAcceptUEOriginatingDeregistration(iei uint8) (deregistrati
 }
 
 func (a *DeregistrationAcceptUEOriginatingDeregistration) EncodeDeregistrationAcceptUEOriginatingDeregistration(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationAcceptUEOriginatingDeregistration/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationAcceptUEOriginatingDeregistration/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.DeregistrationAcceptMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.DeregistrationAcceptMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationAcceptUEOriginatingDeregistration/DeregistrationAcceptMessageIdentity): %w", err)
 	}
 	return nil

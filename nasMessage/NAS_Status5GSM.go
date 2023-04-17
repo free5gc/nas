@@ -24,19 +24,19 @@ func NewStatus5GSM(iei uint8) (status5GSM *Status5GSM) {
 }
 
 func (a *Status5GSM) EncodeStatus5GSM(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GSM/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.PDUSessionID.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.PDUSessionID.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GSM/PDUSessionID): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.PTI.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.PTI.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GSM/PTI): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.STATUSMessageIdentity5GSM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.STATUSMessageIdentity5GSM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GSM/STATUSMessageIdentity5GSM): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GSM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.Cause5GSM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Status5GSM/Cause5GSM): %w", err)
 	}
 	return nil

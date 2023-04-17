@@ -23,16 +23,16 @@ func NewIdentityRequest(iei uint8) (identityRequest *IdentityRequest) {
 }
 
 func (a *IdentityRequest) EncodeIdentityRequest(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityRequest/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityRequest/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.IdentityRequestMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.IdentityRequestMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityRequest/IdentityRequestMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndIdentityType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndIdentityType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityRequest/SpareHalfOctetAndIdentityType): %w", err)
 	}
 	return nil

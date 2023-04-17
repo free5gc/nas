@@ -22,13 +22,13 @@ func NewConfigurationUpdateComplete(iei uint8) (configurationUpdateComplete *Con
 }
 
 func (a *ConfigurationUpdateComplete) EncodeConfigurationUpdateComplete(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ConfigurationUpdateComplete/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ConfigurationUpdateComplete/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.ConfigurationUpdateCompleteMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ConfigurationUpdateCompleteMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ConfigurationUpdateComplete/ConfigurationUpdateCompleteMessageIdentity): %w", err)
 	}
 	return nil

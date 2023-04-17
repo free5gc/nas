@@ -59,17 +59,17 @@ const (
 )
 
 func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.ConfigurationUpdateCommandMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ConfigurationUpdateCommandMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ConfigurationUpdateCommandMessageIdentity): %w", err)
 	}
 	if a.ConfigurationUpdateIndication != nil {
-		if err := binary.Write(buffer, binary.BigEndian, &a.ConfigurationUpdateIndication.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.ConfigurationUpdateIndication.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ConfigurationUpdateIndication): %w", err)
 		}
 	}
@@ -80,7 +80,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.GUTI5G.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/GUTI5G): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, a.GUTI5G.Octet[:a.GUTI5G.GetLen()]); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.GUTI5G.Octet[:]); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/GUTI5G): %w", err)
 		}
 	}
@@ -91,7 +91,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.TAIList.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/TAIList): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.TAIList.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.TAIList.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/TAIList): %w", err)
 		}
 	}
@@ -102,7 +102,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.AllowedNSSAI.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/AllowedNSSAI): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.AllowedNSSAI.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.AllowedNSSAI.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/AllowedNSSAI): %w", err)
 		}
 	}
@@ -113,7 +113,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.ServiceAreaList.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ServiceAreaList): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.ServiceAreaList.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.ServiceAreaList.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ServiceAreaList): %w", err)
 		}
 	}
@@ -124,7 +124,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.FullNameForNetwork.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/FullNameForNetwork): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.FullNameForNetwork.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.FullNameForNetwork.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/FullNameForNetwork): %w", err)
 		}
 	}
@@ -135,7 +135,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.ShortNameForNetwork.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ShortNameForNetwork): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.ShortNameForNetwork.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.ShortNameForNetwork.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ShortNameForNetwork): %w", err)
 		}
 	}
@@ -143,7 +143,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.LocalTimeZone.GetIei()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/LocalTimeZone): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.LocalTimeZone.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.LocalTimeZone.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/LocalTimeZone): %w", err)
 		}
 	}
@@ -151,7 +151,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.UniversalTimeAndLocalTimeZone.GetIei()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/UniversalTimeAndLocalTimeZone): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.UniversalTimeAndLocalTimeZone.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.UniversalTimeAndLocalTimeZone.Octet[:]); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/UniversalTimeAndLocalTimeZone): %w", err)
 		}
 	}
@@ -162,7 +162,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.NetworkDaylightSavingTime.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/NetworkDaylightSavingTime): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.NetworkDaylightSavingTime.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.NetworkDaylightSavingTime.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/NetworkDaylightSavingTime): %w", err)
 		}
 	}
@@ -173,17 +173,17 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.LADNInformation.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/LADNInformation): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.LADNInformation.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.LADNInformation.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/LADNInformation): %w", err)
 		}
 	}
 	if a.MICOIndication != nil {
-		if err := binary.Write(buffer, binary.BigEndian, &a.MICOIndication.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.MICOIndication.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/MICOIndication): %w", err)
 		}
 	}
 	if a.NetworkSlicingIndication != nil {
-		if err := binary.Write(buffer, binary.BigEndian, &a.NetworkSlicingIndication.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.NetworkSlicingIndication.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/NetworkSlicingIndication): %w", err)
 		}
 	}
@@ -194,7 +194,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.ConfiguredNSSAI.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ConfiguredNSSAI): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.ConfiguredNSSAI.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.ConfiguredNSSAI.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/ConfiguredNSSAI): %w", err)
 		}
 	}
@@ -205,7 +205,7 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.RejectedNSSAI.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/RejectedNSSAI): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.RejectedNSSAI.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.RejectedNSSAI.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/RejectedNSSAI): %w", err)
 		}
 	}
@@ -216,12 +216,12 @@ func (a *ConfigurationUpdateCommand) EncodeConfigurationUpdateCommand(buffer *by
 		if err := binary.Write(buffer, binary.BigEndian, a.OperatordefinedAccessCategoryDefinitions.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/OperatordefinedAccessCategoryDefinitions): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.OperatordefinedAccessCategoryDefinitions.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.OperatordefinedAccessCategoryDefinitions.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/OperatordefinedAccessCategoryDefinitions): %w", err)
 		}
 	}
 	if a.SMSIndication != nil {
-		if err := binary.Write(buffer, binary.BigEndian, &a.SMSIndication.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.SMSIndication.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ConfigurationUpdateCommand/SMSIndication): %w", err)
 		}
 	}
@@ -265,7 +265,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/GUTI5G): %d", a.GUTI5G.Len)
 			}
 			a.GUTI5G.SetLen(a.GUTI5G.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.GUTI5G.Octet[:a.GUTI5G.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.GUTI5G.Octet[:]); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/GUTI5G): %w", err)
 			}
 		case ConfigurationUpdateCommandTAIListType:
@@ -277,7 +277,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/TAIList): %d", a.TAIList.Len)
 			}
 			a.TAIList.SetLen(a.TAIList.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.TAIList.Buffer[:a.TAIList.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.TAIList.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/TAIList): %w", err)
 			}
 		case ConfigurationUpdateCommandAllowedNSSAIType:
@@ -289,7 +289,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/AllowedNSSAI): %d", a.AllowedNSSAI.Len)
 			}
 			a.AllowedNSSAI.SetLen(a.AllowedNSSAI.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.AllowedNSSAI.Buffer[:a.AllowedNSSAI.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.AllowedNSSAI.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/AllowedNSSAI): %w", err)
 			}
 		case ConfigurationUpdateCommandServiceAreaListType:
@@ -301,7 +301,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/ServiceAreaList): %d", a.ServiceAreaList.Len)
 			}
 			a.ServiceAreaList.SetLen(a.ServiceAreaList.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.ServiceAreaList.Buffer[:a.ServiceAreaList.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.ServiceAreaList.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/ServiceAreaList): %w", err)
 			}
 		case ConfigurationUpdateCommandFullNameForNetworkType:
@@ -313,7 +313,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/FullNameForNetwork): %d", a.FullNameForNetwork.Len)
 			}
 			a.FullNameForNetwork.SetLen(a.FullNameForNetwork.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.FullNameForNetwork.Buffer[:a.FullNameForNetwork.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.FullNameForNetwork.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/FullNameForNetwork): %w", err)
 			}
 		case ConfigurationUpdateCommandShortNameForNetworkType:
@@ -325,7 +325,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/ShortNameForNetwork): %d", a.ShortNameForNetwork.Len)
 			}
 			a.ShortNameForNetwork.SetLen(a.ShortNameForNetwork.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.ShortNameForNetwork.Buffer[:a.ShortNameForNetwork.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.ShortNameForNetwork.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/ShortNameForNetwork): %w", err)
 			}
 		case ConfigurationUpdateCommandLocalTimeZoneType:
@@ -335,7 +335,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 			}
 		case ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType:
 			a.UniversalTimeAndLocalTimeZone = nasType.NewUniversalTimeAndLocalTimeZone(ieiN)
-			if err := binary.Read(buffer, binary.BigEndian, &a.UniversalTimeAndLocalTimeZone.Octet); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.UniversalTimeAndLocalTimeZone.Octet[:]); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/UniversalTimeAndLocalTimeZone): %w", err)
 			}
 		case ConfigurationUpdateCommandNetworkDaylightSavingTimeType:
@@ -359,7 +359,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/LADNInformation): %d", a.LADNInformation.Len)
 			}
 			a.LADNInformation.SetLen(a.LADNInformation.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.LADNInformation.Buffer[:a.LADNInformation.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.LADNInformation.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/LADNInformation): %w", err)
 			}
 		case ConfigurationUpdateCommandMICOIndicationType:
@@ -377,7 +377,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/ConfiguredNSSAI): %d", a.ConfiguredNSSAI.Len)
 			}
 			a.ConfiguredNSSAI.SetLen(a.ConfiguredNSSAI.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.ConfiguredNSSAI.Buffer[:a.ConfiguredNSSAI.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.ConfiguredNSSAI.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/ConfiguredNSSAI): %w", err)
 			}
 		case ConfigurationUpdateCommandRejectedNSSAIType:
@@ -389,7 +389,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("invalid ie length (ConfigurationUpdateCommand/RejectedNSSAI): %d", a.RejectedNSSAI.Len)
 			}
 			a.RejectedNSSAI.SetLen(a.RejectedNSSAI.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.RejectedNSSAI.Buffer[:a.RejectedNSSAI.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.RejectedNSSAI.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/RejectedNSSAI): %w", err)
 			}
 		case ConfigurationUpdateCommandOperatordefinedAccessCategoryDefinitionsType:
@@ -398,7 +398,7 @@ func (a *ConfigurationUpdateCommand) DecodeConfigurationUpdateCommand(byteArray 
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/OperatordefinedAccessCategoryDefinitions): %w", err)
 			}
 			a.OperatordefinedAccessCategoryDefinitions.SetLen(a.OperatordefinedAccessCategoryDefinitions.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.OperatordefinedAccessCategoryDefinitions.Buffer[:a.OperatordefinedAccessCategoryDefinitions.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.OperatordefinedAccessCategoryDefinitions.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ConfigurationUpdateCommand/OperatordefinedAccessCategoryDefinitions): %w", err)
 			}
 		case ConfigurationUpdateCommandSMSIndicationType:

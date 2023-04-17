@@ -23,16 +23,16 @@ func NewNotification(iei uint8) (notification *Notification) {
 }
 
 func (a *Notification) EncodeNotification(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Notification/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Notification/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.NotificationMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.NotificationMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Notification/NotificationMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndAccessType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndAccessType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (Notification/SpareHalfOctetAndAccessType): %w", err)
 	}
 	return nil

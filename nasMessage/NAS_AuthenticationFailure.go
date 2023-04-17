@@ -28,16 +28,16 @@ const (
 )
 
 func (a *AuthenticationFailure) EncodeAuthenticationFailure(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationFailure/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationFailure/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.AuthenticationFailureMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationFailureMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationFailure/AuthenticationFailureMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.Cause5GMM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationFailure/Cause5GMM): %w", err)
 	}
 	if a.AuthenticationFailureParameter != nil {
@@ -47,7 +47,7 @@ func (a *AuthenticationFailure) EncodeAuthenticationFailure(buffer *bytes.Buffer
 		if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationFailureParameter.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationFailure/AuthenticationFailureParameter): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationFailureParameter.Octet[:a.AuthenticationFailureParameter.GetLen()]); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationFailureParameter.Octet[:]); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationFailure/AuthenticationFailureParameter): %w", err)
 		}
 	}
@@ -91,7 +91,7 @@ func (a *AuthenticationFailure) DecodeAuthenticationFailure(byteArray *[]byte) e
 				return fmt.Errorf("invalid ie length (AuthenticationFailure/AuthenticationFailureParameter): %d", a.AuthenticationFailureParameter.Len)
 			}
 			a.AuthenticationFailureParameter.SetLen(a.AuthenticationFailureParameter.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.AuthenticationFailureParameter.Octet[:a.AuthenticationFailureParameter.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.AuthenticationFailureParameter.Octet[:]); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationFailure/AuthenticationFailureParameter): %w", err)
 			}
 		default:

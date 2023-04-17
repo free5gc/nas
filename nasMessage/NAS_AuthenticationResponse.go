@@ -29,13 +29,13 @@ const (
 )
 
 func (a *AuthenticationResponse) EncodeAuthenticationResponse(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationResponse/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationResponse/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.AuthenticationResponseMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationResponseMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (AuthenticationResponse/AuthenticationResponseMessageIdentity): %w", err)
 	}
 	if a.AuthenticationResponseParameter != nil {
@@ -45,7 +45,7 @@ func (a *AuthenticationResponse) EncodeAuthenticationResponse(buffer *bytes.Buff
 		if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationResponseParameter.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationResponse/AuthenticationResponseParameter): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationResponseParameter.Octet[:a.AuthenticationResponseParameter.GetLen()]); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.AuthenticationResponseParameter.Octet[:]); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationResponse/AuthenticationResponseParameter): %w", err)
 		}
 	}
@@ -56,7 +56,7 @@ func (a *AuthenticationResponse) EncodeAuthenticationResponse(buffer *bytes.Buff
 		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationResponse/EAPMessage): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (AuthenticationResponse/EAPMessage): %w", err)
 		}
 	}
@@ -97,7 +97,7 @@ func (a *AuthenticationResponse) DecodeAuthenticationResponse(byteArray *[]byte)
 				return fmt.Errorf("invalid ie length (AuthenticationResponse/AuthenticationResponseParameter): %d", a.AuthenticationResponseParameter.Len)
 			}
 			a.AuthenticationResponseParameter.SetLen(a.AuthenticationResponseParameter.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.AuthenticationResponseParameter.Octet[:a.AuthenticationResponseParameter.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.AuthenticationResponseParameter.Octet[:]); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationResponse/AuthenticationResponseParameter): %w", err)
 			}
 		case AuthenticationResponseEAPMessageType:
@@ -109,7 +109,7 @@ func (a *AuthenticationResponse) DecodeAuthenticationResponse(byteArray *[]byte)
 				return fmt.Errorf("invalid ie length (AuthenticationResponse/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (AuthenticationResponse/EAPMessage): %w", err)
 			}
 		default:

@@ -24,22 +24,22 @@ func NewDeregistrationRequestUEOriginatingDeregistration(iei uint8) (deregistrat
 }
 
 func (a *DeregistrationRequestUEOriginatingDeregistration) EncodeDeregistrationRequestUEOriginatingDeregistration(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationRequestUEOriginatingDeregistration/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationRequestUEOriginatingDeregistration/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.DeregistrationRequestMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.DeregistrationRequestMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationRequestUEOriginatingDeregistration/DeregistrationRequestMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.NgksiAndDeregistrationType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.NgksiAndDeregistrationType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationRequestUEOriginatingDeregistration/NgksiAndDeregistrationType): %w", err)
 	}
 	if err := binary.Write(buffer, binary.BigEndian, a.MobileIdentity5GS.GetLen()); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.MobileIdentity5GS.Buffer); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.MobileIdentity5GS.Buffer); err != nil {
 		return fmt.Errorf("NAS encode error (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %w", err)
 	}
 	return nil
@@ -66,7 +66,7 @@ func (a *DeregistrationRequestUEOriginatingDeregistration) DecodeDeregistrationR
 		return fmt.Errorf("invalid ie length (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %d", a.MobileIdentity5GS.Len)
 	}
 	a.MobileIdentity5GS.SetLen(a.MobileIdentity5GS.GetLen())
-	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity5GS.Buffer); err != nil {
+	if err := binary.Read(buffer, binary.BigEndian, a.MobileIdentity5GS.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (DeregistrationRequestUEOriginatingDeregistration/MobileIdentity5GS): %w", err)
 	}
 	for buffer.Len() > 0 {

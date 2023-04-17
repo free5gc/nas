@@ -23,19 +23,19 @@ func NewIdentityResponse(iei uint8) (identityResponse *IdentityResponse) {
 }
 
 func (a *IdentityResponse) EncodeIdentityResponse(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityResponse/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityResponse/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.IdentityResponseMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.IdentityResponseMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityResponse/IdentityResponseMessageIdentity): %w", err)
 	}
 	if err := binary.Write(buffer, binary.BigEndian, a.MobileIdentity.GetLen()); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityResponse/MobileIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.MobileIdentity.Buffer); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.MobileIdentity.Buffer); err != nil {
 		return fmt.Errorf("NAS encode error (IdentityResponse/MobileIdentity): %w", err)
 	}
 	return nil
@@ -59,7 +59,7 @@ func (a *IdentityResponse) DecodeIdentityResponse(byteArray *[]byte) error {
 		return fmt.Errorf("invalid ie length (IdentityResponse/MobileIdentity): %d", a.MobileIdentity.Len)
 	}
 	a.MobileIdentity.SetLen(a.MobileIdentity.GetLen())
-	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity.Buffer); err != nil {
+	if err := binary.Read(buffer, binary.BigEndian, a.MobileIdentity.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (IdentityResponse/MobileIdentity): %w", err)
 	}
 	for buffer.Len() > 0 {

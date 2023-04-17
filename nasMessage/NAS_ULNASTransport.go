@@ -39,29 +39,29 @@ const (
 )
 
 func (a *ULNASTransport) EncodeULNASTransport(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ULNASTransport/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ULNASTransport/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.ULNASTRANSPORTMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ULNASTRANSPORTMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ULNASTransport/ULNASTRANSPORTMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndPayloadContainerType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndPayloadContainerType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (ULNASTransport/SpareHalfOctetAndPayloadContainerType): %w", err)
 	}
 	if err := binary.Write(buffer, binary.BigEndian, a.PayloadContainer.GetLen()); err != nil {
 		return fmt.Errorf("NAS encode error (ULNASTransport/PayloadContainer): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.PayloadContainer.Buffer); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.PayloadContainer.Buffer); err != nil {
 		return fmt.Errorf("NAS encode error (ULNASTransport/PayloadContainer): %w", err)
 	}
 	if a.PduSessionID2Value != nil {
 		if err := binary.Write(buffer, binary.BigEndian, a.PduSessionID2Value.GetIei()); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/PduSessionID2Value): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.PduSessionID2Value.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.PduSessionID2Value.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/PduSessionID2Value): %w", err)
 		}
 	}
@@ -69,12 +69,12 @@ func (a *ULNASTransport) EncodeULNASTransport(buffer *bytes.Buffer) error {
 		if err := binary.Write(buffer, binary.BigEndian, a.OldPDUSessionID.GetIei()); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/OldPDUSessionID): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.OldPDUSessionID.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.OldPDUSessionID.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/OldPDUSessionID): %w", err)
 		}
 	}
 	if a.RequestType != nil {
-		if err := binary.Write(buffer, binary.BigEndian, &a.RequestType.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.RequestType.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/RequestType): %w", err)
 		}
 	}
@@ -96,7 +96,7 @@ func (a *ULNASTransport) EncodeULNASTransport(buffer *bytes.Buffer) error {
 		if err := binary.Write(buffer, binary.BigEndian, a.DNN.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/DNN): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.DNN.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.DNN.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/DNN): %w", err)
 		}
 	}
@@ -107,7 +107,7 @@ func (a *ULNASTransport) EncodeULNASTransport(buffer *bytes.Buffer) error {
 		if err := binary.Write(buffer, binary.BigEndian, a.AdditionalInformation.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/AdditionalInformation): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.AdditionalInformation.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.AdditionalInformation.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (ULNASTransport/AdditionalInformation): %w", err)
 		}
 	}
@@ -135,7 +135,7 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 		return fmt.Errorf("invalid ie length (ULNASTransport/PayloadContainer): %d", a.PayloadContainer.Len)
 	}
 	a.PayloadContainer.SetLen(a.PayloadContainer.GetLen())
-	if err := binary.Read(buffer, binary.BigEndian, &a.PayloadContainer.Buffer); err != nil {
+	if err := binary.Read(buffer, binary.BigEndian, a.PayloadContainer.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (ULNASTransport/PayloadContainer): %w", err)
 	}
 	for buffer.Len() > 0 {
@@ -186,7 +186,7 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 				return fmt.Errorf("invalid ie length (ULNASTransport/DNN): %d", a.DNN.Len)
 			}
 			a.DNN.SetLen(a.DNN.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.DNN.Buffer[:a.DNN.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.DNN.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/DNN): %w", err)
 			}
 		case ULNASTransportAdditionalInformationType:
@@ -198,7 +198,7 @@ func (a *ULNASTransport) DecodeULNASTransport(byteArray *[]byte) error {
 				return fmt.Errorf("invalid ie length (ULNASTransport/AdditionalInformation): %d", a.AdditionalInformation.Len)
 			}
 			a.AdditionalInformation.SetLen(a.AdditionalInformation.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.AdditionalInformation.Buffer[:a.AdditionalInformation.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.AdditionalInformation.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (ULNASTransport/AdditionalInformation): %w", err)
 			}
 		default:

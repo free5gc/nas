@@ -32,16 +32,16 @@ const (
 )
 
 func (a *RegistrationReject) EncodeRegistrationReject(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (RegistrationReject/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (RegistrationReject/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.RegistrationRejectMessageIdentity.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.RegistrationRejectMessageIdentity.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (RegistrationReject/RegistrationRejectMessageIdentity): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.Cause5GMM.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.Cause5GMM.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (RegistrationReject/Cause5GMM): %w", err)
 	}
 	if a.T3346Value != nil {
@@ -51,7 +51,7 @@ func (a *RegistrationReject) EncodeRegistrationReject(buffer *bytes.Buffer) erro
 		if err := binary.Write(buffer, binary.BigEndian, a.T3346Value.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationReject/T3346Value): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.T3346Value.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.T3346Value.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationReject/T3346Value): %w", err)
 		}
 	}
@@ -62,7 +62,7 @@ func (a *RegistrationReject) EncodeRegistrationReject(buffer *bytes.Buffer) erro
 		if err := binary.Write(buffer, binary.BigEndian, a.T3502Value.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationReject/T3502Value): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.T3502Value.Octet); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.T3502Value.Octet); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationReject/T3502Value): %w", err)
 		}
 	}
@@ -73,7 +73,7 @@ func (a *RegistrationReject) EncodeRegistrationReject(buffer *bytes.Buffer) erro
 		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.GetLen()); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationReject/EAPMessage): %w", err)
 		}
-		if err := binary.Write(buffer, binary.BigEndian, &a.EAPMessage.Buffer); err != nil {
+		if err := binary.Write(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 			return fmt.Errorf("NAS encode error (RegistrationReject/EAPMessage): %w", err)
 		}
 	}
@@ -141,7 +141,7 @@ func (a *RegistrationReject) DecodeRegistrationReject(byteArray *[]byte) error {
 				return fmt.Errorf("invalid ie length (RegistrationReject/EAPMessage): %d", a.EAPMessage.Len)
 			}
 			a.EAPMessage.SetLen(a.EAPMessage.GetLen())
-			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer[:a.EAPMessage.GetLen()]); err != nil {
+			if err := binary.Read(buffer, binary.BigEndian, a.EAPMessage.Buffer); err != nil {
 				return fmt.Errorf("NAS decode error (RegistrationReject/EAPMessage): %w", err)
 			}
 		default:

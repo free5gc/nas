@@ -24,16 +24,16 @@ func NewSecurityProtected5GSNASMessage(iei uint8) (securityProtected5GSNASMessag
 }
 
 func (a *SecurityProtected5GSNASMessage) EncodeSecurityProtected5GSNASMessage(buffer *bytes.Buffer) error {
-	if err := binary.Write(buffer, binary.BigEndian, &a.ExtendedProtocolDiscriminator.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.ExtendedProtocolDiscriminator.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityProtected5GSNASMessage/ExtendedProtocolDiscriminator): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityProtected5GSNASMessage/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.MessageAuthenticationCode.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.MessageAuthenticationCode.Octet[:]); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityProtected5GSNASMessage/MessageAuthenticationCode): %w", err)
 	}
-	if err := binary.Write(buffer, binary.BigEndian, &a.SequenceNumber.Octet); err != nil {
+	if err := binary.Write(buffer, binary.BigEndian, a.SequenceNumber.Octet); err != nil {
 		return fmt.Errorf("NAS encode error (SecurityProtected5GSNASMessage/SequenceNumber): %w", err)
 	}
 	if err := binary.Write(buffer, binary.BigEndian, &a.Plain5GSNASMessage); err != nil {
@@ -50,7 +50,7 @@ func (a *SecurityProtected5GSNASMessage) DecodeSecurityProtected5GSNASMessage(by
 	if err := binary.Read(buffer, binary.BigEndian, &a.SpareHalfOctetAndSecurityHeaderType.Octet); err != nil {
 		return fmt.Errorf("NAS decode error (SecurityProtected5GSNASMessage/SpareHalfOctetAndSecurityHeaderType): %w", err)
 	}
-	if err := binary.Read(buffer, binary.BigEndian, &a.MessageAuthenticationCode.Octet); err != nil {
+	if err := binary.Read(buffer, binary.BigEndian, a.MessageAuthenticationCode.Octet[:]); err != nil {
 		return fmt.Errorf("NAS decode error (SecurityProtected5GSNASMessage/MessageAuthenticationCode): %w", err)
 	}
 	if err := binary.Read(buffer, binary.BigEndian, &a.SequenceNumber.Octet); err != nil {
