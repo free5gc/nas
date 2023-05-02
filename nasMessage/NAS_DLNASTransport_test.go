@@ -55,7 +55,7 @@ var nasMessageDLNASTransportTable = []nasMessageDLNASTransportData{
 		},
 		inBackoffTimerValue: nasType.BackoffTimerValue{
 			Iei:   nasMessage.DLNASTransportBackoffTimerValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 	},

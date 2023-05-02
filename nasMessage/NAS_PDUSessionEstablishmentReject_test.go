@@ -37,7 +37,7 @@ var nasMessagePDUSessionEstablishmentRejectTable = []nasMessagePDUSessionEstabli
 		},
 		inBackoffTimerValue: nasType.BackoffTimerValue{
 			Iei:   nasMessage.PDUSessionEstablishmentRejectBackoffTimerValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inAllowedSSCMode: nasType.AllowedSSCMode{
@@ -45,8 +45,8 @@ var nasMessagePDUSessionEstablishmentRejectTable = []nasMessagePDUSessionEstabli
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.PDUSessionEstablishmentRejectEAPMessageType,
-			Len:    1,
-			Buffer: []uint8{0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionEstablishmentRejectExtendedProtocolConfigurationOptionsType,

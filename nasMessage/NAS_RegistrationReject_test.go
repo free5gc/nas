@@ -35,18 +35,18 @@ var nasMessageRegistrationRejectTable = []nasMessageRegistrationRejectData{
 		},
 		inT3346Value: nasType.T3346Value{
 			Iei:   nasMessage.RegistrationRejectT3346ValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inT3502Value: nasType.T3502Value{
 			Iei:   nasMessage.RegistrationRejectT3502ValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.RegistrationRejectEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 	},
 }

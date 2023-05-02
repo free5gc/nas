@@ -52,8 +52,8 @@ var nasMessageRegistrationRequestTable = []nasMessageRegistrationRequestData{
 		inNgksi:                              0x01,
 		inRegistrationType5GS:                0x01,
 		inMobileIdentity5GS: nasType.MobileIdentity5GS{
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inNoncurrentNativeNASKeySetIdentifier: nasType.NoncurrentNativeNASKeySetIdentifier{
 			Octet: 0xC0,
@@ -97,7 +97,7 @@ var nasMessageRegistrationRequestTable = []nasMessageRegistrationRequestData{
 		},
 		inUEStatus: nasType.UEStatus{
 			Iei:   nasMessage.RegistrationRequestUEStatusType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inAdditionalGUTI: nasType.AdditionalGUTI{
@@ -112,12 +112,12 @@ var nasMessageRegistrationRequestTable = []nasMessageRegistrationRequestData{
 		},
 		inUesUsageSetting: nasType.UesUsageSetting{
 			Iei:   nasMessage.RegistrationRequestUesUsageSettingType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inRequestedDRXParameters: nasType.RequestedDRXParameters{
 			Iei:   nasMessage.RegistrationRequestRequestedDRXParametersType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inEPSNASMessageContainer: nasType.EPSNASMessageContainer{
@@ -140,7 +140,7 @@ var nasMessageRegistrationRequestTable = []nasMessageRegistrationRequestData{
 		},
 		inUpdateType5GS: nasType.UpdateType5GS{
 			Iei:   nasMessage.RegistrationRequestUpdateType5GSType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inNASMessageContainer: nasType.NASMessageContainer{

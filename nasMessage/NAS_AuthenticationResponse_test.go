@@ -30,7 +30,7 @@ var nasMessageAuthenticationResponseTable = []nasMessageAuthenticationResponseDa
 		inSpareHalfOctet:                        0x01,
 		inAuthenticationResponseMessageIdentity: 0x01,
 		inAuthenticationResponseParameter:       nasType.AuthenticationResponseParameter{nasMessage.AuthenticationResponseAuthenticationResponseParameterType, 16, [16]uint8{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-		inEAPMessage:                            nasType.EAPMessage{nasMessage.AuthenticationResponseEAPMessageType, 2, []uint8{0x01, 0x01}},
+		inEAPMessage:                            nasType.EAPMessage{nasMessage.AuthenticationResponseEAPMessageType, 4, []uint8{0x01, 0x01, 0x01, 0x01}},
 	},
 }
 

@@ -67,8 +67,8 @@ var nasMessageRegistrationAcceptTable = []nasMessageRegistrationAcceptData{
 		},
 		inTAIList: nasType.TAIList{
 			Iei:    nasMessage.RegistrationAcceptTAIListType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    8,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
 		},
 		inAllowedNSSAI: nasType.AllowedNSSAI{
 			Iei:    nasMessage.RegistrationAcceptAllowedNSSAIType,
@@ -107,8 +107,8 @@ var nasMessageRegistrationAcceptTable = []nasMessageRegistrationAcceptData{
 		},
 		inLADNInformation: nasType.LADNInformation{
 			Iei:    nasMessage.RegistrationAcceptLADNInformationType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    10,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
 		},
 		inMICOIndication: nasType.MICOIndication{
 			Octet: 0xB0,
@@ -118,8 +118,8 @@ var nasMessageRegistrationAcceptTable = []nasMessageRegistrationAcceptData{
 		},
 		inServiceAreaList: nasType.ServiceAreaList{
 			Iei:    nasMessage.RegistrationAcceptServiceAreaListType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inT3512Value: nasType.T3512Value{
 			Iei:   nasMessage.RegistrationAcceptT3512ValueType,
@@ -138,23 +138,23 @@ var nasMessageRegistrationAcceptTable = []nasMessageRegistrationAcceptData{
 		},
 		inEmergencyNumberList: nasType.EmergencyNumberList{
 			Iei:    nasMessage.RegistrationAcceptEmergencyNumberListType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedEmergencyNumberList: nasType.ExtendedEmergencyNumberList{
 			Iei:    nasMessage.RegistrationAcceptExtendedEmergencyNumberListType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inSORTransparentContainer: nasType.SORTransparentContainer{
 			Iei:    nasMessage.RegistrationAcceptSORTransparentContainerType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    20,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.RegistrationAcceptEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inNSSAIInclusionMode: nasType.NSSAIInclusionMode{
 			Octet: 0xA0,

@@ -29,8 +29,8 @@ var nasMessageRegistrationCompleteTable = []nasMessageRegistrationCompleteData{
 		inRegistrationCompleteMessageIdentity: nas.MsgTypeRegistrationComplete,
 		inSORTransparentContainer: nasType.SORTransparentContainer{
 			Iei:    nasMessage.RegistrationCompleteSORTransparentContainerType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    17,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
 		},
 	},
 }

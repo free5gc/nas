@@ -53,8 +53,8 @@ var nasMessageConfigurationUpdateCommandTable = []nasMessageConfigurationUpdateC
 		},
 		inTAIList: nasType.TAIList{
 			Iei:    nasMessage.ConfigurationUpdateCommandTAIListType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    8,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01},
 		},
 		inAllowedNSSAI: nasType.AllowedNSSAI{
 			Iei:    nasMessage.ConfigurationUpdateCommandAllowedNSSAIType,
@@ -63,8 +63,8 @@ var nasMessageConfigurationUpdateCommandTable = []nasMessageConfigurationUpdateC
 		},
 		inServiceAreaList: nasType.ServiceAreaList{
 			Iei:    nasMessage.ConfigurationUpdateCommandServiceAreaListType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inFullNameForNetwork: nasType.FullNameForNetwork{
 			Iei:    nasMessage.ConfigurationUpdateCommandFullNameForNetworkType,
@@ -86,7 +86,7 @@ var nasMessageConfigurationUpdateCommandTable = []nasMessageConfigurationUpdateC
 		},
 		inNetworkDaylightSavingTime: nasType.NetworkDaylightSavingTime{
 			Iei:   nasMessage.ConfigurationUpdateCommandNetworkDaylightSavingTimeType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inLADNInformation: nasType.LADNInformation{

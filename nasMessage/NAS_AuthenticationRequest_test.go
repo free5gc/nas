@@ -38,7 +38,7 @@ var nasMessageAuthenticationRequestTable = []nasMessageAuthenticationRequestData
 		inABBA:                                 nasType.ABBA{0, 2, []byte{0x00, 0x00}},
 		inAuthenticationParameterRAND:          nasType.AuthenticationParameterRAND{nasMessage.AuthenticationRequestAuthenticationParameterRANDType, [16]uint8{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 		inAuthenticationParameterAUTN:          nasType.AuthenticationParameterAUTN{nasMessage.AuthenticationRequestAuthenticationParameterAUTNType, 16, [16]uint8{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-		inEAPMessage:                           nasType.EAPMessage{nasMessage.AuthenticationRequestEAPMessageType, 2, []byte{0x00, 0x00}},
+		inEAPMessage:                           nasType.EAPMessage{nasMessage.AuthenticationRequestEAPMessageType, 4, []byte{0x00, 0x00, 0x00, 0x00}},
 	},
 }
 

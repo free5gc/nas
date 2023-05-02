@@ -26,7 +26,7 @@ var nasMessageAuthenticationRejectTable = []nasMessageAuthenticationRejectData{
 		inSecurityHeader:                      0x01,
 		inSpareHalfOctet:                      0x01,
 		inAuthenticationRejectMessageIdentity: 0x01,
-		inEAPMessage:                          nasType.EAPMessage{nasMessage.AuthenticationRejectEAPMessageType, 2, []byte{0x00, 0x00}},
+		inEAPMessage:                          nasType.EAPMessage{nasMessage.AuthenticationRejectEAPMessageType, 4, []byte{0x00, 0x00, 0x00, 0x00}},
 	},
 }
 

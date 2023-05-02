@@ -35,13 +35,13 @@ var nasMessagePDUSessionReleaseCommandTable = []nasMessagePDUSessionReleaseComma
 		},
 		inBackoffTimerValue: nasType.BackoffTimerValue{
 			Iei:   nasMessage.PDUSessionReleaseCommandBackoffTimerValueType,
-			Len:   2,
+			Len:   1,
 			Octet: 0x01,
 		},
 		inEAPMessage: nasType.EAPMessage{
 			Iei:    nasMessage.PDUSessionReleaseCommandEAPMessageType,
-			Len:    2,
-			Buffer: []uint8{0x01, 0x01},
+			Len:    4,
+			Buffer: []uint8{0x01, 0x01, 0x01, 0x01},
 		},
 		inExtendedProtocolConfigurationOptions: nasType.ExtendedProtocolConfigurationOptions{
 			Iei:    nasMessage.PDUSessionReleaseCommandExtendedProtocolConfigurationOptionsType,
