@@ -7,14 +7,11 @@ import (
 )
 
 func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
-	time := 0
+	time := 0 // expressed in quarters of an hour
 
-	if timezone[0] == '-' {
-		time = 64 // 0x80
-	}
-
+	// Parse hour
 	if timezone[1] == '1' {
-		time += (10 * 4) // expressed in quarters of an hour
+		time += (10 * 4)
 	}
 
 	for i := 0; i < 10; i++ {
@@ -23,11 +20,28 @@ func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
 		}
 	}
 
-	for i := 1; i <= 4; i++ {
-		if int(timezone[4]) == (i + 0x30) {
-			time += i
-		}
+	// Parse minute
+	switch timezone[4:6] {
+	case "15":
+		time += 1
+	case "30":
+		time += 2
+	case "45":
+		time += 3
+	default:
+		time += 0
 	}
+
+	// Convert decimal to binary-coded decimal
+	time = ((time / 10) << 4) + (time % 10)
+
+	// Add signed number
+	if timezone[0] == '-' {
+		time |= 0x80
+	}
+
+	// Swap the semi-octet
+	time = ((time & 0x0F) << 4) | ((time & 0xF0) >> 4)
 
 	nasTimezone.SetTimeZone(uint8(time))
 	return
@@ -36,11 +50,11 @@ func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
 func DaylightSavingTimeToNas(timezone string) (nasDaylightSavingTimeToNas nasType.NetworkDaylightSavingTime) {
 	value := 0
 
-	if strings.Contains(timezone, "+1h") {
+	if strings.Contains(timezone, "+1") {
 		value = 1
 	}
 
-	if strings.Contains(timezone, "+2h") {
+	if strings.Contains(timezone, "+2") {
 		value = 2
 	}
 
