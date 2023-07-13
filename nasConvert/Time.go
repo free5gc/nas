@@ -56,7 +56,9 @@ func parseTimeZone(timezone string) int {
 	return time
 }
 
-func UniversalTimeAndLocalTimeZoneToNas(universalTime time.Time) (nasUniversalTimeAndLocalTimeZoneToNas nasType.UniversalTimeAndLocalTimeZone) {
+func UniversalTimeAndLocalTimeZoneToNas(universalTime time.Time) (
+	nasUniversalTimeAndLocalTimeZoneToNas nasType.UniversalTimeAndLocalTimeZone,
+) {
 	year := toSemiOctet(toBinaryCodedDecimal(universalTime.Year() % 100))
 	month := toSemiOctet(toBinaryCodedDecimal(int(universalTime.Month())))
 	day := toSemiOctet(toBinaryCodedDecimal(universalTime.Day()))
