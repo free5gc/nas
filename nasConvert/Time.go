@@ -1,12 +1,23 @@
 package nasConvert
 
 import (
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/free5gc/nas/nasType"
 )
 
-func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
+func toBinaryCodedDecimal(val int) int {
+	return ((val / 10) << 4) + (val % 10)
+}
+
+func toSemiOctet(val int) int {
+	// Refer to TS 23.040 - 9.1.2.3  Semi-octet representation
+	return ((val & 0x0F) << 4) | ((val & 0xF0) >> 4)
+}
+
+func parseTimeZone(timezone string) int {
 	time := 0 // expressed in quarters of an hour
 
 	// Parse hour
@@ -33,15 +44,48 @@ func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
 	}
 
 	// Convert decimal to binary-coded decimal
-	time = ((time / 10) << 4) + (time % 10)
+	time = toBinaryCodedDecimal(time)
 
 	// Add signed number
 	if timezone[0] == '-' {
 		time |= 0x80
 	}
 
-	// Swap the semi-octet
-	time = ((time & 0x0F) << 4) | ((time & 0xF0) >> 4)
+	time = toSemiOctet(time)
+
+	return time
+}
+
+func UniversalTimeAndLocalTimeZoneToNas(universalTime time.Time) (nasUniversalTimeAndLocalTimeZoneToNas nasType.UniversalTimeAndLocalTimeZone) {
+	year := toSemiOctet(toBinaryCodedDecimal(universalTime.Year() % 100))
+	month := toSemiOctet(toBinaryCodedDecimal(int(universalTime.Month())))
+	day := toSemiOctet(toBinaryCodedDecimal(universalTime.Day()))
+	hour := toSemiOctet(toBinaryCodedDecimal(universalTime.Hour()))
+	minute := toSemiOctet(toBinaryCodedDecimal(universalTime.Minute()))
+	second := toSemiOctet(toBinaryCodedDecimal(universalTime.Second()))
+	timezone := ""
+
+	_, offset := universalTime.Zone()
+	if offset < 0 {
+		timezone += "-"
+	} else {
+		timezone += "+"
+	}
+	timezone += fmt.Sprintf("%2d:%2d", offset/3600, (offset%3600)/60)
+
+	nasUniversalTimeAndLocalTimeZoneToNas.SetYear(uint8(year))
+	nasUniversalTimeAndLocalTimeZoneToNas.SetMonth(uint8(month))
+	nasUniversalTimeAndLocalTimeZoneToNas.SetDay(uint8(day))
+	nasUniversalTimeAndLocalTimeZoneToNas.SetHour(uint8(hour))
+	nasUniversalTimeAndLocalTimeZoneToNas.SetMinute(uint8(minute))
+	nasUniversalTimeAndLocalTimeZoneToNas.SetSecond(uint8(second))
+	nasUniversalTimeAndLocalTimeZoneToNas.SetTimeZone(uint8(parseTimeZone(timezone)))
+
+	return
+}
+
+func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
+	time := parseTimeZone(timezone)
 
 	nasTimezone.SetTimeZone(uint8(time))
 	return
