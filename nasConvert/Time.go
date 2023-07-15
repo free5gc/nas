@@ -57,7 +57,7 @@ func parseTimeZone(timezone string) int {
 }
 
 func UniversalTimeAndLocalTimeZoneToNas(universalTime time.Time) (
-	nasUniversalTimeAndLocalTimeZoneToNas nasType.UniversalTimeAndLocalTimeZone,
+	nasUniversalTimeAndLocalTimeZone nasType.UniversalTimeAndLocalTimeZone,
 ) {
 	year := toSemiOctet(toBinaryCodedDecimal(universalTime.Year() % 100))
 	month := toSemiOctet(toBinaryCodedDecimal(int(universalTime.Month())))
@@ -75,25 +75,25 @@ func UniversalTimeAndLocalTimeZoneToNas(universalTime time.Time) (
 	}
 	timezone += fmt.Sprintf("%2d:%2d", offset/3600, (offset%3600)/60)
 
-	nasUniversalTimeAndLocalTimeZoneToNas.SetYear(uint8(year))
-	nasUniversalTimeAndLocalTimeZoneToNas.SetMonth(uint8(month))
-	nasUniversalTimeAndLocalTimeZoneToNas.SetDay(uint8(day))
-	nasUniversalTimeAndLocalTimeZoneToNas.SetHour(uint8(hour))
-	nasUniversalTimeAndLocalTimeZoneToNas.SetMinute(uint8(minute))
-	nasUniversalTimeAndLocalTimeZoneToNas.SetSecond(uint8(second))
-	nasUniversalTimeAndLocalTimeZoneToNas.SetTimeZone(uint8(parseTimeZone(timezone)))
+	nasUniversalTimeAndLocalTimeZone.SetYear(uint8(year))
+	nasUniversalTimeAndLocalTimeZone.SetMonth(uint8(month))
+	nasUniversalTimeAndLocalTimeZone.SetDay(uint8(day))
+	nasUniversalTimeAndLocalTimeZone.SetHour(uint8(hour))
+	nasUniversalTimeAndLocalTimeZone.SetMinute(uint8(minute))
+	nasUniversalTimeAndLocalTimeZone.SetSecond(uint8(second))
+	nasUniversalTimeAndLocalTimeZone.SetTimeZone(uint8(parseTimeZone(timezone)))
 
 	return
 }
 
-func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
+func LocalTimeZoneToNas(timezone string) (nasLocalTimeZone nasType.LocalTimeZone) {
 	time := parseTimeZone(timezone)
 
-	nasTimezone.SetTimeZone(uint8(time))
+	nasLocalTimeZone.SetTimeZone(uint8(time))
 	return
 }
 
-func DaylightSavingTimeToNas(timezone string) (nasDaylightSavingTimeToNas nasType.NetworkDaylightSavingTime) {
+func DaylightSavingTimeToNas(timezone string) (nasDaylightSavingTime nasType.NetworkDaylightSavingTime) {
 	value := 0
 
 	if strings.Contains(timezone, "+1") {
@@ -104,7 +104,7 @@ func DaylightSavingTimeToNas(timezone string) (nasDaylightSavingTimeToNas nasTyp
 		value = 2
 	}
 
-	nasDaylightSavingTimeToNas.SetLen(1)
-	nasDaylightSavingTimeToNas.Setvalue(uint8(value))
+	nasDaylightSavingTime.SetLen(1)
+	nasDaylightSavingTime.Setvalue(uint8(value))
 	return
 }
