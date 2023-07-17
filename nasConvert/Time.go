@@ -70,10 +70,14 @@ func UniversalTimeAndLocalTimeZoneToNas(universalTime time.Time) (
 	_, offset := universalTime.Zone()
 	if offset < 0 {
 		timezone += "-"
+		offset = 0 - offset
 	} else {
 		timezone += "+"
 	}
-	timezone += fmt.Sprintf("%2d:%2d", offset/3600, (offset%3600)/60)
+	timezone += fmt.Sprintf("%02d:%02d", offset/3600, (offset%3600)/60)
+	if universalTime.IsDST() {
+		timezone += "+1"
+	}
 
 	nasUniversalTimeAndLocalTimeZone.SetYear(uint8(year))
 	nasUniversalTimeAndLocalTimeZone.SetMonth(uint8(month))
