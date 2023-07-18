@@ -8,7 +8,7 @@ import (
 	"github.com/free5gc/nas/nasConvert"
 	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -62,13 +62,13 @@ func TestUniversalTimeAndLocalTimeZoneToNas(t *testing.T) {
 	}
 
 	for _, testData := range nasConvertUniversalTimeAndLocalTimeZoneTable {
-		assert.Equal(t, testData.out.GetYear(), testData.in.GetYear())
-		assert.Equal(t, testData.out.GetMonth(), testData.in.GetMonth())
-		assert.Equal(t, testData.out.GetDay(), testData.in.GetDay())
-		assert.Equal(t, testData.out.GetHour(), testData.in.GetHour())
-		assert.Equal(t, testData.out.GetMinute(), testData.in.GetMinute())
-		assert.Equal(t, testData.out.GetSecond(), testData.in.GetSecond())
-		assert.Equal(t, testData.out.GetTimeZone(), testData.in.GetTimeZone())
+		require.Equal(t, testData.out.GetYear(), testData.in.GetYear())
+		require.Equal(t, testData.out.GetMonth(), testData.in.GetMonth())
+		require.Equal(t, testData.out.GetDay(), testData.in.GetDay())
+		require.Equal(t, testData.out.GetHour(), testData.in.GetHour())
+		require.Equal(t, testData.out.GetMinute(), testData.in.GetMinute())
+		require.Equal(t, testData.out.GetSecond(), testData.in.GetSecond())
+		require.Equal(t, testData.out.GetTimeZone(), testData.in.GetTimeZone())
 	}
 }
 
@@ -147,7 +147,7 @@ func TestDecodeUniversalTimeAndLocalTimeZone(t *testing.T) {
 	}
 
 	for _, testData := range testDecodedUniversalTimeAndLocalTimeZoneTable {
-		assert.Equal(t, testData.out.Format(time.RFC822Z), testData.in.Format(time.RFC822Z))
+		require.Equal(t, testData.out.Format(time.RFC822Z), testData.in.Format(time.RFC822Z))
 	}
 }
 
@@ -175,7 +175,7 @@ func TestLocalTimeZoneToNas(t *testing.T) {
 	}
 
 	for _, testData := range nasConvertLocalTimeZoneTable {
-		assert.Equal(t, testData.out.GetTimeZone(), testData.in.GetTimeZone())
+		require.Equal(t, testData.out.GetTimeZone(), testData.in.GetTimeZone())
 	}
 }
 
@@ -218,7 +218,7 @@ func TestDecodeLocalTimeZone(t *testing.T) {
 	}
 
 	for _, testData := range testDecodedLocalTimeZoneTable {
-		assert.Equal(t, testData.out, testData.in)
+		require.Equal(t, testData.out, testData.in)
 	}
 }
 
@@ -240,8 +240,8 @@ func TestDaylightSavingTimeToNas(t *testing.T) {
 	}
 
 	for _, testData := range nasConvertNetworkDaylightSavingTimeTable {
-		assert.Equal(t, testData.out.GetLen(), testData.in.GetLen())
-		assert.Equal(t, testData.out.Getvalue(), testData.in.Getvalue())
+		require.Equal(t, testData.out.GetLen(), testData.in.GetLen())
+		require.Equal(t, testData.out.Getvalue(), testData.in.Getvalue())
 	}
 }
 
@@ -265,6 +265,6 @@ func TestDecodeDaylightSavingTime(t *testing.T) {
 	}
 
 	for _, testData := range daylightSavingTimeTable {
-		assert.LessOrEqual(t, testData.Getvalue(), uint8(0x02))
+		require.LessOrEqual(t, testData.Getvalue(), uint8(0x02))
 	}
 }
