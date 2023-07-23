@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/free5gc/nas/nasConvert"
-	"github.com/free5gc/nas/nasMessage"
 	"github.com/free5gc/nas/nasType"
 	"github.com/stretchr/testify/require"
 )
@@ -25,17 +24,14 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-type nasConvertUniversalTimeAndLocalTimeZone struct {
-	in  nasType.UniversalTimeAndLocalTimeZone
-	out nasType.UniversalTimeAndLocalTimeZone
-}
-
 func TestUniversalTimeAndLocalTimeZoneToNas(t *testing.T) {
-	nasConvertUniversalTimeAndLocalTimeZoneTable := []nasConvertUniversalTimeAndLocalTimeZone{
+	tests := []struct {
+		in  nasType.UniversalTimeAndLocalTimeZone
+		out nasType.UniversalTimeAndLocalTimeZone
+	}{
 		{
 			in: nasConvert.UniversalTimeAndLocalTimeZoneToNas(time.Date(2023, time.July, 13, 12, 27, 39, 0, CST)),
 			out: nasType.UniversalTimeAndLocalTimeZone{
-				Iei: nasMessage.ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType,
 				Octet: [7]uint8{
 					uint8(0x32), uint8(0x70), uint8(0x31), uint8(0x21), uint8(0x72), uint8(0x93), uint8(0x23),
 				},
@@ -44,7 +40,6 @@ func TestUniversalTimeAndLocalTimeZoneToNas(t *testing.T) {
 		{
 			in: nasConvert.UniversalTimeAndLocalTimeZoneToNas(time.Date(2019, time.December, 15, 16, 55, 46, 0, IST)),
 			out: nasType.UniversalTimeAndLocalTimeZone{
-				Iei: nasMessage.ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType,
 				Octet: [7]uint8{
 					uint8(0x91), uint8(0x21), uint8(0x51), uint8(0x61), uint8(0x55), uint8(0x64), uint8(0x22),
 				},
@@ -53,7 +48,6 @@ func TestUniversalTimeAndLocalTimeZoneToNas(t *testing.T) {
 		{
 			in: nasConvert.UniversalTimeAndLocalTimeZoneToNas(time.Date(2001, time.February, 2, 9, 3, 6, 0, EST)),
 			out: nasType.UniversalTimeAndLocalTimeZone{
-				Iei: nasMessage.ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType,
 				Octet: [7]uint8{
 					uint8(0x10), uint8(0x20), uint8(0x20), uint8(0x90), uint8(0x30), uint8(0x60), uint8(0x0A),
 				},
@@ -61,14 +55,8 @@ func TestUniversalTimeAndLocalTimeZoneToNas(t *testing.T) {
 		},
 	}
 
-	for _, testData := range nasConvertUniversalTimeAndLocalTimeZoneTable {
-		require.Equal(t, testData.out.GetYear(), testData.in.GetYear())
-		require.Equal(t, testData.out.GetMonth(), testData.in.GetMonth())
-		require.Equal(t, testData.out.GetDay(), testData.in.GetDay())
-		require.Equal(t, testData.out.GetHour(), testData.in.GetHour())
-		require.Equal(t, testData.out.GetMinute(), testData.in.GetMinute())
-		require.Equal(t, testData.out.GetSecond(), testData.in.GetSecond())
-		require.Equal(t, testData.out.GetTimeZone(), testData.in.GetTimeZone())
+	for _, tc := range tests {
+		require.Equal(t, tc.out, tc.in)
 	}
 }
 
@@ -110,16 +98,13 @@ func decodeUniversalTimeAndLocalTimeZone(
 	return time.Date(year, time.Month(month), day, hour, minute, second, 0, location)
 }
 
-type testDecodedUniversalTimeAndLocalTimeZone struct {
-	in  time.Time
-	out time.Time
-}
-
 func TestDecodeUniversalTimeAndLocalTimeZone(t *testing.T) {
-	testDecodedUniversalTimeAndLocalTimeZoneTable := []testDecodedUniversalTimeAndLocalTimeZone{
+	tests := []struct {
+		in  time.Time
+		out time.Time
+	}{
 		{
 			in: decodeUniversalTimeAndLocalTimeZone(nasType.UniversalTimeAndLocalTimeZone{
-				Iei: nasMessage.ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType,
 				Octet: [7]uint8{
 					uint8(0x32), uint8(0x70), uint8(0x31), uint8(0x21), uint8(0x72), uint8(0x93), uint8(0x23),
 				},
@@ -128,7 +113,6 @@ func TestDecodeUniversalTimeAndLocalTimeZone(t *testing.T) {
 		},
 		{
 			in: decodeUniversalTimeAndLocalTimeZone(nasType.UniversalTimeAndLocalTimeZone{
-				Iei: nasMessage.ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType,
 				Octet: [7]uint8{
 					uint8(0x91), uint8(0x21), uint8(0x51), uint8(0x61), uint8(0x55), uint8(0x64), uint8(0x22),
 				},
@@ -137,7 +121,6 @@ func TestDecodeUniversalTimeAndLocalTimeZone(t *testing.T) {
 		},
 		{
 			in: decodeUniversalTimeAndLocalTimeZone(nasType.UniversalTimeAndLocalTimeZone{
-				Iei: nasMessage.ConfigurationUpdateCommandUniversalTimeAndLocalTimeZoneType,
 				Octet: [7]uint8{
 					uint8(0x10), uint8(0x20), uint8(0x20), uint8(0x90), uint8(0x30), uint8(0x60), uint8(0x0A),
 				},
@@ -146,36 +129,32 @@ func TestDecodeUniversalTimeAndLocalTimeZone(t *testing.T) {
 		},
 	}
 
-	for _, testData := range testDecodedUniversalTimeAndLocalTimeZoneTable {
+	for _, testData := range tests {
 		require.Equal(t, testData.out.Format(time.RFC822Z), testData.in.Format(time.RFC822Z))
 	}
 }
 
-type nasConvertLocalTimeZone struct {
-	in  nasType.LocalTimeZone
-	out nasType.LocalTimeZone
-}
-
 func TestLocalTimeZoneToNas(t *testing.T) {
-	nasConvertLocalTimeZoneTable := []nasConvertLocalTimeZone{
+	tests := []struct {
+		in  nasType.LocalTimeZone
+		out nasType.LocalTimeZone
+	}{
 		{
 			in: nasConvert.LocalTimeZoneToNas("+08:30"),
 			out: nasType.LocalTimeZone{
-				Iei:   nasMessage.ConfigurationUpdateCommandLocalTimeZoneType,
 				Octet: uint8(0x43),
 			},
 		},
 		{
 			in: nasConvert.LocalTimeZoneToNas("-04:45"),
 			out: nasType.LocalTimeZone{
-				Iei:   nasMessage.ConfigurationUpdateCommandLocalTimeZoneType,
 				Octet: uint8(0x99),
 			},
 		},
 	}
 
-	for _, testData := range nasConvertLocalTimeZoneTable {
-		require.Equal(t, testData.out.GetTimeZone(), testData.in.GetTimeZone())
+	for _, tc := range tests {
+		require.Equal(t, tc.out, tc.in)
 	}
 }
 
@@ -194,77 +173,98 @@ func decodeLocalTimeZone(nasLocalTimeZone nasType.LocalTimeZone) string {
 	return timezone
 }
 
-type testDecodedLocalTimeZone struct {
-	in  string
-	out string
-}
-
 func TestDecodeLocalTimeZone(t *testing.T) {
-	testDecodedLocalTimeZoneTable := []testDecodedLocalTimeZone{
+	tests := []struct {
+		in  string
+		out string
+	}{
 		{
 			in: decodeLocalTimeZone(nasType.LocalTimeZone{
-				Iei:   nasMessage.ConfigurationUpdateCommandLocalTimeZoneType,
 				Octet: uint8(0x23),
 			}),
 			out: "+08:00",
 		},
 		{
 			in: decodeLocalTimeZone(nasType.LocalTimeZone{
-				Iei:   nasMessage.ConfigurationUpdateCommandLocalTimeZoneType,
 				Octet: uint8(0x99),
 			}),
 			out: "-04:45",
 		},
 	}
 
-	for _, testData := range testDecodedLocalTimeZoneTable {
-		require.Equal(t, testData.out, testData.in)
+	for _, tc := range tests {
+		require.Equal(t, tc.out, tc.in)
 	}
 }
 
-type nasConvertNetworkDaylightSavingTime struct {
-	in  nasType.NetworkDaylightSavingTime
-	out nasType.NetworkDaylightSavingTime
-}
-
 func TestDaylightSavingTimeToNas(t *testing.T) {
-	nasConvertNetworkDaylightSavingTimeTable := []nasConvertNetworkDaylightSavingTime{
+	nasConvertNetworkDaylightSavingTimeTable := []struct {
+		in  nasType.NetworkDaylightSavingTime
+		out nasType.NetworkDaylightSavingTime
+	}{
 		{
 			in: nasConvert.DaylightSavingTimeToNas("-05:00+1"), // EST to EDT
 			out: nasType.NetworkDaylightSavingTime{
-				Iei:   nasMessage.ConfigurationUpdateCommandNetworkDaylightSavingTimeType,
 				Len:   uint8(0x01),
 				Octet: uint8(0x01),
 			},
 		},
+		{
+			in: nasConvert.DaylightSavingTimeToNas("+08:00+2"),
+			out: nasType.NetworkDaylightSavingTime{
+				Len:   uint8(0x01),
+				Octet: uint8(0x02),
+			},
+		},
+		{
+			in: nasConvert.DaylightSavingTimeToNas("-03:00"),
+			out: nasType.NetworkDaylightSavingTime{
+				Len:   uint8(0x01),
+				Octet: uint8(0x00),
+			},
+		},
 	}
 
-	for _, testData := range nasConvertNetworkDaylightSavingTimeTable {
-		require.Equal(t, testData.out.GetLen(), testData.in.GetLen())
-		require.Equal(t, testData.out.Getvalue(), testData.in.Getvalue())
+	for _, tc := range nasConvertNetworkDaylightSavingTimeTable {
+		require.Equal(t, tc.out, tc.in)
 	}
 }
 
+func decodeDaylightSavingTime(nasDaylightSavingTime nasType.NetworkDaylightSavingTime) string {
+	result := ""
+
+	switch nasDaylightSavingTime.Getvalue() {
+	case uint8(0x00):
+		result = ""
+	case uint8(0x01):
+		result = "+1"
+	case uint8(0x02):
+		result = "+2"
+	}
+
+	return result
+}
+
 func TestDecodeDaylightSavingTime(t *testing.T) {
-	daylightSavingTimeTable := []nasType.NetworkDaylightSavingTime{
+	tests := []struct {
+		in  string
+		out string
+	}{
 		{
-			Iei:   nasMessage.ConfigurationUpdateCommandNetworkDaylightSavingTimeType,
-			Len:   uint8(0x01),
-			Octet: uint8(0x00),
+			in:  decodeDaylightSavingTime(nasConvert.DaylightSavingTimeToNas("-05:00+1")),
+			out: "+1",
 		},
 		{
-			Iei:   nasMessage.ConfigurationUpdateCommandNetworkDaylightSavingTimeType,
-			Len:   uint8(0x01),
-			Octet: uint8(0x01),
+			in:  decodeDaylightSavingTime(nasConvert.DaylightSavingTimeToNas("+08:00+2")),
+			out: "+2",
 		},
 		{
-			Iei:   nasMessage.ConfigurationUpdateCommandNetworkDaylightSavingTimeType,
-			Len:   uint8(0x01),
-			Octet: uint8(0x02),
+			in:  decodeDaylightSavingTime(nasConvert.DaylightSavingTimeToNas("03:00")),
+			out: "",
 		},
 	}
 
-	for _, testData := range daylightSavingTimeTable {
-		require.LessOrEqual(t, testData.Getvalue(), uint8(0x02))
+	for _, tc := range tests {
+		require.Equal(t, tc.in, tc.out)
 	}
 }
