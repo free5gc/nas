@@ -1,20 +1,28 @@
 package nasConvert
 
 import (
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/free5gc/nas/nasType"
 )
 
-func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
-	time := 0
+func toBinaryCodedDecimal(val int) int {
+	return ((val / 10) << 4) + (val % 10)
+}
 
-	if timezone[0] == '-' {
-		time = 64 // 0x80
-	}
+func toSemiOctet(val int) int {
+	// Refer to TS 23.040 - 9.1.2.3  Semi-octet representation
+	return ((val & 0x0F) << 4) | ((val & 0xF0) >> 4)
+}
 
+func parseTimeZone(timezone string) int {
+	time := 0 // expressed in quarters of an hour
+
+	// Parse hour
 	if timezone[1] == '1' {
-		time += (10 * 4) // expressed in quarters of an hour
+		time += (10 * 4)
 	}
 
 	for i := 0; i < 10; i++ {
@@ -23,28 +31,155 @@ func LocalTimeZoneToNas(timezone string) (nasTimezone nasType.LocalTimeZone) {
 		}
 	}
 
-	for i := 1; i <= 4; i++ {
-		if int(timezone[4]) == (i + 0x30) {
-			time += i
-		}
+	// Parse minute
+	switch timezone[4:6] {
+	case "15":
+		time += 1
+	case "30":
+		time += 2
+	case "45":
+		time += 3
+	default:
+		time += 0
 	}
 
-	nasTimezone.SetTimeZone(uint8(time))
-	return
+	// Convert decimal to binary-coded decimal
+	time = toBinaryCodedDecimal(time)
+
+	// Add signed number
+	if timezone[0] == '-' {
+		time |= 0x80
+	}
+
+	time = toSemiOctet(time)
+
+	return time
 }
 
-func DaylightSavingTimeToNas(timezone string) (nasDaylightSavingTimeToNas nasType.NetworkDaylightSavingTime) {
-	value := 0
+func EncodeUniversalTimeAndLocalTimeZoneToNas(
+	universalTime time.Time,
+) nasType.UniversalTimeAndLocalTimeZone {
+	var nasUniversalTimeAndLocalTimeZone nasType.UniversalTimeAndLocalTimeZone
 
-	if strings.Contains(timezone, "+1h") {
-		value = 1
+	year := toSemiOctet(toBinaryCodedDecimal(universalTime.Year() % 100))
+	month := toSemiOctet(toBinaryCodedDecimal(int(universalTime.Month())))
+	day := toSemiOctet(toBinaryCodedDecimal(universalTime.Day()))
+	hour := toSemiOctet(toBinaryCodedDecimal(universalTime.Hour()))
+	minute := toSemiOctet(toBinaryCodedDecimal(universalTime.Minute()))
+	second := toSemiOctet(toBinaryCodedDecimal(universalTime.Second()))
+	timezone := ""
+
+	_, offset := universalTime.Zone()
+	if offset < 0 {
+		timezone += "-"
+		offset = 0 - offset
+	} else {
+		timezone += "+"
+	}
+	timezone += fmt.Sprintf("%02d:%02d", offset/3600, (offset%3600)/60)
+	if universalTime.IsDST() {
+		timezone += "+1"
 	}
 
-	if strings.Contains(timezone, "+2h") {
+	nasUniversalTimeAndLocalTimeZone.SetYear(uint8(year))
+	nasUniversalTimeAndLocalTimeZone.SetMonth(uint8(month))
+	nasUniversalTimeAndLocalTimeZone.SetDay(uint8(day))
+	nasUniversalTimeAndLocalTimeZone.SetHour(uint8(hour))
+	nasUniversalTimeAndLocalTimeZone.SetMinute(uint8(minute))
+	nasUniversalTimeAndLocalTimeZone.SetSecond(uint8(second))
+	nasUniversalTimeAndLocalTimeZone.SetTimeZone(uint8(parseTimeZone(timezone)))
+	return nasUniversalTimeAndLocalTimeZone
+}
+
+func EncodeLocalTimeZoneToNas(
+	timezone string,
+) nasType.LocalTimeZone {
+	var nasLocalTimeZone nasType.LocalTimeZone
+
+	time := parseTimeZone(timezone)
+	nasLocalTimeZone.SetTimeZone(uint8(time))
+	return nasLocalTimeZone
+}
+
+func EncodeDaylightSavingTimeToNas(
+	timezone string,
+) nasType.NetworkDaylightSavingTime {
+	var nasDaylightSavingTime nasType.NetworkDaylightSavingTime
+
+	value := 0
+	if strings.Contains(timezone, "+1") {
+		value = 1
+	}
+	if strings.Contains(timezone, "+2") {
 		value = 2
 	}
 
-	nasDaylightSavingTimeToNas.SetLen(1)
-	nasDaylightSavingTimeToNas.Setvalue(uint8(value))
-	return
+	nasDaylightSavingTime.SetLen(1)
+	nasDaylightSavingTime.Setvalue(uint8(value))
+	return nasDaylightSavingTime
+}
+
+func getTimeZoneOffset(timezone uint8) int {
+	octet := int((timezone >> 4) + (timezone&0x07)*10)
+	offset := (octet / 4 * 60 * 60) + (octet % 4 * 15 * 60)
+
+	if timezone&0x08 == 0x08 {
+		// sign is "-"
+		offset = 0 - offset
+	}
+	return offset
+}
+
+func DecodeUniversalTimeAndLocalTimeZone(
+	nasUniversalTimeAndLocalTimeZone nasType.UniversalTimeAndLocalTimeZone,
+) time.Time {
+	year := 2000 + int((nasUniversalTimeAndLocalTimeZone.GetYear()&0x0f)*10+
+		((nasUniversalTimeAndLocalTimeZone.GetYear()&0xf0)>>4))
+
+	month := int((nasUniversalTimeAndLocalTimeZone.GetMonth()&0x0f)*10 +
+		((nasUniversalTimeAndLocalTimeZone.GetMonth() & 0xf0) >> 4))
+
+	day := int((nasUniversalTimeAndLocalTimeZone.GetDay()&0x0f)*10 +
+		((nasUniversalTimeAndLocalTimeZone.GetDay() & 0xf0) >> 4))
+
+	hour := int((nasUniversalTimeAndLocalTimeZone.GetHour()&0x0f)*10 +
+		((nasUniversalTimeAndLocalTimeZone.GetHour() & 0xf0) >> 4))
+
+	minute := int((nasUniversalTimeAndLocalTimeZone.GetMinute()&0x0f)*10 +
+		((nasUniversalTimeAndLocalTimeZone.GetMinute() & 0xf0) >> 4))
+
+	second := int((nasUniversalTimeAndLocalTimeZone.GetSecond()&0x0f)*10 +
+		((nasUniversalTimeAndLocalTimeZone.GetSecond() & 0xf0) >> 4))
+
+	offset := getTimeZoneOffset(nasUniversalTimeAndLocalTimeZone.GetTimeZone())
+	location := time.FixedZone("NameIsNotImportant", offset)
+	return time.Date(year, time.Month(month), day, hour, minute, second, 0, location)
+}
+
+func DecodeLocalTimeZone(nasLocalTimeZone nasType.LocalTimeZone) string {
+	offset := getTimeZoneOffset(nasLocalTimeZone.GetTimeZone())
+	timezone := ""
+
+	if offset < 0 {
+		timezone += "-"
+		offset = 0 - offset
+	} else {
+		timezone += "+"
+	}
+
+	timezone += fmt.Sprintf("%02d:%02d", offset/3600, (offset%3600)/60)
+	return timezone
+}
+
+func DecodeDaylightSavingTime(nasDaylightSavingTime nasType.NetworkDaylightSavingTime) string {
+	result := ""
+	switch nasDaylightSavingTime.Getvalue() {
+	case uint8(0x00):
+		result = ""
+	case uint8(0x01):
+		result = "+1"
+	case uint8(0x02):
+		result = "+2"
+	}
+	return result
 }
