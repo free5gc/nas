@@ -13,12 +13,14 @@ var (
 	CST *time.Location
 	IST *time.Location
 	EST *time.Location
+	CET *time.Location
 )
 
 func TestMain(m *testing.M) {
 	CST, _ = time.LoadLocation("Asia/Taipei")
 	IST, _ = time.LoadLocation("Asia/Kolkata")
 	EST, _ = time.LoadLocation("America/New_York") // If using DST, EST would be EDT.
+	CET, _ = time.LoadLocation("Europe/Berlin")    // If using DST, CET would be CEST.
 
 	m.Run()
 }
@@ -49,6 +51,14 @@ func TestUniversalTimeAndLocalTimeZoneToNas(t *testing.T) {
 			out: nasType.UniversalTimeAndLocalTimeZone{
 				Octet: [7]uint8{
 					uint8(0x10), uint8(0x20), uint8(0x20), uint8(0x90), uint8(0x30), uint8(0x60), uint8(0x0A),
+				},
+			},
+		},
+		{
+			in: nasConvert.EncodeUniversalTimeAndLocalTimeZoneToNas(time.Date(2023, time.August, 24, 9, 18, 43, 0, CET)),
+			out: nasType.UniversalTimeAndLocalTimeZone{
+				Octet: [7]uint8{
+					uint8(0x32), uint8(0x80), uint8(0x42), uint8(0x90), uint8(0x81), uint8(0x34), uint8(0x80),
 				},
 			},
 		},
@@ -88,6 +98,14 @@ func TestDecodeUniversalTimeAndLocalTimeZone(t *testing.T) {
 			}),
 			out: time.Date(2001, time.February, 2, 9, 3, 6, 0, EST),
 		},
+		{
+			in: nasConvert.DecodeUniversalTimeAndLocalTimeZone(nasType.UniversalTimeAndLocalTimeZone{
+				Octet: [7]uint8{
+					uint8(0x32), uint8(0x80), uint8(0x42), uint8(0x90), uint8(0x81), uint8(0x34), uint8(0x80),
+				},
+			}),
+			out: time.Date(2023, time.August, 24, 9, 18, 43, 0, CET),
+		},
 	}
 
 	for _, testData := range tests {
@@ -110,6 +128,18 @@ func TestLocalTimeZoneToNas(t *testing.T) {
 			in: nasConvert.EncodeLocalTimeZoneToNas("-04:45"),
 			out: nasType.LocalTimeZone{
 				Octet: uint8(0x99),
+			},
+		},
+		{
+			in: nasConvert.EncodeLocalTimeZoneToNas("+01:00+1"), // CEST
+			out: nasType.LocalTimeZone{
+				Octet: uint8(0x80),
+			},
+		},
+		{
+			in: nasConvert.EncodeLocalTimeZoneToNas("-05:00+1"), // EDT
+			out: nasType.LocalTimeZone{
+				Octet: uint8(0x69),
 			},
 		},
 	}
@@ -135,6 +165,18 @@ func TestDecodeLocalTimeZone(t *testing.T) {
 				Octet: uint8(0x99),
 			}),
 			out: "-04:45",
+		},
+		{
+			in: nasConvert.DecodeLocalTimeZone(nasType.LocalTimeZone{
+				Octet: uint8(0x80),
+			}),
+			out: "+02:00",
+		},
+		{
+			in: nasConvert.DecodeLocalTimeZone(nasType.LocalTimeZone{
+				Octet: uint8(0x69),
+			}),
+			out: "-04:00",
 		},
 	}
 

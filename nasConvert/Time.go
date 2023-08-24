@@ -12,22 +12,31 @@ func toBinaryCodedDecimal(val int) int {
 	return ((val / 10) << 4) + (val % 10)
 }
 
+// Refer to TS 23.040 - 9.1.2.3  Semi-octet representation
 func toSemiOctet(val int) int {
-	// Refer to TS 23.040 - 9.1.2.3  Semi-octet representation
 	return ((val & 0x0F) << 4) | ((val & 0xF0) >> 4)
 }
 
-func parseTimeZone(timezone string) int {
+func parseTimeZoneToNas(timezone string) int {
 	time := 0 // expressed in quarters of an hour
 
 	// Parse hour
 	if timezone[1] == '1' {
 		time += (10 * 4)
 	}
-
 	for i := 0; i < 10; i++ {
 		if int(timezone[2]) == (i + 0x30) {
 			time += i * 4
+		}
+	}
+	if strings.Contains(timezone, "+1") || strings.Contains(timezone, "+2") {
+		idx := strings.LastIndex(timezone, "+")
+		if idx != -1 {
+			if timezone[0] == '-' {
+				time -= (int(timezone[idx+1]) - 0x30) * 4
+			} else {
+				time += (int(timezone[idx+1]) - 0x30) * 4
+			}
 		}
 	}
 
@@ -52,8 +61,29 @@ func parseTimeZone(timezone string) int {
 	}
 
 	time = toSemiOctet(time)
-
 	return time
+}
+
+// Get time zone string from time.Time structure
+func GetTimeZone(now time.Time) string {
+	timezone := ""
+	_, offset := now.Zone()
+	if now.IsDST() {
+		// Adjust one hour to get the orignal time
+		offset -= 3600
+	}
+	if offset < 0 {
+		timezone += "-"
+		offset = 0 - offset
+	} else {
+		timezone += "+"
+	}
+	timezone += fmt.Sprintf("%02d:%02d", offset/3600, (offset%3600)/60)
+	if now.IsDST() {
+		timezone += "+1"
+	}
+
+	return timezone
 }
 
 func EncodeUniversalTimeAndLocalTimeZoneToNas(
@@ -67,19 +97,7 @@ func EncodeUniversalTimeAndLocalTimeZoneToNas(
 	hour := toSemiOctet(toBinaryCodedDecimal(universalTime.Hour()))
 	minute := toSemiOctet(toBinaryCodedDecimal(universalTime.Minute()))
 	second := toSemiOctet(toBinaryCodedDecimal(universalTime.Second()))
-	timezone := ""
-
-	_, offset := universalTime.Zone()
-	if offset < 0 {
-		timezone += "-"
-		offset = 0 - offset
-	} else {
-		timezone += "+"
-	}
-	timezone += fmt.Sprintf("%02d:%02d", offset/3600, (offset%3600)/60)
-	if universalTime.IsDST() {
-		timezone += "+1"
-	}
+	timezone := GetTimeZone(universalTime)
 
 	nasUniversalTimeAndLocalTimeZone.SetYear(uint8(year))
 	nasUniversalTimeAndLocalTimeZone.SetMonth(uint8(month))
@@ -87,7 +105,7 @@ func EncodeUniversalTimeAndLocalTimeZoneToNas(
 	nasUniversalTimeAndLocalTimeZone.SetHour(uint8(hour))
 	nasUniversalTimeAndLocalTimeZone.SetMinute(uint8(minute))
 	nasUniversalTimeAndLocalTimeZone.SetSecond(uint8(second))
-	nasUniversalTimeAndLocalTimeZone.SetTimeZone(uint8(parseTimeZone(timezone)))
+	nasUniversalTimeAndLocalTimeZone.SetTimeZone(uint8(parseTimeZoneToNas(timezone)))
 	return nasUniversalTimeAndLocalTimeZone
 }
 
@@ -96,8 +114,7 @@ func EncodeLocalTimeZoneToNas(
 ) nasType.LocalTimeZone {
 	var nasLocalTimeZone nasType.LocalTimeZone
 
-	time := parseTimeZone(timezone)
-	nasLocalTimeZone.SetTimeZone(uint8(time))
+	nasLocalTimeZone.SetTimeZone(uint8(parseTimeZoneToNas(timezone)))
 	return nasLocalTimeZone
 }
 
