@@ -131,6 +131,12 @@ func TestLocalTimeZoneToNas(t *testing.T) {
 			},
 		},
 		{
+			in: nasConvert.EncodeLocalTimeZoneToNas("+10:45"),
+			out: nasType.LocalTimeZone{
+				Octet: uint8(0x34),
+			},
+		},
+		{
 			in: nasConvert.EncodeLocalTimeZoneToNas("+01:00+1"), // CEST
 			out: nasType.LocalTimeZone{
 				Octet: uint8(0x80),

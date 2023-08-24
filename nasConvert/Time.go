@@ -29,7 +29,7 @@ func parseTimeZoneToNas(timezone string) int {
 			time += i * 4
 		}
 	}
-	if strings.Contains(timezone, "+1") || strings.Contains(timezone, "+2") {
+	if timezone[len(timezone)-2:] == "+1" || timezone[len(timezone)-2:] == "+2" {
 		idx := strings.LastIndex(timezone, "+")
 		if idx != -1 {
 			if timezone[0] == '-' {
