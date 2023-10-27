@@ -124,10 +124,10 @@ func EncodeDaylightSavingTimeToNas(
 	var nasDaylightSavingTime nasType.NetworkDaylightSavingTime
 
 	value := 0
-	if strings.Contains(timezone, "+1") {
+	if timezone[len(timezone)-2:] == "+1" {
 		value = 1
 	}
-	if strings.Contains(timezone, "+2") {
+	if timezone[len(timezone)-2:] == "+2" {
 		value = 2
 	}
 
