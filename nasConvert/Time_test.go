@@ -217,6 +217,13 @@ func TestDaylightSavingTimeToNas(t *testing.T) {
 				Octet: uint8(0x00),
 			},
 		},
+		{
+			in: nasConvert.EncodeDaylightSavingTimeToNas("+10:45"),
+			out: nasType.NetworkDaylightSavingTime{
+				Len:   uint8(0x01),
+				Octet: uint8(0x00),
+			},
+		},
 	}
 
 	for _, tc := range nasConvertNetworkDaylightSavingTimeTable {
