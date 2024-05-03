@@ -2,8 +2,9 @@ package security
 
 /*
 TS 33.501 6.4.3.1
- COUNT (32 bits) := 0x00 || NAS COUNT (24 bits)
- NAS COUNT (24 bits) := NAS OVERFLOW (16 bits) || NAS SQN (8 bits)
+
+	COUNT (32 bits) := 0x00 || NAS COUNT (24 bits)
+	NAS COUNT (24 bits) := NAS OVERFLOW (16 bits) || NAS SQN (8 bits)
 */
 type Count struct {
 	count uint32
