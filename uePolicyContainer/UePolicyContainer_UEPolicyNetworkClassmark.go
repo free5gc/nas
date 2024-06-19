@@ -17,7 +17,7 @@ func NewUEPolicyNetworkClassmark() (uEPolicyNetworkClassmark *UEPolicyNetworkCla
 
 // D.6.7 UE policy network classmark
 // Iei Row, sBit, len = [], 8, 8
-func (a *UEPolicyNetworkClassmark) GetIei() (iei uint8) {
+func (a *UEPolicyNetworkClassmark) GetIei() uint8 {
 	return a.Iei
 }
 
@@ -29,14 +29,14 @@ func (a *UEPolicyNetworkClassmark) SetIei(iei uint8) {
 
 // D.6.7 UE policy network classmark
 // Len Row, sBit, len = [], 8, 8
-func (a *UEPolicyNetworkClassmark) GetLen() (len uint8) {
+func (a *UEPolicyNetworkClassmark) GetLen() uint8 {
 	return a.Len
 }
 
 // D.6.7 UE policy network classmark
 // Len Row, sBit, len = [], 8, 8
-func (a *UEPolicyNetworkClassmark) SetLen(len uint8) {
-	a.Len = len
+func (a *UEPolicyNetworkClassmark) SetLen(length uint8) {
+	a.Len = length
 }
 
 // D.6.7 UE policy network classmark

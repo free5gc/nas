@@ -46,7 +46,7 @@ func (u *UEPolicySectionManagementResult) UnmarshalBinary(buf *bytes.Buffer) err
 	return nil
 }
 
-func (u *UEPolicySectionManagementResult) GetIei() (iei uint8) {
+func (u *UEPolicySectionManagementResult) GetIei() uint8 {
 	return u.Iei
 }
 
@@ -54,22 +54,22 @@ func (u *UEPolicySectionManagementResult) SetIei(iei uint8) {
 	u.Iei = iei
 }
 
-func (u *UEPolicySectionManagementResult) GetLen() (len uint16) {
+func (u *UEPolicySectionManagementResult) GetLen() uint16 {
 	return u.Len
 }
 
-func (u *UEPolicySectionManagementResult) SetLen(len uint16) {
-	u.Len = len
+func (u *UEPolicySectionManagementResult) SetLen(length uint16) {
+	u.Len = length
 }
 
 // UEPolicySectionManagementResult element D.6.3.1
-func (a *UEPolicySectionManagementResult) GetUEPolicySectionManagementResultContent() (uEPolicySectionManagementResultContent []uint8) {
-	uEPolicySectionManagementResultContent = make([]uint8, len(a.Buffer))
-	copy(uEPolicySectionManagementResultContent, a.Buffer)
+func (a *UEPolicySectionManagementResult) GetUEPolicySectionManagementResultContent() (ctnByte []uint8) {
+	ctnByte = make([]uint8, len(a.Buffer))
+	copy(ctnByte, a.Buffer)
 	return
 }
 
-func (a *UEPolicySectionManagementResult) SetUEPolicySectionManagementResultContent(uEPolicySectionManagementResultContent []uint8) {
-	a.Buffer = make([]uint8, len(uEPolicySectionManagementResultContent))
-	copy(a.Buffer, uEPolicySectionManagementResultContent)
+func (a *UEPolicySectionManagementResult) SetUEPolicySectionManagementResultContent(ctnByte []uint8) {
+	a.Buffer = make([]uint8, len(ctnByte))
+	copy(a.Buffer, ctnByte)
 }

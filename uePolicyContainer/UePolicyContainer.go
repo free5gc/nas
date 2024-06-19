@@ -100,11 +100,17 @@ func (u *UePolDeliverySer) UePolDeliverySerEncode() ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	switch u.GetHeaderMessageType() {
 	case MsgTypeManageUEPolicyCommand:
-		u.EncodeManageUEPolicyCommand(buf)
+		if err := u.EncodeManageUEPolicyCommand(buf); err != nil {
+			return nil, err
+		}
 	case MsgTypeManageUEPolicyComplete:
-		u.EncodeManageUEPolicyComplete(buf)
+		if err := u.EncodeManageUEPolicyComplete(buf); err != nil {
+			return nil, err
+		}
 	case MsgTypeManageUEPolicyReject:
-		u.EncodeManageUEPolicyReject(buf)
+		if err := u.EncodeManageUEPolicyReject(buf); err != nil {
+			return nil, err
+		}
 	case MsgTypeUEStateIndication:
 		// TODO
 	case MsgTypeUEPolicyProvisioningRequest:

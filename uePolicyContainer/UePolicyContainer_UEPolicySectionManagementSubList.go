@@ -17,7 +17,8 @@ type UEPolicySectionManagementSubList struct {
 	Mcc                                      *int  // not specific in specm just recode the origin MCC before encoding
 	Mnc                                      *int  // not specific in specm just recode the origin MNC before encoding
 	UEPolicySectionManagementSubListContents UEPolicySectionManagementSubListContents
-	UpscGenerator                            IDGenerator // a UE policy section code (UPSC) containing a unique value within the PLMN or SNPN selected by the PCF.
+	// a UE policy section code (UPSC) containing a unique value within the PLMN or SNPN selected by the PCF.
+	UpscGenerator IDGenerator
 }
 
 func (u *UEPolicySectionManagementListContent) AppendSublist(sublist UEPolicySectionManagementSubList) {
@@ -59,8 +60,8 @@ func (u *UEPolicySectionManagementListContent) UnmarshalBinary(b []byte) error {
 	}
 }
 
-func (u *UEPolicySectionManagementSubList) SetLen(len uint16) {
-	u.Len = len
+func (u *UEPolicySectionManagementSubList) SetLen(length uint16) {
+	u.Len = length
 }
 
 func (u *UEPolicySectionManagementSubList) GetLen() uint16 {

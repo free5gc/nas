@@ -18,14 +18,23 @@ func NewManageUEPolicyComplete(msgType uint8) (manageUEPolicyComplete *ManageUEP
 	return manageUEPolicyComplete
 }
 
-func (m *ManageUEPolicyComplete) EncodeManageUEPolicyComplete(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, m.PTI.Octet)
-	binary.Write(buffer, binary.BigEndian, m.UePolicyDeliveryServiceMsgType.Octet)
+func (m *ManageUEPolicyComplete) EncodeManageUEPolicyComplete(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, m.PTI.Octet); err != nil {
+		return err
+	}
+	if err := binary.Write(buffer, binary.BigEndian, m.UePolicyDeliveryServiceMsgType.Octet); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *ManageUEPolicyComplete) DecodeManageUEPolicyComplete(byteArray []byte) error {
 	buffer := bytes.NewBuffer(byteArray)
-	binary.Read(buffer, binary.BigEndian, &m.PTI.Octet)
-	binary.Read(buffer, binary.BigEndian, &m.UePolicyDeliveryServiceMsgType.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &m.PTI.Octet); err != nil {
+		return err
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &m.UePolicyDeliveryServiceMsgType.Octet); err != nil {
+		return err
+	}
 	return nil
 }

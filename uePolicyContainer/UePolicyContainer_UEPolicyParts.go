@@ -51,8 +51,8 @@ func (u *UEPolicySectionContents) UnmarshalBinary(b []byte) error {
 	return nil
 }
 
-func (u *UEPolicyPart) SetLen(len uint16) {
-	u.Len = len
+func (u *UEPolicyPart) SetLen(length uint16) {
+	u.Len = length
 }
 
 func (u *UEPolicyPart) SetLen_byContent() uint16 {

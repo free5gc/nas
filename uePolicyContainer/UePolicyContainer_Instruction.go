@@ -53,8 +53,8 @@ func (u *UEPolicySectionManagementSubListContents) UnmarshalBinary(b []byte) err
 	}
 }
 
-func (i *Instruction) SetLen(len uint16) {
-	i.Len = len
+func (i *Instruction) SetLen(length uint16) {
+	i.Len = length
 }
 
 func (i *Instruction) GetLen() uint16 {

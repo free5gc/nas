@@ -22,40 +22,82 @@ func NewManageUEPolicyCommand(msgType uint8) (manageUEPolicyCommand *ManageUEPol
 	return manageUEPolicyCommand
 }
 
-func (m *ManageUEPolicyCommand) EncodeManageUEPolicyCommand(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, m.PTI.Octet)
-	binary.Write(buffer, binary.BigEndian, m.UePolicyDeliveryServiceMsgType.Octet)
+func (m *ManageUEPolicyCommand) EncodeManageUEPolicyCommand(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, m.PTI.Octet); err != nil {
+		return err
+	}
+	if err := binary.Write(buffer, binary.BigEndian, m.UePolicyDeliveryServiceMsgType.Octet); err != nil {
+		return err
+	}
 	// structure: UEPolicySectionManagementList
-	binary.Write(buffer, binary.BigEndian, m.UEPolicySectionManagementList.GetIei())
-	binary.Write(buffer, binary.BigEndian, m.UEPolicySectionManagementList.GetLen())
-	binary.Write(buffer, binary.BigEndian, m.UEPolicySectionManagementList.GetUEPolicySectionManagementListContent())
+	{
+		if err := binary.Write(buffer, binary.BigEndian, m.UEPolicySectionManagementList.GetIei()); err != nil {
+			return err
+		}
+		if err := binary.Write(buffer, binary.BigEndian, m.UEPolicySectionManagementList.GetLen()); err != nil {
+			return err
+		}
+		if err := binary.Write(buffer, binary.BigEndian,
+			m.UEPolicySectionManagementList.GetUEPolicySectionManagementListContent()); err != nil {
+			return err
+		}
+	}
 	// Optinal structure: UEPolicyNetworkClassmark
 	if m.UEPolicyNetworkClassmark != nil {
-		binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetIei())
-		binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetLen())
-		binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetNSSUI())
-		binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetSpare())
+		if err := binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetIei()); err != nil {
+			return err
+		}
+		if err := binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetLen()); err != nil {
+			return err
+		}
+		if err := binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetNSSUI()); err != nil {
+			return err
+		}
+		if err := binary.Write(buffer, binary.BigEndian, m.UEPolicyNetworkClassmark.GetSpare()); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (m *ManageUEPolicyCommand) DecodeManageUEPolicyCommand(byteArray []byte) error {
 	buffer := bytes.NewBuffer(byteArray)
-	binary.Read(buffer, binary.BigEndian, &m.PTI.Octet)
-	binary.Read(buffer, binary.BigEndian, &m.UePolicyDeliveryServiceMsgType.Octet)
-	// structure: UEPolicySectionManagementList
-	binary.Read(buffer, binary.BigEndian, &m.UEPolicySectionManagementList.Iei)
-	binary.Read(buffer, binary.BigEndian, &m.UEPolicySectionManagementList.Len)
-	m.UEPolicySectionManagementList.Buffer = make([]uint8, m.UEPolicySectionManagementList.Len)
-	binary.Read(buffer, binary.BigEndian, m.UEPolicySectionManagementList.Buffer[:m.UEPolicySectionManagementList.GetLen()])
+	if err := binary.Read(buffer, binary.BigEndian, &m.PTI.Octet); err != nil {
+		return err
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &m.UePolicyDeliveryServiceMsgType.Octet); err != nil {
+		return err
+	}
 
+	{ // structure: UEPolicySectionManagementList
+		if err := binary.Read(buffer, binary.BigEndian, &m.UEPolicySectionManagementList.Iei); err != nil {
+			return err
+		}
+		if err := binary.Read(buffer, binary.BigEndian, &m.UEPolicySectionManagementList.Len); err != nil {
+			return err
+		}
+		m.UEPolicySectionManagementList.Buffer = make([]uint8, m.UEPolicySectionManagementList.Len)
+		if err := binary.Read(buffer, binary.BigEndian,
+			m.UEPolicySectionManagementList.Buffer[:m.UEPolicySectionManagementList.GetLen()]); err != nil {
+			return err
+		}
+	}
 	// optinal structure: UEPolicyNetworkClassmark
 	if buffer.Len() > 0 {
 		// initial pointer type element
 		m.UEPolicyNetworkClassmark = NewUEPolicyNetworkClassmark()
-		binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.Iei)
-		binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.Len)
-		binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.NSSUI)
-		binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.Spare)
+		if err := binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.Iei); err != nil {
+			return err
+		}
+		if err := binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.Len); err != nil {
+			return err
+		}
+		if err := binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.NSSUI); err != nil {
+			return err
+		}
+		if err := binary.Read(buffer, binary.BigEndian, &m.UEPolicyNetworkClassmark.Spare); err != nil {
+			return err
+		}
 		if buffer.Len() > 0 {
 			return errors.New("deecode [Manage UE Policy Command] Error: nas msg out of range")
 		}

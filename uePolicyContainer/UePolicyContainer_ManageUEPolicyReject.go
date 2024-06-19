@@ -19,18 +19,32 @@ func NewManageUEPolicyReject(msgType uint8) (manageUEPolicyReject *ManageUEPolic
 	return manageUEPolicyReject
 }
 
-func (m *ManageUEPolicyReject) EncodeManageUEPolicyReject(buffer *bytes.Buffer) {
-	binary.Write(buffer, binary.BigEndian, m.PTI.Octet)
-	binary.Write(buffer, binary.BigEndian, m.UePolicyDeliveryServiceMsgType.Octet)
+func (m *ManageUEPolicyReject) EncodeManageUEPolicyReject(buffer *bytes.Buffer) error {
+	if err := binary.Write(buffer, binary.BigEndian, m.PTI.Octet); err != nil {
+		return err
+	}
+	if err := binary.Write(buffer, binary.BigEndian, m.UePolicyDeliveryServiceMsgType.Octet); err != nil {
+		return err
+	}
 	// UEPolicySectionManagementResult
-	uePolSecMngRsult, _ := m.UEPolicySectionManagementResult.MarshalBinary()
-	binary.Write(buffer, binary.BigEndian, uePolSecMngRsult)
+	uePolSecMngRsult, err := m.UEPolicySectionManagementResult.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	if err := binary.Write(buffer, binary.BigEndian, uePolSecMngRsult); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *ManageUEPolicyReject) DecodeManageUEPolicyReject(byteArray []byte) error {
 	buffer := bytes.NewBuffer(byteArray)
-	binary.Read(buffer, binary.BigEndian, &m.PTI.Octet)
-	binary.Read(buffer, binary.BigEndian, &m.UePolicyDeliveryServiceMsgType.Octet)
+	if err := binary.Read(buffer, binary.BigEndian, &m.PTI.Octet); err != nil {
+		return err
+	}
+	if err := binary.Read(buffer, binary.BigEndian, &m.UePolicyDeliveryServiceMsgType.Octet); err != nil {
+		return err
+	}
 	if err := m.UEPolicySectionManagementResult.UnmarshalBinary(buffer); err != nil {
 		return err
 	}

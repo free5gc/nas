@@ -10,9 +10,12 @@ type UEPolicySectionManagementSubResultContents []Result
 
 // Refer to TS23501 v17.7.1,Table D.6.3.1
 type Result struct {
-	Upsc                 uint16 // a UE policy section code (UPSC) containing a value assigned by the PCF.
-	FailInstructionOrder uint16 // This field contains the binary encoding of the order of the failed instruction in the UE policy section management sublist.
-	Cause                uint8  // The receiving entity shall treat any other value as 0110 1111, "protocol error, unspecified".
+	Upsc uint16 // a UE policy section code (UPSC) containing a value assigned by the PCF.
+	// FailInstructionOrder: This field contains the binary encoding of the order of the failed instruction
+	// in the UE policy section management sublist.
+	FailInstructionOrder uint16
+	// Cause: The receiving entity shall treat any other value as 0110 1111, "protocol error, unspecified".
+	Cause uint8
 }
 
 func (u *UEPolicySectionManagementSubResultContents) AppendResult(ins Result) {

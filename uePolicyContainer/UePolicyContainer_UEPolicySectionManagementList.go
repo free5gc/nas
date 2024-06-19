@@ -48,7 +48,7 @@ func (u *UEPolicySectionManagementList) UnmarshalBinary(buf *bytes.Buffer) error
 
 // UEPolicySectionManagementList element D.6.2.1
 // Iei Row, sBit, len = [], 8, 8
-func (a *UEPolicySectionManagementList) GetIei() (iei uint8) {
+func (a *UEPolicySectionManagementList) GetIei() uint8 {
 	return a.Iei
 }
 
@@ -60,26 +60,26 @@ func (a *UEPolicySectionManagementList) SetIei(iei uint8) {
 
 // UEPolicySectionManagementList element D.6.2.1
 // Len Row, sBit, len = [], 8, 16
-func (a *UEPolicySectionManagementList) GetLen() (len uint16) {
+func (a *UEPolicySectionManagementList) GetLen() uint16 {
 	return a.Len
 }
 
 // UEPolicySectionManagementList element D.6.2.1
 // Len Row, sBit, len = [], 8, 16
-func (a *UEPolicySectionManagementList) SetLen(len uint16) {
-	a.Len = len
+func (a *UEPolicySectionManagementList) SetLen(length uint16) {
+	a.Len = length
 }
 
 // UEPolicySectionManagementList element D.6.2.1
 // QoSFlowDescriptions Row, sBit, len = [0, 0], 8 , INF
-func (a *UEPolicySectionManagementList) GetUEPolicySectionManagementListContent() (uEPolicySectionManagementListContent []uint8) {
-	uEPolicySectionManagementListContent = make([]uint8, len(a.Buffer))
-	copy(uEPolicySectionManagementListContent, a.Buffer)
-	return uEPolicySectionManagementListContent
+func (a *UEPolicySectionManagementList) GetUEPolicySectionManagementListContent() (ctnByte []uint8) {
+	ctnByte = make([]uint8, len(a.Buffer))
+	copy(ctnByte, a.Buffer)
+	return ctnByte
 }
 
 // set a byte list(consit of one or many sublist) to list content
-func (a *UEPolicySectionManagementList) SetUEPolicySectionManagementListContent(uEPolicySectionManagementListContent []uint8) {
-	a.Buffer = make([]uint8, len(uEPolicySectionManagementListContent))
-	copy(a.Buffer, uEPolicySectionManagementListContent)
+func (a *UEPolicySectionManagementList) SetUEPolicySectionManagementListContent(ctnByte []uint8) {
+	a.Buffer = make([]uint8, len(ctnByte))
+	copy(a.Buffer, ctnByte)
 }
