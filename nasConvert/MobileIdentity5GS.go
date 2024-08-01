@@ -145,7 +145,7 @@ func GutiToStringWithError(buf []byte) (guami models.Guami, guti string, err err
 	amfID := hex.EncodeToString(buf[4:7])
 	tmsi5G := hex.EncodeToString(buf[7:])
 
-	guami.PlmnId = new(models.PlmnId)
+	guami.PlmnId = new(models.PlmnIdNid)
 	guami.PlmnId.Mcc = plmnID[:3]
 	guami.PlmnId.Mnc = plmnID[3:]
 	guami.AmfId = amfID
