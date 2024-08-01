@@ -122,7 +122,7 @@ func TestGutiToStringWithError(t *testing.T) {
 				buf: []byte{0xf2, 0x02, 0xf8, 0x39, 0x01, 0x23, 0x45, 0x67, 0x89, 0x01, 0x23},
 			},
 			wantGuami: models.Guami{
-				PlmnId: &models.PlmnId{
+				PlmnId: &models.PlmnIdNid{
 					Mcc: "208",
 					Mnc: "93",
 				},
@@ -137,7 +137,7 @@ func TestGutiToStringWithError(t *testing.T) {
 				buf: []byte{0xf2, 0x02, 0x58, 0x39, 0x01, 0x23, 0x45, 0x67, 0x89, 0x01, 0x23},
 			},
 			wantGuami: models.Guami{
-				PlmnId: &models.PlmnId{
+				PlmnId: &models.PlmnIdNid{
 					Mcc: "208",
 					Mnc: "935",
 				},
