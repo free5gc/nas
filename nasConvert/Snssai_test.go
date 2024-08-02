@@ -10,7 +10,6 @@ import (
 )
 
 func TestSnssaiToModels(t *testing.T) {
-
 	testCase := []struct {
 		Name         string
 		nasSnssai    nasType.SNSSAI
