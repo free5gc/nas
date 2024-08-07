@@ -10,8 +10,8 @@ import (
 
 // TS24.501 9.11.2.8 S-NSSAI
 func SnssaiToModels(nasSnssai *nasType.SNSSAI) (snssai models.Snssai) {
-	sD := nasSnssai.GetSD()
-	if nasSnssai.GetLen() >= uint8(3) {
+	if nasSnssai.GetLen() == uint8(4) {
+		sD := nasSnssai.GetSD()
 		snssai.Sd = hex.EncodeToString(sD[:])
 	}
 	snssai.Sst = int32(nasSnssai.GetSST())

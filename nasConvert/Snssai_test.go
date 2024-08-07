@@ -47,3 +47,38 @@ func TestSnssaiToModels(t *testing.T) {
 		})
 	}
 }
+
+func TestSnssaiToNas(t *testing.T) {
+	testCase := []struct {
+		Name      string
+		Snssai    models.Snssai
+		nasSnssai []uint8
+	}{
+		{
+			Name: "Default",
+			Snssai: models.Snssai{
+				Sst: int32(1),
+				Sd:  "010203",
+			},
+			nasSnssai: []uint8{
+				04, 01, 01, 02, 03,
+			},
+		},
+		{
+			Name: "Empty SD",
+			Snssai: models.Snssai{
+				Sst: int32(1),
+			},
+			nasSnssai: []uint8{
+				01, 01,
+			},
+		},
+	}
+
+	for _, tc := range testCase {
+		t.Run(tc.Name, func(t *testing.T) {
+			result := nasConvert.SnssaiToNas(tc.Snssai)
+			require.Equal(t, tc.nasSnssai, result)
+		})
+	}
+}
