@@ -3,8 +3,8 @@ github.com/aead/cmac v0.0.0-20160719120800-7af84192f0b1/go.mod h1:nuudZmJhzWtx22
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/free5gc/openapi v1.0.9-0.20240823100026-6a9f667e914f h1:b//Fa0CvIDU7fufqMcrEgbVUqpubokK/lFgkTxN3fGM=
-github.com/free5gc/openapi v1.0.9-0.20240823100026-6a9f667e914f/go.mod h1:aKw6uGzEibGDrn9++w4/JpWxaaUBo7GaqsvuFKU9fl4=
+github.com/free5gc/openapi v1.0.9-0.20241107082311-771224514296 h1:e/ozr2CI18QpR7tfxgNm7gXuJrP014d4vNaEIxzk2f4=
+github.com/free5gc/openapi v1.0.9-0.20241107082311-771224514296/go.mod h1:aKw6uGzEibGDrn9++w4/JpWxaaUBo7GaqsvuFKU9fl4=
 github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=
 github.com/golang-jwt/jwt/v5 v5.2.1/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGaHF6qqu48+N2wcFQ5qg5FXgOdqsJ5d8=
