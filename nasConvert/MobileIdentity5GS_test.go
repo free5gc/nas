@@ -311,40 +311,53 @@ func TestPeiToStringWithError(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "PEI-IMEI-even",
+            name: "Complete-Valid-IMEI",
+            args: args{
+                // Example encoding for a valid 15-digit IMEI
+                buf: []byte{
+					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32, 0x57, 0x81,
+				},
+            },
+            want:    "imei-490154203237518",
+            wantErr: false,
+        },
+		{
+            name: "Complete-Ivalid-IMEI",
+            args: args{
+                // Example encoding for a valid 15-digit IMEI
+                buf: []byte{
+					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32, 0x57, 0x82,
+				},
+            },
+            wantErr: true,
+        },
+		{
+			name: "Complete-Valid-IMEISV",
 			args: args{
-				buf: []byte{0x3, 0xf1},
+				buf: []byte{
+					0x90, 0x87, 0x65, 0x43, 0x21, 0x01, 0x23, 0x45, 0x60,
+				},
 			},
-			want:    "imei-01",
+			want:    "imeisv-9785634121032540",
 			wantErr: false,
 		},
 		{
-			name: "PEI-IMEISV-odd",
+			name: "IMEI-TooLong",
 			args: args{
-				buf: []byte{0xd, 0x21},
+				buf: []byte{
+					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32, 0x57, 0x81, 0x20,
+				},
 			},
-			want:    "imeisv-012",
-			wantErr: false,
-		},
-		{
-			name:    "PEI-nil",
 			wantErr: true,
 		},
 		{
-			name: "PEI-IMEI-len1",
+			name: "IMEI-TooShort",
 			args: args{
-				buf: []byte{0xb},
+				buf: []byte{
+					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32,
+				},
 			},
-			want:    "imei-0",
-			wantErr: false,
-		},
-		{
-			name: "PEI-IMEI-len0",
-			args: args{
-				buf: []byte{0x3},
-			},
-			want:    "imei-",
-			wantErr: false,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

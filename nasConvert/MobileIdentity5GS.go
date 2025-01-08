@@ -7,6 +7,7 @@ import (
 	"math/bits"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/free5gc/nas/logger"
 	"github.com/free5gc/nas/nasMessage"
@@ -282,5 +283,52 @@ func PeiToStringWithError(buf []byte) (string, error) {
 		digitStr = digitStr[:len(digitStr)-1] // remove the last digit
 	}
 
+	if prefix == "imei-" {
+        // Validate IMEI before returning
+		if len(digitStr) != 15 {
+            return "", fmt.Errorf("invalid IMEI length: expected 15 digits, got %d", len(digitStr))
+        }
+        valid, err := ValidateIMEI(digitStr)
+        if err != nil {
+            return "", fmt.Errorf("IMEI validation error: %w", err)
+        }
+        if !valid {
+            return "", fmt.Errorf("invalid IMEI checksum")
+        }
+    } else{
+		if len(digitStr) != 16 {
+            return "", fmt.Errorf("invalid IMEISV length: expected 16 digits, got %d", len(digitStr))
+        }
+	}
+
 	return prefix + digitStr, nil
+}
+
+func ValidateIMEI(imei string) (bool, error) {
+    // Remove any non-digit characters
+    cleanIMEI := strings.ReplaceAll(imei, "-", "")
+    cleanIMEI = strings.ReplaceAll(cleanIMEI, " ", "")
+
+    // Check if all characters are digits
+    for _, char := range cleanIMEI {
+        if !unicode.IsDigit(char) {
+            return false, fmt.Errorf("IMEI contains non-digit character: %c", char)
+        }
+    }
+
+    // Luhn algorithm validation
+    sum := 0
+    for i := len(cleanIMEI) - 1; i >= 0; i-- {
+        digit := int(cleanIMEI[i] - '0')
+        
+        if (len(cleanIMEI)-i)%2 == 0 {
+            digit *= 2
+            if digit > 9 {
+                digit = digit/10 + digit%10
+            }
+        }
+        sum += digit
+    }
+
+    return sum%10 == 0, nil
 }
