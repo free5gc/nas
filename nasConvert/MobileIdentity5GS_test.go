@@ -311,26 +311,26 @@ func TestPeiToStringWithError(t *testing.T) {
 		wantErr bool
 	}{
 		{
-            name: "Complete-Valid-IMEI",
-            args: args{
-                // Example encoding for a valid 15-digit IMEI
-                buf: []byte{
+			name: "Complete-Valid-IMEI",
+			args: args{
+				// Example encoding for a valid 15-digit IMEI
+				buf: []byte{
 					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32, 0x57, 0x81,
 				},
-            },
-            want:    "imei-490154203237518",
-            wantErr: false,
-        },
+			},
+			want:    "imei-490154203237518",
+			wantErr: false,
+		},
 		{
-            name: "Complete-Ivalid-IMEI",
-            args: args{
-                // Example encoding for a valid 15-digit IMEI
-                buf: []byte{
+			name: "Complete-Ivalid-IMEI",
+			args: args{
+				// Example encoding for a valid 15-digit IMEI
+				buf: []byte{
 					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32, 0x57, 0x82,
 				},
-            },
-            wantErr: true,
-        },
+			},
+			wantErr: true,
+		},
 		{
 			name: "Complete-Valid-IMEISV",
 			args: args{
