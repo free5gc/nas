@@ -304,7 +304,7 @@ func PeiToStringWithError(buf []byte) (string, error) {
 	return prefix + digitStr, nil
 }
 
-func ValidateIMEI(imei string) (bool, error) {
+func validateIMEI(imei string) (bool, error) {
 	// Remove any non-digit characters
 	cleanIMEI := strings.ReplaceAll(imei, "-", "")
 	cleanIMEI = strings.ReplaceAll(cleanIMEI, " ", "")

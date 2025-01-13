@@ -324,7 +324,7 @@ func TestPeiToStringWithError(t *testing.T) {
 		{
 			name: "Complete-Ivalid-IMEI",
 			args: args{
-				// Example encoding for a valid 15-digit IMEI
+				// Not valid 15-digit IMEI: CD(Check Digit) not valid
 				buf: []byte{
 					0x4b, 0x09, 0x51, 0x24, 0x30, 0x32, 0x57, 0x82,
 				},
