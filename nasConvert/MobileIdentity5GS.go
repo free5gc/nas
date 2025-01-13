@@ -288,7 +288,7 @@ func PeiToStringWithError(buf []byte) (string, error) {
 		if len(digitStr) != 15 {
 			return "", fmt.Errorf("invalid IMEI length: expected 15 digits, got %d", len(digitStr))
 		}
-		valid, err := ValidateIMEI(digitStr)
+		valid, err := validateIMEI(digitStr)
 		if err != nil {
 			return "", fmt.Errorf("IMEI validation error: %w", err)
 		}
