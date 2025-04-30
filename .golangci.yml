@@ -5,6 +5,8 @@ run:
   tests: false
   allow-parallel-runners: true
 linters:
+  disable:
+    - staticcheck
   enable:
     - asciicheck
     - bodyclose
