@@ -379,7 +379,6 @@ func (p *PacketFilterComponentList) UnmarshalBinary(b []byte) error {
 		}
 
 		*p = append(*p, component)
-
 	}
 
 	return nil
