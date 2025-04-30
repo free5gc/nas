@@ -176,14 +176,15 @@ func ParseSpecs() {
 					lenSplit := strings.Split(length, "-")
 					if len(lenSplit) == 1 {
 						// Fixed length
-						if lenSplit[0] == "1/2" {
+						switch lenSplit[0] {
+						case "1/2":
 							// half octet IE
 							half = true
-						} else if lenSplit[0] == "7, 11 or 15" {
+						case "7, 11 or 15":
 							// Special case (PDU address IE)
 							ie.minLength = length7or11or15
 							ie.maxLength = length7or11or15
-						} else {
+						default:
 							if i, err := strconv.ParseInt(lenSplit[0], 10, strconv.IntSize); err != nil {
 								panic(err)
 							} else {

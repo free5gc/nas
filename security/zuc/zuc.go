@@ -122,7 +122,7 @@ func generateKeystream(wlength uint32, l *Lfsr, br *Br, f *Fsm) []uint32 {
 func (l *Lfsr) state(mode string, u uint32) {
 	x := []int{0, 4, 10, 13, 15}
 	k := []int{8, 20, 21, 17, 15}
-	var f uint32 = l.s[0]
+	f := l.s[0]
 
 	for i, v := range x {
 		f += ((l.s[v] << k[i]) | (l.s[v] >> (31 - k[i]))) & 0x7FFFFFFF
