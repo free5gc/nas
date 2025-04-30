@@ -87,6 +87,11 @@ linters:
       allow-separated-leading-comment: false
       allow-cuddle-declarations: false
       force-err-cuddling: false
+    predeclared:
+      ignore:
+        - len
+        - max
+        - min
   exclusions:
     generated: lax
     paths:
