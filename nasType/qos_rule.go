@@ -216,7 +216,6 @@ func buildPacketFilterList(pfList PacketFilterList) ([]byte, error) {
 				return nil, err
 			}
 		}
-
 	}
 
 	return buf.Bytes(), nil
@@ -261,7 +260,6 @@ func parsePacketFilterList(buf *bytes.Buffer, n int) (PacketFilterList, error) {
 		}
 
 		pfList = append(pfList, pf)
-
 	}
 
 	return pfList, nil
