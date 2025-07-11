@@ -267,9 +267,7 @@ func (a *MobileIdentity5GS) Get5GTMSI() string {
 	if idType == "5G-GUTI" && err == nil {
 		tmsi5G_string := hex.EncodeToString(a.Buffer[7:])
 		return tmsi5G_string
-
 	} else if idType == "5G-S-TMSI" && err == nil {
-
 		tmsi5G := a.Buffer[3:7]
 		tmsi5G_string := hex.EncodeToString(tmsi5G[0:])
 

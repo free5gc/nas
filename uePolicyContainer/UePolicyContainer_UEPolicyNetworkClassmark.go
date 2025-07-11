@@ -45,11 +45,12 @@ func (a *UEPolicyNetworkClassmark) SetLen(length uint8) {
 // 0 UE is allowed to accept URSP signalled by non-subscribed SNPNs
 // 1 UE is not allowed to accept URSP signalled by non-subscribed SNPNs
 func (a *UEPolicyNetworkClassmark) SetNSSUI(allowAcceptURSP uint8) error {
-	if allowAcceptURSP == 0 {
+	switch allowAcceptURSP {
+	case 0:
 		a.NSSUI = 0
-	} else if allowAcceptURSP == 1 {
+	case 1:
 		a.NSSUI = 1
-	} else {
+	default:
 		return errors.New("only allowed to set NSSUI as 0 or 1")
 	}
 	return nil
