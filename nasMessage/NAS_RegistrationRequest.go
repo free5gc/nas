@@ -317,10 +317,39 @@ func (a *RegistrationRequest) DecodeRegistrationRequest(byteArray *[]byte) error
 	if err := binary.Read(buffer, binary.BigEndian, &a.MobileIdentity5GS.Len); err != nil {
 		return fmt.Errorf("NAS decode error (RegistrationRequest/MobileIdentity5GS): %w", err)
 	}
-	if a.MobileIdentity5GS.Len < 4 {
-		return fmt.Errorf("invalid ie length (RegistrationRequest/MobileIdentity5GS): %d", a.MobileIdentity5GS.Len)
-	}
+
 	a.MobileIdentity5GS.SetLen(a.MobileIdentity5GS.GetLen())
+	if a.MobileIdentity5GS.Len > 0 {
+		identityType := a.MobileIdentity5GS.Buffer[0] & 0x0F
+		length := a.MobileIdentity5GS.Len
+		switch identityType {
+		case MobileIdentity5GSTypeNoIdentity:
+			if length < 1 {
+				return fmt.Errorf("invalid ie length for no identity: %d, expected > 1", length)
+			}
+		case MobileIdentity5GSTypeSuci:
+			if length < 6 {
+				return fmt.Errorf("invalid ie length for SUCI: %d, expected >= 6", length)
+			}
+		case MobileIdentity5GSType5gGuti:
+			if length != 11 {
+				return fmt.Errorf("invalid ie length for GUTI: %d, expected 11", length)
+			}
+		case MobileIdentity5GSTypeImei:
+			if length != 8 {
+				return fmt.Errorf("invalid ie length for IMEI: %d, expected 8", length)
+			}
+		case MobileIdentity5GSType5gSTmsi:
+			if length != 7 {
+				return fmt.Errorf("invalid ie length for TMSI: %d, expected 7", length)
+			}
+		default:
+			return fmt.Errorf("unknown 5GS mobile identity type: 0x%02X", identityType)
+		}
+	} else {
+		return fmt.Errorf("invalid ie length (RegistrationRequest/MobileIdentity5GS): 0")
+	}
+
 	if err := binary.Read(buffer, binary.BigEndian, a.MobileIdentity5GS.Buffer); err != nil {
 		return fmt.Errorf("NAS decode error (RegistrationRequest/MobileIdentity5GS): %w", err)
 	}
