@@ -38,8 +38,8 @@ func GetLogger() *logrus.Logger {
 }
 
 func SetLogLevel(level logrus.Level) {
-	NasLog.Infoln("set log level :", level)
 	log.SetLevel(level)
+	NasLog.Infoln("set log level :", level)
 }
 
 func SetReportCaller(enable bool) {
