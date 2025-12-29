@@ -84,6 +84,9 @@ func (a *MobileIdentity5GS) SetMobileIdentity5GSContents(mobileIdentity5GSConten
 // All other values are unused and shall be interpreted
 // as "SUCI", if received by the UE
 func (a *MobileIdentity5GS) GetTypeOfIdentity() (string, error) {
+	if len(a.Buffer) == 0 {
+		return "", errors.New("buffer is empty")
+	}
 	idType := a.Buffer[0] & high5BitMask
 	switch idType {
 	case noIdentity:
@@ -105,6 +108,10 @@ func (a *MobileIdentity5GS) GetTypeOfIdentity() (string, error) {
 
 // GetMobileIdentity
 func (a *MobileIdentity5GS) GetMobileIdentity() (string, string, error) {
+	if len(a.Buffer) == 0 {
+		return "", "", fmt.Errorf("empty buffer")
+	}
+
 	idType, err := a.GetTypeOfIdentity()
 	if err != nil {
 		return "", idType, err
@@ -112,22 +119,37 @@ func (a *MobileIdentity5GS) GetMobileIdentity() (string, string, error) {
 
 	switch idType {
 	case "SUCI":
+		if len(a.Buffer) < 8 {
+			return "", idType, fmt.Errorf("invalid SUCI length")
+		}
 		return a.GetSUCI(), idType, nil
 	case "5G-GUTI":
+		if len(a.Buffer) < 7 {
+			return "", idType, fmt.Errorf("invalid 5G-GUTI length")
+		}
 		return a.Get5GGUTI(), idType, nil
 	case "IMEI":
 		return a.GetIMEI(), idType, nil
 	case "5G-S-TMSI":
+		if len(a.Buffer) < 7 {
+			return "", idType, fmt.Errorf("invalid 5G-S-TMSI length")
+		}
 		return a.Get5GTMSI(), idType, nil
 	case "IMEISV":
 		return a.GetIMEISV(), idType, nil
 	default:
+		if len(a.Buffer) < 8 {
+			return "", "SUCI", fmt.Errorf("invalid SUCI length")
+		}
 		return a.GetSUCI(), "SUCI", nil
 	}
 }
 
 // GetSUCI
 func (a *MobileIdentity5GS) GetSUCI() string {
+	if len(a.Buffer) < 8 {
+		return ""
+	}
 	idType, err := a.GetTypeOfIdentity()
 
 	if idType == "SUCI" && err == nil {
@@ -192,6 +214,9 @@ func (a *MobileIdentity5GS) GetPlmnID() string {
 
 // GetMCC
 func (a *MobileIdentity5GS) GetMCC() string {
+	if len(a.Buffer) < 3 {
+		return ""
+	}
 	mccDigit3 := (a.Buffer[2] & high4BitMask)
 	tmpBytes := []byte{bits.RotateLeft8(a.Buffer[1], 4), (mccDigit3 << 4)}
 	mcc := hex.EncodeToString(tmpBytes)
@@ -201,6 +226,9 @@ func (a *MobileIdentity5GS) GetMCC() string {
 
 // GetMNC
 func (a *MobileIdentity5GS) GetMNC() string {
+	if len(a.Buffer) < 4 {
+		return ""
+	}
 	mncDigit3 := (a.Buffer[2] & low4BitMask) >> 4
 	tmpBytes := []byte{bits.RotateLeft8(a.Buffer[3], 4), mncDigit3 << 4}
 	mnc := hex.EncodeToString(tmpBytes)
@@ -219,11 +247,17 @@ func (a *MobileIdentity5GS) Get5GGUTI() string {
 
 // GetAmfID
 func (a *MobileIdentity5GS) GetAmfID() string {
+	if len(a.Buffer) < 7 {
+		return ""
+	}
 	return hex.EncodeToString(a.Buffer[4:7])
 }
 
 // GetAmfRegionID
 func (a *MobileIdentity5GS) GetAmfRegionID() string {
+	if len(a.Buffer) < 5 {
+		return ""
+	}
 	return hex.EncodeToString(a.Buffer[4:5])
 }
 
@@ -234,10 +268,14 @@ func (a *MobileIdentity5GS) GetAmfSetID() string {
 
 	if idType == "5G-GUTI" && err == nil {
 		amfSetStartPoint = 5
+	} else if idType == "5G-S-TMSI" && err == nil {
+		amfSetStartPoint = 1
+	} else {
+		return ""
 	}
 
-	if idType == "5G-S-TMSI" && err == nil {
-		amfSetStartPoint = 1
+	if len(a.Buffer) < amfSetStartPoint+2 {
+		return ""
 	}
 
 	amfSetID := (uint16(a.Buffer[amfSetStartPoint])<<2 + uint16((a.Buffer[amfSetStartPoint+1])&GetBitMask(8, 2))>>6)
@@ -251,11 +289,16 @@ func (a *MobileIdentity5GS) GetAmfPointer() string {
 	idType, err := a.GetTypeOfIdentity()
 	if idType == "5G-GUTI" && err == nil {
 		amfPointerStartPoint = 6
+	} else if idType == "5G-S-TMSI" && err == nil {
+		amfPointerStartPoint = 2
+	} else {
+		return ""
 	}
 
-	if idType == "5G-S-TMSI" && err == nil {
-		amfPointerStartPoint = 2
+	if len(a.Buffer) <= amfPointerStartPoint {
+		return ""
 	}
+
 	AMFPointer := (a.Buffer[amfPointerStartPoint]) & GetBitMask(6, 0)
 	AMFPointer_string := strconv.FormatUint(uint64(AMFPointer), 10)
 	return AMFPointer_string
@@ -265,9 +308,15 @@ func (a *MobileIdentity5GS) GetAmfPointer() string {
 func (a *MobileIdentity5GS) Get5GTMSI() string {
 	idType, err := a.GetTypeOfIdentity()
 	if idType == "5G-GUTI" && err == nil {
+		if len(a.Buffer) < 7 {
+			return ""
+		}
 		tmsi5G_string := hex.EncodeToString(a.Buffer[7:])
 		return tmsi5G_string
 	} else if idType == "5G-S-TMSI" && err == nil {
+		if len(a.Buffer) < 7 {
+			return ""
+		}
 		tmsi5G := a.Buffer[3:7]
 		tmsi5G_string := hex.EncodeToString(tmsi5G[0:])
 
@@ -296,6 +345,9 @@ func (a *MobileIdentity5GS) GetIMEISV() string {
 }
 
 func (a *MobileIdentity5GS) Get5GSTMSI() (tMSI5GS string, mobileIdType string, err error) {
+	if len(a.Buffer) < 7 {
+		return "", "", fmt.Errorf("invalid 5G-S-TMSI length")
+	}
 	partOfAmfId := hex.EncodeToString(a.Buffer[1:3])
 	tmsi5g := a.Get5GTMSI()
 	tMSI5GS = partOfAmfId + tmsi5g
