@@ -79,6 +79,7 @@ const (
 	Cause5GMMN1ModeNotAllowed                               uint8 = 0x1b
 	Cause5GMMRestrictedServiceArea                          uint8 = 0x1c
 	Cause5GMMLADNNotAvailable                               uint8 = 0x2b
+	Cause5GMMNoNetworkSlicesAvailable					    uint8 = 0x3e
 	Cause5GMMMaximumNumberOfPDUSessionsReached              uint8 = 0x41
 	Cause5GMMInsufficientResourcesForSpecificSliceAndDNN    uint8 = 0x43
 	Cause5GMMInsufficientResourcesForSpecificSlice          uint8 = 0x45
@@ -384,6 +385,8 @@ func Cause5GMMToString(cause uint8) string {
 		return fmt.Sprintf("Restricted service area (%d)", Cause5GMMRestrictedServiceArea)
 	case Cause5GMMLADNNotAvailable:
 		return fmt.Sprintf("LADN not available (%d)", Cause5GMMLADNNotAvailable)
+	case Cause5GMMNoNetworkSlicesAvailable:
+		return fmt.Sprintf("No network slices available (%d)", Cause5GMMNoNetworkSlicesAvailable)
 	case Cause5GMMMaximumNumberOfPDUSessionsReached:
 		return fmt.Sprintf("Maximum number of PDU sessions reached (%d)", Cause5GMMMaximumNumberOfPDUSessionsReached)
 	case Cause5GMMInsufficientResourcesForSpecificSliceAndDNN:
