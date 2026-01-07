@@ -392,3 +392,199 @@ func TestNasTypeGet5GSTMSI(t *testing.T) {
 			table.inBuffer, table.outerr, err)
 	}
 }
+
+type GetMobileIdentityTemplate struct {
+	inBuffer []uint8
+	outID    string
+	outType  string
+	outErr   string // Expected error message substring, empty if no error expected
+}
+
+var GetMobileIdentityTable = []GetMobileIdentityTemplate{
+	// SUCI Cases
+	{[]uint8{0x01, 0x13, 0x00, 0x13, 0x0f, 0xff, 0x00, 0x00, 0x41, 0x00, 0x00, 0x21, 0xf0}, "suci-0-310-310--0-0-140000120", "SUCI", ""},
+	{[]uint8{0x01, 0x02, 0x03}, "", "SUCI", "invalid SUCI length"}, // Malformed SUCI
+
+	// 5G-GUTI Cases
+	{[]uint8{0xf2, 0x13, 0x00, 0x13, 0xca, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x01}, "310310cafe0000000001", "5G-GUTI", ""},
+	{[]uint8{0xf2, 0x01, 0x02}, "", "5G-GUTI", "invalid 5G-GUTI length"}, // Malformed GUTI
+
+	// 5G-S-TMSI Cases
+	{[]uint8{0xf4, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x01}, "00000001", "5G-S-TMSI", ""},
+
+	// IMEI Cases
+	{[]uint8{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xf0}, "imei-0000000000000200", "IMEI", ""},
+
+	// IMEISV Cases
+	{[]uint8{0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xf0}, "imeisv-0000000000000200", "IMEISV", ""},
+
+	// Error Cases
+	{[]uint8{}, "", "", "empty buffer"},
+	{[]uint8{0x00}, "", "", "no identity"},
+}
+
+func TestNasTypeGetMobileIdentity(t *testing.T) {
+	for i, table := range GetMobileIdentityTable {
+		t.Logf("Test Cnt:%d", i)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+
+		id, idType, err := a.GetMobileIdentity()
+
+		if table.outErr != "" {
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), table.outErr)
+		} else {
+			assert.NoError(t, err)
+			assert.Equal(t, table.outID, id)
+			assert.Equal(t, table.outType, idType)
+		}
+	}
+}
+
+// --- Malicious Packet Tests for Individual Getters ---
+
+type MaliciousGetterTemplate struct {
+	inBuffer []uint8
+	out      string
+}
+
+var MaliciousGetterTable = []MaliciousGetterTemplate{
+	{[]uint8{}, ""},             // Empty
+	{[]uint8{0x00}, ""},         // Too short
+	{[]uint8{0x00, 0x00}, ""},   // Too short
+}
+
+func TestNasTypeGetMCC_Malicious(t *testing.T) {
+	for i, table := range MaliciousGetterTable {
+		t.Logf("Test Cnt:%d", i)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.GetMCC()
+			assert.Equal(t, "", res)
+		})
+	}
+}
+
+func TestNasTypeGetMNC_Malicious(t *testing.T) {
+	for i, table := range MaliciousGetterTable {
+		t.Logf("Test Cnt:%d", i)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.GetMNC()
+			assert.Equal(t, "", res)
+		})
+	}
+}
+
+func TestNasTypeGetAmfID_Malicious(t *testing.T) {
+	// GetAmfID requires at least 7 bytes
+	maliciousTable := []MaliciousGetterTemplate{
+		{[]uint8{}, ""},
+		{[]uint8{0x00, 0x01, 0x02, 0x03, 0x04, 0x05}, ""}, // 6 bytes (too short)
+	}
+	for i, table := range maliciousTable {
+		t.Logf("Test Cnt:%d", i)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.GetAmfID()
+			assert.Equal(t, "", res)
+		})
+	}
+}
+
+func TestNasTypeGetAmfRegionID_Malicious(t *testing.T) {
+	// GetAmfRegionID requires at least 5 bytes
+	maliciousTable := []MaliciousGetterTemplate{
+		{[]uint8{}, ""},
+		{[]uint8{0x00, 0x01, 0x02, 0x03}, ""}, // 4 bytes (too short)
+	}
+	for i, table := range maliciousTable {
+		t.Logf("Test Cnt:%d", i)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.GetAmfRegionID()
+			assert.Equal(t, "", res)
+		})
+	}
+}
+
+func TestNasTypeGetAmfSetID_Malicious(t *testing.T) {
+	// GetAmfSetID logic depends on Identity Type
+	// 5G-GUTI (0xF2): Start at index 5, need 2 bytes -> total 7 bytes
+	// 5G-S-TMSI (0xF4): Start at index 1, need 2 bytes -> total 3 bytes
+	
+	maliciousTable := []struct {
+		inBuffer []uint8
+		desc     string
+	}{
+		{[]uint8{}, "Empty"},
+		{[]uint8{0xf2, 0x00, 0x00, 0x00, 0x00}, "GUTI too short (5 bytes)"},
+		{[]uint8{0xf4, 0x00}, "S-TMSI too short (2 bytes)"},
+		{[]uint8{0x00, 0x00}, "Unknown Type too short"},
+	}
+
+	for i, table := range maliciousTable {
+		t.Logf("Test Cnt:%d (%s)", i, table.desc)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.GetAmfSetID()
+			assert.Equal(t, "", res)
+		})
+	}
+}
+
+func TestNasTypeGetAmfPointer_Malicious(t *testing.T) {
+	// GetAmfPointer logic depends on Identity Type
+	// 5G-GUTI (0xF2): Start at index 6
+	// 5G-S-TMSI (0xF4): Start at index 2
+	
+	maliciousTable := []struct {
+		inBuffer []uint8
+		desc     string
+	}{
+		{[]uint8{}, "Empty"},
+		{[]uint8{0xf2, 0x00, 0x00, 0x00, 0x00, 0x00}, "GUTI too short (6 bytes, need index 6)"},
+		{[]uint8{0xf4, 0x00}, "S-TMSI too short (2 bytes, need index 2)"},
+	}
+
+	for i, table := range maliciousTable {
+		t.Logf("Test Cnt:%d (%s)", i, table.desc)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.GetAmfPointer()
+			assert.Equal(t, "", res)
+		})
+	}
+}
+
+func TestNasTypeGet5GTMSI_Malicious(t *testing.T) {
+	// Get5GTMSI logic:
+	// GUTI: need 7+ bytes (Buffer[7:])
+	// S-TMSI: need 7 bytes (Buffer[3:7])
+	
+	maliciousTable := []struct {
+		inBuffer []uint8
+		desc     string
+	}{
+		{[]uint8{}, "Empty"},
+		{[]uint8{0xf2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, "GUTI too short (7 bytes, need >7)"},
+		{[]uint8{0xf4, 0x00, 0x00, 0x00, 0x00, 0x00}, "S-TMSI too short (6 bytes, need 7)"},
+	}
+
+	for i, table := range maliciousTable {
+		t.Logf("Test Cnt:%d (%s)", i, table.desc)
+		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
+		a.Buffer = table.inBuffer
+		assert.NotPanics(t, func() {
+			res := a.Get5GTMSI()
+			assert.Equal(t, "", res)
+		})
+	}
+}
