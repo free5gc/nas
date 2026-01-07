@@ -182,16 +182,17 @@ func (a *MobileIdentity5GS) GetSUCI() string {
 		// Scheme output
 		// TS 24.501 9.11.3.4
 		if protectionScheme == "0" {
+			if len(a.Buffer) < 9 {
+				return ""
+			}
 			// MSIN
 			var msinBytes []byte
 			for i := 8; i < len(a.Buffer); i++ {
 				msinBytes = append(msinBytes, bits.RotateLeft8(a.Buffer[i], 4))
 			}
 			schemeOutput = hex.EncodeToString(msinBytes)
-			if len(schemeOutput) > 0 {
-				if schemeOutput[len(schemeOutput)-1] == 'f' {
-					schemeOutput = schemeOutput[:len(schemeOutput)-1]
-				}
+			if schemeOutput[len(schemeOutput)-1] == 'f' {
+				schemeOutput = schemeOutput[:len(schemeOutput)-1]
 			}
 		} else {
 			schemeOutput = hex.EncodeToString(a.Buffer[8:])
