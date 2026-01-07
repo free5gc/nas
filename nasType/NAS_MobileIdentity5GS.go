@@ -188,8 +188,10 @@ func (a *MobileIdentity5GS) GetSUCI() string {
 				msinBytes = append(msinBytes, bits.RotateLeft8(a.Buffer[i], 4))
 			}
 			schemeOutput = hex.EncodeToString(msinBytes)
-			if schemeOutput[len(schemeOutput)-1] == 'f' {
-				schemeOutput = schemeOutput[:len(schemeOutput)-1]
+			if len(schemeOutput) > 0 {
+				if schemeOutput[len(schemeOutput)-1] == 'f' {
+					schemeOutput = schemeOutput[:len(schemeOutput)-1]
+				}
 			}
 		} else {
 			schemeOutput = hex.EncodeToString(a.Buffer[8:])
