@@ -137,8 +137,10 @@ func TestNasTypeGetSUCI(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetSUCI(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetSUCI())
+		res, err := a.GetSUCI()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -158,8 +160,10 @@ func TestNasTypeGetPlmnID(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetPlmnID(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetPlmnID())
+		res, err := a.GetPlmnID()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -178,8 +182,10 @@ func TestNasTypeGetMCC(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetMCC(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetMCC())
+		res, err := a.GetMCC()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -198,8 +204,10 @@ func TestNasTypeGetMNC(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetMNC(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetMNC())
+		res, err := a.GetMNC()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -218,8 +226,10 @@ func TestNasTypeGet5GGUTI(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.Get5GGUTI(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.Get5GGUTI())
+		res, err := a.Get5GGUTI()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -238,8 +248,10 @@ func TestNasTypeGetAmfID(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetAmfID(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetAmfID())
+		res, err := a.GetAmfID()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -258,8 +270,10 @@ func TestNasTypeGetAmfRegionID(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetAmfRegionID(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetAmfRegionID())
+		res, err := a.GetAmfRegionID()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -279,8 +293,10 @@ func TestNasTypeGetAmfSetID(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetAmfSetID(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetAmfSetID())
+		res, err := a.GetAmfSetID()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -300,8 +316,10 @@ func TestNasTypeAmfPointerID(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetAmfPointer(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetAmfPointer())
+		res, err := a.GetAmfPointer()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -321,8 +339,10 @@ func TestNasTypeGet5GTMSI(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.Get5GTMSI(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.Get5GTMSI())
+		res, err := a.Get5GTMSI()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -341,8 +361,10 @@ func TestNasTypeGetIMEI(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetIMEI(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetIMEI())
+		res, err := a.GetIMEI()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -361,8 +383,10 @@ func TestNasTypeGetIMEISV(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 
-		assert.Equalf(t, table.out, a.GetIMEISV(), "in(%v): out %v, actual %x",
-			table.inBuffer, table.out, a.GetIMEISV())
+		res, err := a.GetIMEISV()
+		assert.NoError(t, err)
+		assert.Equalf(t, table.out, res, "in(%v): out %v, actual %x",
+			table.inBuffer, table.out, res)
 	}
 }
 
@@ -407,7 +431,8 @@ var GetMobileIdentityTable = []GetMobileIdentityTemplate{
 
 	// 5G-GUTI Cases
 	{[]uint8{0xf2, 0x13, 0x00, 0x13, 0xca, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x01}, "310310cafe0000000001", "5G-GUTI", ""},
-	{[]uint8{0xf2, 0x01, 0x02}, "", "5G-GUTI", "invalid 5G-GUTI length"}, // Malformed GUTI
+	// Update expected error because Get5GGUTI fails at GetMCC first for strict parsing chains
+	{[]uint8{0xf2, 0x01, 0x02}, "", "5G-GUTI", "invalid MNC length"}, // Malformed GUTI (len 3 -> MCC ok, MNC fails)
 
 	// 5G-S-TMSI Cases
 	{[]uint8{0xf4, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x01}, "00000001", "5G-S-TMSI", ""},
@@ -443,6 +468,8 @@ func TestNasTypeGetMobileIdentity(t *testing.T) {
 }
 
 // --- Malicious Packet Tests for Individual Getters ---
+// These tests check that individual getters don't panic on malformed input
+// AND that they return an error.
 
 type MaliciousGetterTemplate struct {
 	inBuffer []uint8
@@ -450,9 +477,9 @@ type MaliciousGetterTemplate struct {
 }
 
 var MaliciousGetterTable = []MaliciousGetterTemplate{
-	{[]uint8{}, ""},             // Empty
-	{[]uint8{0x00}, ""},         // Too short
-	{[]uint8{0x00, 0x00}, ""},   // Too short
+	{[]uint8{}, ""},           // Empty
+	{[]uint8{0x00}, ""},       // Too short
+	{[]uint8{0x00, 0x00}, ""}, // Too short
 }
 
 func TestNasTypeGetMCC_Malicious(t *testing.T) {
@@ -461,8 +488,9 @@ func TestNasTypeGetMCC_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.GetMCC()
+			res, err := a.GetMCC()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
@@ -473,8 +501,9 @@ func TestNasTypeGetMNC_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.GetMNC()
+			res, err := a.GetMNC()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
@@ -490,8 +519,9 @@ func TestNasTypeGetAmfID_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.GetAmfID()
+			res, err := a.GetAmfID()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
@@ -507,17 +537,14 @@ func TestNasTypeGetAmfRegionID_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.GetAmfRegionID()
+			res, err := a.GetAmfRegionID()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
 
 func TestNasTypeGetAmfSetID_Malicious(t *testing.T) {
-	// GetAmfSetID logic depends on Identity Type
-	// 5G-GUTI (0xF2): Start at index 5, need 2 bytes -> total 7 bytes
-	// 5G-S-TMSI (0xF4): Start at index 1, need 2 bytes -> total 3 bytes
-	
 	maliciousTable := []struct {
 		inBuffer []uint8
 		desc     string
@@ -533,17 +560,14 @@ func TestNasTypeGetAmfSetID_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.GetAmfSetID()
+			res, err := a.GetAmfSetID()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
 
 func TestNasTypeGetAmfPointer_Malicious(t *testing.T) {
-	// GetAmfPointer logic depends on Identity Type
-	// 5G-GUTI (0xF2): Start at index 6
-	// 5G-S-TMSI (0xF4): Start at index 2
-	
 	maliciousTable := []struct {
 		inBuffer []uint8
 		desc     string
@@ -558,17 +582,14 @@ func TestNasTypeGetAmfPointer_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.GetAmfPointer()
+			res, err := a.GetAmfPointer()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
 
 func TestNasTypeGet5GTMSI_Malicious(t *testing.T) {
-	// Get5GTMSI logic:
-	// GUTI: need 7+ bytes (Buffer[7:])
-	// S-TMSI: need 7 bytes (Buffer[3:7])
-	
 	maliciousTable := []struct {
 		inBuffer []uint8
 		desc     string
@@ -583,8 +604,9 @@ func TestNasTypeGet5GTMSI_Malicious(t *testing.T) {
 		a := nasType.NewMobileIdentity5GS(nasMessage.RegistrationRequestAdditionalGUTIType)
 		a.Buffer = table.inBuffer
 		assert.NotPanics(t, func() {
-			res := a.Get5GTMSI()
+			res, err := a.Get5GTMSI()
 			assert.Equal(t, "", res)
+			assert.Error(t, err)
 		})
 	}
 }
