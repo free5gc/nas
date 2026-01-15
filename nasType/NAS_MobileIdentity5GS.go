@@ -318,11 +318,12 @@ func (a *MobileIdentity5GS) GetAmfSetID() (string, error) {
 		return "", err
 	}
 
-	if idType == "5G-GUTI" {
+	switch idType {
+	case "5G-GUTI":
 		amfSetStartPoint = 5
-	} else if idType == "5G-S-TMSI" {
+	case "5G-S-TMSI":
 		amfSetStartPoint = 1
-	} else {
+	default:
 		return "", fmt.Errorf("wrong identity type for AmfSetID")
 	}
 
@@ -343,11 +344,12 @@ func (a *MobileIdentity5GS) GetAmfPointer() (string, error) {
 		return "", err
 	}
 
-	if idType == "5G-GUTI" {
+	switch idType {
+	case "5G-GUTI":
 		amfPointerStartPoint = 6
-	} else if idType == "5G-S-TMSI" {
+	case "5G-S-TMSI":
 		amfPointerStartPoint = 2
-	} else {
+	default:
 		return "", fmt.Errorf("wrong identity type for AmfPointer")
 	}
 
@@ -367,13 +369,14 @@ func (a *MobileIdentity5GS) Get5GTMSI() (string, error) {
 		return "", err
 	}
 
-	if idType == "5G-GUTI" {
+	switch idType {
+	case "5G-GUTI":
 		if len(a.Buffer) <= 7 {
 			return "", fmt.Errorf("invalid 5G-GUTI length for TMSI")
 		}
 		tmsi5G_string := hex.EncodeToString(a.Buffer[7:])
 		return tmsi5G_string, nil
-	} else if idType == "5G-S-TMSI" {
+	case "5G-S-TMSI":
 		if len(a.Buffer) < 7 {
 			return "", fmt.Errorf("invalid 5G-S-TMSI length for TMSI")
 		}
@@ -381,7 +384,7 @@ func (a *MobileIdentity5GS) Get5GTMSI() (string, error) {
 		tmsi5G_string := hex.EncodeToString(tmsi5G[0:])
 
 		return tmsi5G_string, nil
-	} else {
+	default:
 		return "", fmt.Errorf("wrong identity type for 5G-TMSI")
 	}
 }
@@ -392,10 +395,12 @@ func (a *MobileIdentity5GS) GetIMEI() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if idType == "IMEI" {
+	switch idType {
+	case "IMEI":
 		return "imei-" + peiToString(a.Buffer), nil
+	default:
+		return "", fmt.Errorf("identity type is not IMEI")
 	}
-	return "", fmt.Errorf("identity type is not IMEI")
 }
 
 // GetIMEISV
@@ -404,10 +409,12 @@ func (a *MobileIdentity5GS) GetIMEISV() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if idType == "IMEISV" {
+	switch idType {
+	case "IMEISV":
 		return "imeisv-" + peiToString(a.Buffer), nil
+	default:
+		return "", fmt.Errorf("identity type is not IMEISV")
 	}
-	return "", fmt.Errorf("identity type is not IMEISV")
 }
 
 func (a *MobileIdentity5GS) Get5GSTMSI() (tMSI5GS string, mobileIdType string, err error) {
