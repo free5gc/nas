@@ -49,12 +49,13 @@ func SuciToStringWithError(buf []byte) (suci string, plmnId string, err error) {
 	}
 
 	supiFormat := (buf[0] & 0xf0) >> 4
-	if supiFormat == nasMessage.SupiFormatNai {
+	switch supiFormat {
+	case nasMessage.SupiFormatNai:
 		suci, plmnId, err = naiToString(buf[1:])
 		return suci, plmnId, err
-	} else if supiFormat == nasMessage.SupiFormatGCI {
+	case nasMessage.SupiFormatGCI:
 		return "", "", errors.New("GCI not supported")
-	} else if supiFormat == nasMessage.SupiFormatGLI {
+	case nasMessage.SupiFormatGLI:
 		return "", "", errors.New("GLI not supported")
 	}
 
@@ -118,7 +119,7 @@ func SuciToStringWithError(buf []byte) (suci string, plmnId string, err error) {
 	return suci, plmnId, nil
 }
 
-/* NAI format for SUCI has the form username@realm (Ref. TS 24 501 Sec. 28.7). Where:
+/* NAI format for SUCI has the form username@realm (Ref. TS 23.003 Section 28.7.3). Where:
  * realm = [ (nai.)5gc.mnc<MNC>.mcc<MCC>.3gppnetwork.org || <NSI realm> ]
  * username = type<supi type>.rid<routing indicator>.schid<protection scheme id>
  * [ .userid<MSIN || NSI username> ||
@@ -132,10 +133,12 @@ func SuciToStringWithError(buf []byte) (suci string, plmnId string, err error) {
  * <ECC ephemeral public key><ciphertext><MAC tag> || <HPLMN defined scheme output>]"
  */
 
-var reBase = regexp.MustCompile(`^type(\d{1})\.rid(\d{1,4})\.schid(\d{1})`)
-var reHN = regexp.MustCompile(`^\.hnkey(\d{1,3})`)
-var reECC = regexp.MustCompile(`^\.ecckey([^.]+)\.cip([^.]+)\.mac([^.]+)`)
-var rePLMN = regexp.MustCompile(`^.*\.mnc(\d{2,3})\.mcc(\d{3})\.3gppnetwork\.org$`)
+var (
+	reBase = regexp.MustCompile(`^type(\d{1})\.rid(\d{1,4})\.schid(\d{1})\.`)
+	reHN   = regexp.MustCompile(`^hnkey(\d{1,3})\.`)
+	reECC  = regexp.MustCompile(`^ecckey([0-9A-Fa-f]+)\.cip([0-9A-Fa-f]+)\.mac([0-9a-fA-F]{16})$`)
+	rePLMN = regexp.MustCompile(`^.*\.mnc(\d{2,3})\.mcc(\d{3})\.3gppnetwork\.org$`)
+)
 
 func NaiToString(buf []byte) (nai string) {
 	var err error
@@ -147,7 +150,7 @@ func NaiToString(buf []byte) (nai string) {
 	return
 }
 
-func naiToString(buf []byte) (nai string, plmnId string, err error) {
+func naiToString(buf []byte) (suci string, plmnId string, err error) {
 	// Split buf in username and realm
 	parts := strings.SplitN(string(buf), "@", 2)
 	if len(parts) != 2 {
@@ -158,27 +161,31 @@ func naiToString(buf []byte) (nai string, plmnId string, err error) {
 
 	// Parse SUPI type, routing indicator and protection scheme id
 	baseMatch := reBase.FindStringSubmatch(username)
-	if baseMatch == nil || len(baseMatch) < 4 {
+	if len(baseMatch) < 4 {
 		return "", "", errors.New("invalid NAI username format: missing type, rid or schid")
 	}
 	supiType := baseMatch[1]
 	rid := baseMatch[2]
-	protectionSchemeID := baseMatch[3]
+
+	protectionSchemeID, err := strconv.Atoi(baseMatch[3])
+	if err != nil {
+		return "", "", errors.New("invalid protection scheme id: not a number")
+	}
 
 	// Parse Scheme Output (Null, Profile A, Profile B, HPLMN Proprietary)
 	rest := username[len(baseMatch[0]):]
 	schemeOutput := ""
 	homeNetworkPublicKeyID := ""
 	switch {
-	case strings.HasPrefix(rest, ".userid"):
+	case strings.HasPrefix(rest, "userid"):
 		// Null Scheme
-		if protectionSchemeID != "0" {
+		if protectionSchemeID != nasMessage.ProtectionSchemeNullScheme {
 			return "", "", errors.New("userid is admitted only when protection scheme is null")
 		}
-		schemeOutput = strings.TrimPrefix(rest, ".userid")
+		schemeOutput = strings.TrimPrefix(rest, "userid")
 		homeNetworkPublicKeyID = "0"
 
-	case strings.HasPrefix(rest, ".hnkey"):
+	case strings.HasPrefix(rest, "hnkey"):
 		hnMatch := reHN.FindStringSubmatch(rest)
 		if hnMatch == nil {
 			return "", "", errors.New("invalid home network public key identifier format")
@@ -186,7 +193,11 @@ func naiToString(buf []byte) (nai string, plmnId string, err error) {
 		homeNetworkPublicKeyID = hnMatch[1]
 
 		rest = rest[len(hnMatch[0]):]
-		if strings.HasPrefix(rest, ".ecckey") {
+		if strings.HasPrefix(rest, "ecckey") {
+			if protectionSchemeID != nasMessage.ProtectionSchemeECIESProfileA &&
+				protectionSchemeID != nasMessage.ProtectionSchemeECIESProfileB {
+				return "", "", errors.New("ecckey is admitted only for protection scheme profiles A and B")
+			}
 			// Profile A or B Scheme
 			eccMatch := reECC.FindStringSubmatch(rest)
 			if eccMatch == nil {
@@ -196,12 +207,24 @@ func naiToString(buf []byte) (nai string, plmnId string, err error) {
 			ecc := eccMatch[1]
 			cip := eccMatch[2]
 			mac := eccMatch[3]
+
+			if protectionSchemeID == nasMessage.ProtectionSchemeECIESProfileA && len(ecc) != 64 {
+				return "", "", errors.New("ecc key must be 64 characters long for profile A")
+			}
+
+			if protectionSchemeID == nasMessage.ProtectionSchemeECIESProfileB && len(ecc) != 66 {
+				return "", "", errors.New("ecc key must be 66 characters long for profile B")
+			}
+
 			schemeOutput = ecc + cip + mac
-
-		} else if strings.HasPrefix(rest, ".out") {
+		} else if strings.HasPrefix(rest, "out") {
 			// HPLMN Proprietary Scheme
-			schemeOutput = strings.TrimPrefix(rest, ".out")
-
+			if protectionSchemeID == nasMessage.ProtectionSchemeNullScheme ||
+				protectionSchemeID == nasMessage.ProtectionSchemeECIESProfileA ||
+				protectionSchemeID == nasMessage.ProtectionSchemeECIESProfileB {
+				return "", "", errors.New("out is admitted only for proprietary protection schemes")
+			}
+			schemeOutput = strings.TrimPrefix(rest, "out")
 		} else {
 			return "", "", errors.New("unknown protection scheme output")
 		}
@@ -214,7 +237,7 @@ func naiToString(buf []byte) (nai string, plmnId string, err error) {
 	homeNetworkID := ""
 	match := rePLMN.FindStringSubmatch(realm)
 	plmnId = ""
-	if match == nil || len(match) < 3 {
+	if len(match) < 3 {
 		homeNetworkID = realm
 	} else {
 		mcc := match[2]
@@ -228,8 +251,8 @@ func naiToString(buf []byte) (nai string, plmnId string, err error) {
 	}
 
 	// Build SUCI in UTF-8 string format
-	suci := strings.Join([]string{
-		"suci", supiType, homeNetworkID, rid, protectionSchemeID, homeNetworkPublicKeyID, schemeOutput,
+	suci = strings.Join([]string{
+		"suci", supiType, homeNetworkID, rid, strconv.Itoa(protectionSchemeID), homeNetworkPublicKeyID, schemeOutput,
 	}, "-")
 
 	return suci, plmnId, nil
