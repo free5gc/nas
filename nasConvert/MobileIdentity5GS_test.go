@@ -38,15 +38,6 @@ func TestSuciToStringWithError(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name: "SUSI-NAI",
-			args: args{
-				buf: []byte{0x11, 0x02, 0x58, 0x39, 0xf0, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10},
-			},
-			wantSuci:   "nai-1-025839f0ff010000000010",
-			wantPlmnId: "",
-			wantErr:    false,
-		},
-		{
 			name: "SUSI-short",
 			args: args{
 				buf: []byte{0x01, 0x02, 0xf8, 0x39, 0xf0, 0xff, 0x00, 0x00, 0x00},
@@ -70,20 +61,131 @@ func TestSuciToStringWithError(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "SUSI-NAI-short",
+			name: "TS23003-28.7.3-Examples-SUCI-NAI-IMSI",
 			args: args{
-				buf: []byte{0x11, 0x02},
+				buf: append([]byte{0x11}, []byte("type0.rid678.schid0.userid0999999999@5gc.mnc015.mcc234.3gppnetwork.org")...),
 			},
-			wantSuci:   "nai-1-02",
+			wantSuci:   "suci-0-234-15-678-0-0-0999999999",
+			wantPlmnId: "23415",
+			wantErr:    false,
+		},
+		{
+			name: "TS23003-28.7.3-Examples-SUCI-NAI-NSI",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type1.rid678.schid0.useriduser17@example.com")...),
+			},
+			wantSuci:   "suci-1-example.com-678-0-0-user17",
 			wantPlmnId: "",
 			wantErr:    false,
 		},
 		{
-			name: "SUSI-NAI-too-short",
+			name: "SUCI-NAI-too-short",
 			args: args{
 				buf: []byte{0x11},
 			},
 			wantErr: true,
+		},
+		{
+			name: "SUCI-NAI-invalid-username-format",
+			args: args{
+				buf: append([]byte{0x11}, []byte("username@example.com")...),
+			},
+			wantErr: true,
+		},
+		{
+			name: "SUCI-NAI-invalid-missing-@",
+			args: args{
+				buf: append([]byte{0x11}, []byte("username.example.com")...),
+			},
+			wantErr: true,
+		},
+		{
+			name: "SUCI-NAI-invalid-protection-scheme",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type0.rid678.schid3.username@example.com")...),
+			},
+			wantErr: true,
+		},
+		{
+			name: "TS23003-28.7.6-trusted-non-3GPP-access",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type0.rid678.schid0.userid0999999999@nai.5gc.mnc001.mcc001.3gppnetwork.org")...),
+			},
+			wantSuci:   "suci-0-001-01-678-0-0-0999999999",
+			wantPlmnId: "00101",
+			wantErr:    false,
+		},
+		{
+			name: "TS23003-28.7.7-trusted-non-3GPP-access-N5CW",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type0.rid678.schid0.userid0999999999@nai.5gc-nn.mnc001.mcc001.3gppnetwork.org")...),
+			},
+			wantSuci:   "suci-0-001-01-678-0-0-0999999999",
+			wantPlmnId: "00101",
+			wantErr:    false,
+		},
+		{
+			name: "TS23003-28.7.12-NSWO",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type0.rid678.schid0.userid0999999999@5gc-nswo.nid1234.mnc001.mcc001.3gppnetwork.org")...),
+			},
+			wantSuci:   "suci-0-001-01-678-0-0-0999999999",
+			wantPlmnId: "00101",
+			wantErr:    false,
+		},
+		{
+			name: "TS29503-AnnexC-Example1",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type0.rid012.schid0.userid0123456789@5gc.mnc045.mcc123.3gppnetwork.org")...),
+			},
+			wantSuci:   "suci-0-123-45-012-0-0-0123456789",
+			wantPlmnId: "12345",
+			wantErr:    false,
+		},
+		{
+			name: "TS29503-AnnexC-Example2",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type0.rid0002.schid1.hnkey17.ecckeye9b9916c911f448d8792e6b2f387f85d3ecab9040049427d9edbb5431b0bc711.cip023be6a057.macb45d936238aebeb7@5gc.mnc045.mcc123.3gppnetwork.org")...),
+			},
+			wantSuci:   "suci-0-123-45-0002-1-17-e9b9916c911f448d8792e6b2f387f85d3ecab9040049427d9edbb5431b0bc711023be6a057b45d936238aebeb7",
+			wantPlmnId: "12345",
+			wantErr:    false,
+		},
+		{
+			name: "TS29503-AnnexC-Example3",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type1.rid84.schid2.hnkey250.ecckeye9b9916c911f448d8792e6b2f387f85d3ecab9040049427d9edbb5431b0bc71195.cip023be6a057.macb45d936238aebeb7@example.com")...),
+			},
+			wantSuci:   "suci-1-example.com-84-2-250-e9b9916c911f448d8792e6b2f387f85d3ecab9040049427d9edbb5431b0bc71195023be6a057b45d936238aebeb7",
+			wantPlmnId: "",
+			wantErr:    false,
+		},
+		{
+			name: "TS29503-AnnexC-Example4",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type3.rid012.schid0.userid00-00-5E-00-53-00@operator.com")...),
+			},
+			wantSuci:   "suci-3-operator.com-012-0-0-00-00-5E-00-53-00",
+			wantPlmnId: "",
+			wantErr:    false,
+		},
+		{
+			name: "TS29503-AnnexC-Example5",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type1.rid3456.schid0.useridanonymous@operator.com")...),
+			},
+			wantSuci:   "suci-1-operator.com-3456-0-0-anonymous",
+			wantPlmnId: "",
+			wantErr:    false,
+		},
+		{
+			name: "TS29503-AnnexC-Example5-Alternative",
+			args: args{
+				buf: append([]byte{0x11}, []byte("type1.rid3456.schid0.userid@operator.com")...),
+			},
+			wantSuci:   "suci-1-operator.com-3456-0-0-",
+			wantPlmnId: "",
+			wantErr:    false,
 		},
 	}
 	for _, tt := range tests {

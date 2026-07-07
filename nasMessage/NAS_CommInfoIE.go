@@ -232,6 +232,8 @@ const (
 const (
 	SupiFormatImsi uint8 = 0x00
 	SupiFormatNai  uint8 = 0x01
+	SupiFormatGCI  uint8 = 0x02
+	SupiFormatGLI  uint8 = 0x03
 )
 
 // TS 24.501 9.11.3.4
