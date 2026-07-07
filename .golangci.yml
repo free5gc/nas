@@ -125,6 +125,7 @@ formatters:
       sections:
         - standard
         - default
+        - localmodule
     gofmt:
       simplify: true
     goimports:
