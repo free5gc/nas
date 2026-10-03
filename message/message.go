@@ -268,6 +268,9 @@ func getIeLen(reader *bytes.Buffer, octets IELengthType) (uint16, error) {
 	} else {
 		length = binary.BigEndian.Uint16(ieLen)
 	}
+	if int(length) > reader.Len() {
+		return 0, errors.Errorf("IE length %d exceeds remaining data %d", length, reader.Len())
+	}
 	return length, nil
 }
 

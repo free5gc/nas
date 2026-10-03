@@ -394,7 +394,7 @@ func TestRegReqUnmarshalBinaryNegative(t *testing.T) {
 				0xe0, 0xe0, 0xc0, 0x40, 0x00, 0x80, // 0x20, 0x00,
 			},
 			expected: errors.Errorf(
-				"RegReq.S1UENwCapability.UnmarshalBinary(): expected length: 8, but get 6"),
+				"RegReq UnmarshalBinary getIeLen of S1UENwCapability: IE length 8 exceeds remaining data 6"),
 		},
 		{
 			name: "case 2 - RegReqCntr has no container type decoded before container value",
