@@ -1,25 +1,28 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // AllowedSSCMode is detailed in 9.11.4.5 Allowed SSC mode, 24.501
+// Spare bits are ignored on decode and emitted as zero.
 type AllowedSSCMode struct {
-	// Name, uint8, Bits, Octet
-	SSC3 uint8 // 3->3,   1->1
-	SSC2 uint8 // 2->2,   1->1
-	SSC1 uint8 // 1->1,   1->1
+	SSC3 uint8
+	SSC2 uint8
+	SSC1 uint8
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *AllowedSSCMode) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "AllowedSSCMode",
+	if len(b) != 1 {
+		return errors.Errorf("AllowedSSCMode IE length %d, expected 1", len(b))
 	}
-	return e
+	i.SSC3 = GetBit3(b[0])
+	i.SSC2 = GetBit2(b[0])
+	i.SSC1 = GetBit1(b[0])
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *AllowedSSCMode) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "AllowedSSCMode",
+	if i.SSC3 > 1 || i.SSC2 > 1 || i.SSC1 > 1 {
+		return nil, errors.Errorf("invalid allowed SSC mode bits")
 	}
-	return nil, e
+	return []byte{i.SSC3<<2 | i.SSC2<<1 | i.SSC1}, nil
 }

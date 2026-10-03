@@ -1,19 +1,20 @@
 package ie
 
-type EmergNumList struct{}
-
-// UnmarshalBinary handles the value part, not including IEI and length.
-func (i *EmergNumList) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "EmergNumList",
-	}
-	return e
+// EmergNumList preserves the bounded IE value without interpreting its contents.
+// Contents excludes the IEI and length octets.
+type EmergNumList struct {
+	Contents []byte
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
-func (i *EmergNumList) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "EmergNumList",
+func (i *EmergNumList) UnmarshalBinary(b []byte) error {
+	value, err := copyIEValue("EmergNumList", b, 3, 48)
+	if err != nil {
+		return err
 	}
-	return nil, e
+	i.Contents = value
+	return nil
+}
+
+func (i *EmergNumList) MarshalBinary() ([]byte, error) {
+	return copyIEValue("EmergNumList", i.Contents, 3, 48)
 }

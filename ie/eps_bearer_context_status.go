@@ -1,19 +1,20 @@
 package ie
 
-type EPSBearerCtxStatus struct{}
-
-// UnmarshalBinary handles the value part, not including IEI and length.
-func (i *EPSBearerCtxStatus) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "EPSBearerCtxStatus",
-	}
-	return e
+// EPSBearerCtxStatus preserves the bounded IE value without interpreting its contents.
+// Contents excludes the IEI and length octets.
+type EPSBearerCtxStatus struct {
+	Contents []byte
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
-func (i *EPSBearerCtxStatus) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "EPSBearerCtxStatus",
+func (i *EPSBearerCtxStatus) UnmarshalBinary(b []byte) error {
+	value, err := copyIEValue("EPSBearerCtxStatus", b, 2, 2)
+	if err != nil {
+		return err
 	}
-	return nil, e
+	i.Contents = value
+	return nil
+}
+
+func (i *EPSBearerCtxStatus) MarshalBinary() ([]byte, error) {
+	return copyIEValue("EPSBearerCtxStatus", i.Contents, 2, 2)
 }

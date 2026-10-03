@@ -1,23 +1,21 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // AlwaysonPDUSessInd is detailed in 9.11.4.3 Always-on PDU session indication, 24.501
+// Spare bits are ignored on decode and emitted as zero.
 type AlwaysonPDUSessInd struct {
-	// Name, uint8, Bits, Octet
-	APSI bool // 1->1,   1->1
+	APSI bool
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *AlwaysonPDUSessInd) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "AlwaysonPDUSessInd",
+	if len(b) != 1 {
+		return errors.Errorf("AlwaysonPDUSessInd IE length %d, expected 1", len(b))
 	}
-	return e
+	i.APSI = GetBit1(b[0]) == 1
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *AlwaysonPDUSessInd) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "AlwaysonPDUSessInd",
-	}
-	return nil, e
+	return []byte{bool2uint8(i.APSI)}, nil
 }

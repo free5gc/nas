@@ -1,23 +1,21 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // SMSInd is detailed in 9.11.3.50A SMS indication, 24.501
+// Spare bits are ignored on decode and emitted as zero.
 type SMSInd struct {
-	// Name, uint8, Bits, Octet
-	SAI bool // 1->1,   1->1
+	SAI bool
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *SMSInd) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "SMSInd",
+	if len(b) != 1 {
+		return errors.Errorf("SMSInd IE length %d, expected 1", len(b))
 	}
-	return e
+	i.SAI = GetBit1(b[0]) == 1
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *SMSInd) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "SMSInd",
-	}
-	return nil, e
+	return []byte{bool2uint8(i.SAI)}, nil
 }

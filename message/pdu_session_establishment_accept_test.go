@@ -210,9 +210,9 @@ func TestPDUSessEstAcceptUnmarshalBinary(t *testing.T) {
 				// ie.SessAMBR LV
 				0x06,
 				0x06, 0x00, 0x64, 0x06, 0x00, 0xc8,
-				// ie.AlwaysonPDUSessInd , TV, 1B (unimplemented)
+				// ie.AlwaysonPDUSessInd, TV, 1B
 				0x80,
-				// ie.MappedEPSBearerCtxs, TLV-E, 7-65538B (unimplemented)
+				// ie.MappedEPSBearerCtxs, TLV-E, 7-65538B
 				0x75, 0x00, 0x04,
 				0x01, 0x02, 0x03, 0x04,
 				// ie.ServingPLMNRateCtrl, TLV, 4B (unimplemented)
@@ -231,8 +231,10 @@ func TestPDUSessEstAcceptUnmarshalBinary(t *testing.T) {
 			},
 			// Unimplemented IE ignored, implemented parts are there
 			expected: &PDUSessEstAccept{
-				PDUSessId: 5,
-				PTI:       1,
+				AlwaysonPDUSessInd:  &ie.AlwaysonPDUSessInd{APSI: false},
+				MappedEPSBearerCtxs: &ie.MappedEPSBearerCtxs{Contents: []byte{1, 2, 3, 4}},
+				PDUSessId:           5,
+				PTI:                 1,
 				SelectedSSCMode: &ie.SSCMode{
 					Mode: ie.SSCMODE1,
 				},

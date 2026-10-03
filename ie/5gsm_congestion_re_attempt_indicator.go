@@ -1,23 +1,26 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // CongestionReattemptIndicator5GSM is detailed in 9.11.4.21 5GSM congestion re-attempt indicator, 24.501
+// Spare bits are ignored on decode and emitted as zero.
 type CongestionReattemptIndicator5GSM struct {
-	// Name, uint8, Bits, Octet
-	ABO uint8 // 1->1,   3->3
+	ABO   uint8
+	CATBO uint8
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *CongestionReattemptIndicator5GSM) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "CongestionReattemptIndicator5GSM",
+	if len(b) != 1 {
+		return errors.Errorf("CongestionReattemptIndicator5GSM IE length %d, expected 1", len(b))
 	}
-	return e
+	i.ABO = GetBit1(b[0])
+	i.CATBO = GetBit2(b[0])
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *CongestionReattemptIndicator5GSM) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "CongestionReattemptIndicator5GSM",
+	if i.ABO > 1 || i.CATBO > 1 {
+		return nil, errors.Errorf("invalid congestion re-attempt bits")
 	}
-	return nil, e
+	return []byte{i.CATBO<<1 | i.ABO}, nil
 }
