@@ -1,6 +1,9 @@
 package ie
 
 import (
+	"encoding/binary"
+	"unicode/utf8"
+
 	"github.com/pkg/errors"
 )
 
@@ -81,8 +84,19 @@ func decodeStrByCodeScheme(
 			}
 		}
 		return string(result[:]), nil
-	// TODO: support CodeScheme_UCS2
-	// case CodeScheme_UCS2:
+	case CodeScheme_UCS2:
+		if len(bs)%2 != 0 || numSpareBitsInLastOctet != 0 {
+			return "", errors.Errorf("UCS-2 network name needs complete octets and 16-bit characters")
+		}
+		text := make([]rune, len(bs)/2)
+		for j := range text {
+			value := binary.BigEndian.Uint16(bs[2*j:])
+			if value >= 0xd800 && value <= 0xdfff {
+				return "", errors.Errorf("UCS-2 network name contains a surrogate")
+			}
+			text[j] = rune(value)
+		}
+		return string(text), nil
 	default:
 		return "", errors.Errorf("decodeStrByCodeScheme(): unsupported code scheme[%d]", codeScheme)
 	}
@@ -141,8 +155,19 @@ func encodeStrByCodeScheme(
 			}
 		}
 		return bs, uint8(numSpareBitsInLastOctet), nil
-	// TODO: support CodeScheme_UCS2
-	// case CodeScheme_UCS2:
+	case CodeScheme_UCS2:
+		if !utf8.ValidString(s) {
+			return nil, 0, errors.Errorf("invalid UTF-8 network name")
+		}
+		text := []rune(s)
+		bs := make([]byte, 2*len(text))
+		for j, value := range text {
+			if value > 0xffff || value >= 0xd800 && value <= 0xdfff {
+				return nil, 0, errors.Errorf("network name character cannot be encoded as UCS-2")
+			}
+			binary.BigEndian.PutUint16(bs[2*j:], uint16(value))
+		}
+		return bs, 0, nil
 	default:
 		return nil, 0, errors.Errorf("encodeStrByCodeScheme(): unsupported code scheme[%d]", codeScheme)
 	}
