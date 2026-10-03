@@ -314,9 +314,15 @@ func (i *MobileId5GS) marshalBinary_SUCISupiImsi() ([]byte, error) {
 		// This handles both even and odd MSIN lengths correctly
 		blen = 8 + (i.MSINLength+1)/2
 	case ECIESSchemeProfileA:
+		if len(i.ECCEphPubKey) != 32 || len(i.MACTag) != 8 {
+			return nil, errors.Errorf("Profile A requires a 32-byte ephemeral key and 8-byte MAC")
+		}
 		blen = 8 + 32 + 8 + len(i.CipherVal)
 	case ECIESSchemeProfileB:
-		blen = 12 + 33 + 8 + len(i.CipherVal)
+		if len(i.ECCEphPubKey) != 33 || len(i.MACTag) != 8 {
+			return nil, errors.Errorf("Profile B requires a 33-byte ephemeral key and 8-byte MAC")
+		}
+		blen = 8 + 33 + 8 + len(i.CipherVal)
 	default:
 		return nil, errors.Errorf("marshalBinary_SUCISupiImsi : bad i.ProtectionSchemeId(%d)", i.ProtectionSchemeId)
 	}
