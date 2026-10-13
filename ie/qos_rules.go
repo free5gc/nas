@@ -358,12 +358,13 @@ func (p *PacketFilterContents) MarshalBinary() ([]byte, error) {
 		ofs++
 
 		for _, port := range ports {
-			if val, err := strconv.Atoi(port); err != nil {
+			val, err := strconv.ParseUint(port, 10, 16)
+			if err != nil {
 				return nil, errors.Wrap(err, "PFC MarshalBinary() RPR")
-			} else {
-				binary.BigEndian.PutUint16(b[ofs:ofs+2], uint16(val))
-				ofs += 2
 			}
+
+			binary.BigEndian.PutUint16(b[ofs:ofs+2], uint16(val))
+			ofs += 2
 		}
 	}
 
@@ -381,12 +382,14 @@ func (p *PacketFilterContents) MarshalBinary() ([]byte, error) {
 		ofs++
 
 		for _, port := range ports {
-			if val, err := strconv.Atoi(port); err != nil {
+			val, err := strconv.ParseUint(port, 10, 16)
+			if err != nil {
 				return nil, errors.Wrap(err, "PFC MarshalBinary() LPR")
-			} else {
-				binary.BigEndian.PutUint16(b[ofs:ofs+2], uint16(val))
-				ofs += 2
 			}
+
+			binary.BigEndian.PutUint16(b[ofs:ofs+2], uint16(val))
+			ofs += 2
+
 		}
 	}
 
