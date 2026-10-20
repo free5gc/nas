@@ -1,19 +1,20 @@
 package ie
 
-type EPSNASSecAlgos struct{}
-
-// UnmarshalBinary handles the value part, not including IEI and length.
-func (i *EPSNASSecAlgos) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "EPSNASSecAlgos",
-	}
-	return e
+// EPSNASSecAlgos preserves the bounded IE value without interpreting its contents.
+// Contents excludes the IEI and length octets.
+type EPSNASSecAlgos struct {
+	Contents []byte
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
-func (i *EPSNASSecAlgos) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "EPSNASSecAlgos",
+func (i *EPSNASSecAlgos) UnmarshalBinary(b []byte) error {
+	value, err := copyIEValue("EPSNASSecAlgos", b, 1, 1)
+	if err != nil {
+		return err
 	}
-	return nil, e
+	i.Contents = value
+	return nil
+}
+
+func (i *EPSNASSecAlgos) MarshalBinary() ([]byte, error) {
+	return copyIEValue("EPSNASSecAlgos", i.Contents, 1, 1)
 }

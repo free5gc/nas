@@ -1,27 +1,28 @@
 package ie
 
 // SORTransparentCntr is detailed in 9.11.3.51 SOR transparent container, 24.501
+// The bounded value is preserved without interpreting the inner contents.
+// Contents excludes the IEI and length octets.
 type SORTransparentCntr struct {
-	// Name, uint8, Bits, Octet
-	SORHdr                        uint8 // 8->1,   4->4
-	SORMACIAUSF                   uint8 // 8->1,   5->520
-	Countersor                    uint8 // 8->1,   521->2122
-	SecuredPkt                    uint8 // 8->1,   2123->23
-	PLMNIDAndAccessTechnologyList uint8 // 8->1,   2123->23102
+	// Deprecated: generated placeholder fields were never encoded or decoded.
+	// Use Contents for the complete IE value.
+	SORHdr                        uint8
+	SORMACIAUSF                   uint8
+	Countersor                    uint8
+	SecuredPkt                    uint8
+	PLMNIDAndAccessTechnologyList uint8
+	Contents                      []byte
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *SORTransparentCntr) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "SORTransparentCntr",
+	value, err := copyIEValue("SORTransparentCntr", b, 17, 65535)
+	if err != nil {
+		return err
 	}
-	return e
+	i.Contents = value
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *SORTransparentCntr) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "SORTransparentCntr",
-	}
-	return nil, e
+	return copyIEValue("SORTransparentCntr", i.Contents, 17, 65535)
 }

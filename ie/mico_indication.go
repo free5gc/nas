@@ -1,24 +1,23 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // MICOInd is detailed in 9.11.3.31 MICO indication, 24.501
+// Spare bits are ignored on decode and emitted as zero.
 type MICOInd struct {
-	// Name, uint8, Bits, Octet
-	SPRTI bool // 2->2,   1->1
-	RAAI  bool // 1->1,   1->1
+	SPRTI bool
+	RAAI  bool
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *MICOInd) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "MICOInd",
+	if len(b) != 1 {
+		return errors.Errorf("MICOInd IE length %d, expected 1", len(b))
 	}
-	return e
+	i.SPRTI = GetBit2(b[0]) == 1
+	i.RAAI = GetBit1(b[0]) == 1
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *MICOInd) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "MICOInd",
-	}
-	return nil, e
+	return []byte{SetBit2(SetBit1(0, bool2uint8(i.RAAI)), bool2uint8(i.SPRTI))}, nil
 }

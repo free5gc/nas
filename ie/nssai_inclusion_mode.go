@@ -1,23 +1,24 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // NSSAIInclusionMode is detailed in 9.11.3.37A NSSAI inclusion mode, 24.501
+// Spare bits are ignored on decode and emitted as zero.
 type NSSAIInclusionMode struct {
-	// Name, uint8, Bits, Octet
-	NSSAIInclusionMode uint8 // 2->1,   1->1
+	NSSAIInclusionMode uint8
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *NSSAIInclusionMode) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "NSSAIInclusionMode",
+	if len(b) != 1 {
+		return errors.Errorf("NSSAIInclusionMode IE length %d, expected 1", len(b))
 	}
-	return e
+	i.NSSAIInclusionMode = b[0] & 3
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *NSSAIInclusionMode) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "NSSAIInclusionMode",
+	if i.NSSAIInclusionMode > 3 {
+		return nil, errors.Errorf("invalid NSSAI inclusion mode %d", i.NSSAIInclusionMode)
 	}
-	return nil, e
+	return []byte{i.NSSAIInclusionMode}, nil
 }
