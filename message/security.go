@@ -142,10 +142,12 @@ func (s *SecCtx) Clone() *SecCtx {
 		IntegrityAlg: s.IntegrityAlg,
 	}
 	if s.UplinkCount != nil {
-		secCtx.UplinkCount = &Count{Count: s.UplinkCount.Count}
+		uplinkCount := *s.UplinkCount
+		secCtx.UplinkCount = &uplinkCount
 	}
 	if s.DownlinkCount != nil {
-		secCtx.DownlinkCount = &Count{Count: s.DownlinkCount.Count}
+		downlinkCount := *s.DownlinkCount
+		secCtx.DownlinkCount = &downlinkCount
 	}
 	copy(secCtx.KnasEnc[:], s.KnasEnc[:])
 	copy(secCtx.KnasInt[:], s.KnasInt[:])
