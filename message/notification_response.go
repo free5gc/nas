@@ -2,6 +2,7 @@ package message
 
 import (
 	"bytes"
+	"io"
 
 	"github.com/pkg/errors"
 
@@ -28,10 +29,6 @@ func (m *NotifRsp) MsgType() MsgType {
 }
 
 func (m *NotifRsp) UnmarshalBinary(b []byte) error {
-	var ieLen uint16
-	var err error
-	var umerr Error
-
 	if len(b) < int(GmmHdrLen) {
 		return errors.Errorf("NotifRsp len(b)=%d, < GmmHdrLen(%d)",
 			len(b), GmmHdrLen)
@@ -39,39 +36,43 @@ func (m *NotifRsp) UnmarshalBinary(b []byte) error {
 
 	// skip 3 bytes header (b should not be used after this call)
 	reader := bytes.NewBuffer(b[3:])
+	m.PDUSessStatus = nil
+	var seenPDUSessStatus bool
 
 	// This message contains 0 Mandatory IE
 	// Optional / Conditional IE
 	for reader.Len() > 0 {
-		ieiByte := reader.Next(1)
-		iei := extractIEI(ieiByte[0])
+		iei := reader.Next(1)[0]
 		switch iei {
 		case NotifRspIEIPDUSessStatus: // TLV, 4-34B
-			ieLen, err = getIeLen(reader, IELen8Bits)
+			ieLen, err := getIeLen(reader, IELen8Bits)
 			if err != nil {
-				return errors.Wrap(err, "NotifRsp UnmarshalBinary getIeLen of PDUSessStatus")
+				// Ignore the incomplete optional IE (TS 24.501 section 7.7.1).
+				// Its boundary is unavailable, so stop parsing the tail.
+				return nil
 			}
-			if m.PDUSessStatus != nil {
-				reader.Next(int(ieLen))
-				break
+			value := reader.Next(int(ieLen))
+			if seenPDUSessStatus {
+				continue // Only the first occurrence counts (section 7.6.3).
 			}
-			m.PDUSessStatus = new(ie.PDUSessStatus)
-			if err = m.PDUSessStatus.UnmarshalBinary(
-				reader.Next(int(ieLen))); err != nil {
-				if _, ok := err.(*ie.IEToDo); ok {
-					umerr.IEToDoList = append(umerr.IEToDoList, iei)
-					m.PDUSessStatus = nil
-					continue
-				}
+			seenPDUSessStatus = true
+			if len(value) < 2 {
+				continue // Syntactically incorrect optional IE: treat as absent.
+			}
+			status := new(ie.PDUSessStatus)
+			if err = status.UnmarshalBinary(value); err != nil {
 				return errors.Wrap(err, "NotifRsp.PDUSessStatus.UnmarshalBinary")
 			}
+			m.PDUSessStatus = status
 		default:
-			// Type and Length unknown, unable to parse.
-			return errors.Errorf("NotifRsp unknown iei[%d]", iei)
+			if err := skipUnknownOptionalIE(reader, iei); err != nil {
+				if errors.Is(err, io.ErrUnexpectedEOF) {
+					// Ignore an incomplete optional tail, keeping decoded IEs.
+					return nil
+				}
+				return errors.Wrap(err, "NotifRsp")
+			}
 		}
-	}
-	if len(umerr.IEToDoList) > 0 {
-		return &umerr
 	}
 	return nil
 }
