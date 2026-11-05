@@ -346,6 +346,11 @@ func Marshal(m Message, sc *SecCtx, st SecHdrType) ([]byte, error) {
 	return secMsg, nil
 }
 
+// Parse decodes a NAS message. With a security context it verifies and deciphers a protected
+// message and, after a successful integrity check, updates the receive NAS COUNT in sc
+// (UplinkCount on the core network side, DownlinkCount on the UE side) and records it as
+// accepted, so that COUNT is not accepted again (TS 24.501 4.4.3). Parse is not safe for
+// concurrent use: calls that share a receive COUNT must be serialized by the caller.
 func Parse(b []byte, sc *SecCtx) (m Message, err error) {
 	defer func() {
 		if p := recover(); p != nil {
@@ -378,7 +383,6 @@ func Parse(b []byte, sc *SecCtx) (m Message, err error) {
 
 	toDecrypt := false
 	toCheckMAC := false
-	resetCounter := false
 	switch h.SecHdrType {
 	case SecHdrTypeIntegrityProtected:
 		toCheckMAC = true
@@ -390,14 +394,12 @@ func Parse(b []byte, sc *SecCtx) (m Message, err error) {
 	case SecHdrTypeIntegrityProtectedAndCipheredWithNew5gNasSecCtx:
 		toCheckMAC = true
 		toDecrypt = true
-		resetCounter = true
 	default:
 		return nil, errors.Errorf("Parse() bad SecHdr type: 0x%0x", h.SecHdrType)
 	}
 
 	var macFail *MACFailure
-	var oldSqn uint8
-	var oldOverflow uint16
+	var estimated Count
 	if sc == nil {
 		// unable to calc MAC nor to decrypt; try to parse the msg as plaintext
 		toCheckMAC = false
@@ -414,17 +416,6 @@ func Parse(b []byte, sc *SecCtx) (m Message, err error) {
 			count = sc.DownlinkCount
 			direction = DirectionDownlink
 		}
-		// store count for recovery if MAC failed later
-		oldSqn = count.SQN()
-		oldOverflow = count.Overflow()
-
-		if resetCounter {
-			count.Set(0, 0)
-		}
-		if count.SQN() > h.SequenceNumber {
-			count.SetOverflow(count.Overflow() + 1)
-		}
-		count.SetSQN(h.SequenceNumber)
 
 		// TS 33.501 D.1: All processing performed in association with integrity (except for replay protection)
 		// shall be exactly the same as with any of the integrity algorithms specified in this annex
@@ -432,6 +423,36 @@ func Parse(b []byte, sc *SecCtx) (m Message, err error) {
 		if sc.IntegrityAlg == AlgIntegrity128NIA0 {
 			toCheckMAC = false
 		}
+
+		// TS 24.501 4.4.3.1: the stored receive COUNT is the largest COUNT accepted so far, so the
+		// estimated COUNT must be higher than it. The start value of a new context is not accepted
+		// yet. There is no replay protection with NIA0 (TS 24.501 4.4.3.2).
+		replayCheck := toCheckMAC && count.accepted
+		estimated = *count
+		if estimated.SQN() > h.SequenceNumber || (replayCheck && estimated.SQN() == h.SequenceNumber) {
+			estimated.SetOverflow(estimated.Overflow() + 1)
+		}
+		estimated.SetSQN(h.SequenceNumber)
+		if toCheckMAC && estimated.Get() < count.Get() {
+			// Only a wrap of the overflow counter gives an estimate below the stored COUNT, also
+			// for a start value that is not accepted yet. The COUNT must not wrap in this context
+			// (TS 24.501 4.4.3.5), so the message cannot be verified.
+			toCheckMAC = false
+			macFail = &MACFailure{
+				Expected: []byte{0x00, 0x00, 0x00, 0x00},
+				Received: h.MAC,
+			}
+		}
+
+		// Verify and decipher with the estimate; the stored COUNT is updated only after a
+		// successful integrity check (TS 24.501 4.4.3.3).
+		rxCtx := *sc
+		if direction == DirectionUplink {
+			rxCtx.UplinkCount = &estimated
+		} else {
+			rxCtx.DownlinkCount = &estimated
+		}
+		sc = &rxCtx
 	}
 
 	// Verify the MAC of security protected header
@@ -450,10 +471,12 @@ func Parse(b []byte, sc *SecCtx) (m Message, err error) {
 				Expected: mac32,
 				Received: h.MAC,
 			}
-
-			// recover secCtx since mac failed
-			count.Set(oldOverflow, oldSqn)
 		}
+	}
+
+	if count != nil && macFail == nil {
+		*count = estimated
+		count.accepted = true
 	}
 
 	innerMsg := SeqAndInnerMsg[1:]
