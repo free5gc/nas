@@ -47,6 +47,7 @@ func (m *SecModeComplete) UnmarshalBinary(b []byte) error {
 
 	// This message contains 0 Mandatory IE
 	// Optional / Conditional IE
+	// TS 24.501 7.7.1: the network treats a syntactically incorrect optional IE as not present
 	for reader.Len() > 0 {
 		ieiByte := reader.Next(1)
 		iei := extractIEI(ieiByte[0])
@@ -68,7 +69,8 @@ func (m *SecModeComplete) UnmarshalBinary(b []byte) error {
 					m.IMEISV = nil
 					continue
 				}
-				return errors.Wrap(err, "SecModeComplete.IMEISV.UnmarshalBinary")
+				m.IMEISV = nil
+				continue
 			}
 		case SecModeCompleteIEINASMsgCntr: // TLV-E, 4-nB
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -87,7 +89,8 @@ func (m *SecModeComplete) UnmarshalBinary(b []byte) error {
 					m.NASMsgCntr = nil
 					continue
 				}
-				return errors.Wrap(err, "SecModeComplete.NASMsgCntr.UnmarshalBinary")
+				m.NASMsgCntr = nil
+				continue
 			}
 		case SecModeCompleteIEINonimeisvPEI: // TLV-E, 7-nB
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -106,7 +109,8 @@ func (m *SecModeComplete) UnmarshalBinary(b []byte) error {
 					m.NonimeisvPEI = nil
 					continue
 				}
-				return errors.Wrap(err, "SecModeComplete.NonimeisvPEI.UnmarshalBinary")
+				m.NonimeisvPEI = nil
+				continue
 			}
 		default:
 			// Type and Length unknown, unable to parse.

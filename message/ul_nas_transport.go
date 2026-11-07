@@ -78,6 +78,7 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 	}
 
 	// Optional / Conditional IE
+	// TS 24.501 7.7.1: the network treats a syntactically incorrect optional IE as not present
 	for reader.Len() > 0 {
 		ieiByte := reader.Next(1)
 		iei := extractIEI(ieiByte[0])
@@ -112,7 +113,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.OldPDUSessID = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.OldPDUSessID.UnmarshalBinary")
+				m.OldPDUSessID = nil
+				continue
 			}
 		case ULNASTransportIEIReqType: // TV, 1B
 			if m.ReqType != nil {
@@ -126,7 +128,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.ReqType = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.ReqType.UnmarshalBinary")
+				m.ReqType = nil
+				continue
 			}
 		case ULNASTransportIEISNSSAI: // TLV, 3-10B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -145,7 +148,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.SNSSAI = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.SNSSAI.UnmarshalBinary")
+				m.SNSSAI = nil
+				continue
 			}
 		case ULNASTransportIEIDNN: // TLV, 3-102B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -164,7 +168,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.DNN = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.DNN.UnmarshalBinary")
+				m.DNN = nil
+				continue
 			}
 		case ULNASTransportIEIAdditionalInfo: // TLV, 3-nB
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -183,7 +188,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.AdditionalInfo = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.AdditionalInfo.UnmarshalBinary")
+				m.AdditionalInfo = nil
+				continue
 			}
 		case ULNASTransportIEIMAPDUSessInfo: // TV, 1B
 			if m.MAPDUSessInfo != nil {
@@ -197,7 +203,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.MAPDUSessInfo = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.MAPDUSessInfo.UnmarshalBinary")
+				m.MAPDUSessInfo = nil
+				continue
 			}
 		case ULNASTransportIEIRelAssistanceInd: // TV, 1B
 			if m.RelAssistanceInd != nil {
@@ -211,7 +218,8 @@ func (m *ULNASTransport) UnmarshalBinary(b []byte) error {
 					m.RelAssistanceInd = nil
 					continue
 				}
-				return errors.Wrap(err, "ULNASTransport.RelAssistanceInd.UnmarshalBinary")
+				m.RelAssistanceInd = nil
+				continue
 			}
 		default:
 			// Type and Length unknown, unable to parse.
