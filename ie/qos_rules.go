@@ -94,6 +94,10 @@ type QosRule struct {
 	Precedence    uint8          // 8 -> 1 , m+1 -> m+1
 	Segregation   bool           // 7 -> 7 , m+2 -> m+2
 	QFI           uint8          // 6 -> 1 , m+2 -> m+2k
+	// A rule that modifies an existing one may leave out its precedence, and its QFI octet (TS 24.501
+	// 9.11.4.13): NoPrecedence says that the rule has neither, NoQFI that it has no QFI octet.
+	NoPrecedence bool
+	NoQFI        bool
 }
 
 // QosRules is detailed in 9.11.4.13 QoS rules , 24.501
@@ -554,23 +558,14 @@ func (p *PacketFilterContents) marshalLenEstimate() uint8 {
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *QosRules) UnmarshalBinary(b []byte) error {
 	qosRulesLen := uint16(len(b))
-	rule := QosRule{}
 	ofs := uint16(0)
 	for ofs < qosRulesLen-2 {
+		rule := QosRule{}
 		if umlen, err := rule.unmarshalQosRule(b[ofs:]); err != nil {
 			i.Rules = nil
 			return errors.Wrap(err, "qosRule UnmarshalBinary()")
 		} else {
 			ofs += umlen
-			if rule.OpCode != OpCode_DelExistingQosRule {
-				if ofs < qosRulesLen-1 {
-					rule.Precedence = b[ofs]
-					ofs++
-					rule.Segregation = GetBit7(b[ofs]) == 1
-					rule.QFI = Get6Bits61(b[ofs])
-					ofs++
-				}
-			}
 			i.Rules = append(i.Rules, rule)
 		}
 	}
@@ -592,6 +587,10 @@ func (r *QosRule) unmarshalQosRule(b []byte) (uint16, error) {
 		}
 	}
 	r.IsDefaultDQR = GetBit5(b[3]) == 1
+	if int(ruleLen)+3 > len(b) {
+		return 0, errors.Errorf("qosRule: ruleLen=%d exceeds the %d octets left", ruleLen, len(b)-3)
+	}
+	end := ruleLen + 3 // 3 = 1B "QoS Rule ID" + 2B "Len of QoS Rule"
 	nrOfPktFilters := Get4Bits41(b[3])
 	r.PktFilterList = make([]PacketFilter, nrOfPktFilters)
 	ofs := uint16(4) // Offset to the start of pkt filter list
@@ -600,6 +599,17 @@ func (r *QosRule) unmarshalQosRule(b []byte) (uint16, error) {
 	}
 	for j := uint8(0); j < nrOfPktFilters; j++ {
 		flt := &r.PktFilterList[j]
+		// TS 24.501 9.11.4.13: for "modify existing QoS rule and delete packet filters", the packet filter
+		// list holds the identifiers of the packet filters to delete, one octet each.
+		if r.OpCode == OpCode_ModifyDelPktFilters {
+			if ofs >= end {
+				r.PktFilterList = nil
+				return 0, errors.Errorf("qosRule : bad pkt flt identifier? ofs=%d, ruleLen=%d", ofs, ruleLen)
+			}
+			flt.Id = Get4Bits41(b[ofs])
+			ofs++
+			continue
+		}
 		// 2: i.Contents is at the 2nd octet
 		if int(ofs)+2 > len(b) {
 			r.PktFilterList = nil
@@ -620,12 +630,22 @@ func (r *QosRule) unmarshalQosRule(b []byte) (uint16, error) {
 		ofs += pfcLen
 	}
 
-	// ruleLen + 3 : len of the whole QoS Rule, 3 = 1B "QoS Rule ID" + 2B "Len of QoS Rule"
-	// ofs value here : len of the whole QoS Rule - 2 Octets (Precedence + the one w/ QFI)
-	if ruleLen+3 != ofs+2 {
-		return ofs, errors.Errorf("ruleLen=%d, ofs=%d", ruleLen, ofs)
+	// The precedence and the octet with the QFI follow the packet filter list. A new rule has both; a rule
+	// that modifies an existing one may have neither, or the precedence alone (TS 24.501 9.11.4.13).
+	switch {
+	case end == ofs+2:
+		r.Precedence = b[ofs]
+		r.Segregation = GetBit7(b[ofs+1]) == 1
+		r.QFI = Get6Bits61(b[ofs+1])
+	case end == ofs+1 && r.OpCode != OpCode_CreateNewQosRule:
+		r.Precedence = b[ofs]
+		r.NoQFI = true
+	case end == ofs && r.OpCode != OpCode_CreateNewQosRule:
+		r.NoPrecedence, r.NoQFI = true, true
+	default:
+		return 0, errors.Errorf("ruleLen=%d, ofs=%d", ruleLen, ofs)
 	}
-	return ofs, nil
+	return end, nil
 }
 
 // MarshalBinary returns the value part, not including IEI and length.
@@ -677,6 +697,12 @@ func (r *QosRule) marshalQosRule() ([]byte, error) {
 	nrOfPktFilters := uint8(0)
 	for j := range r.PktFilterList {
 		flt := r.PktFilterList[j]
+		if r.OpCode == OpCode_ModifyDelPktFilters {
+			b[ofs] = Set4Bits41(b[ofs], flt.Id)
+			ofs++
+			nrOfPktFilters++
+			continue
+		}
 		b[ofs] = Set2Bits65(b[ofs], flt.Dir)
 		b[ofs] = Set4Bits41(b[ofs], flt.Id)
 		ofs++
@@ -691,11 +717,15 @@ func (r *QosRule) marshalQosRule() ([]byte, error) {
 		}
 		nrOfPktFilters++
 	}
-	b[ofs] = r.Precedence
-	ofs++
-	b[ofs] = SetBit7(b[ofs], bool2uint8(r.Segregation))
-	b[ofs] = Set6Bits61(b[ofs], r.QFI)
-	ofs++
+	if !r.NoPrecedence {
+		b[ofs] = r.Precedence
+		ofs++
+		if !r.NoQFI {
+			b[ofs] = SetBit7(b[ofs], bool2uint8(r.Segregation))
+			b[ofs] = Set6Bits61(b[ofs], r.QFI)
+			ofs++
+		}
+	}
 	b[3] = Set4Bits41(b[3], nrOfPktFilters)
 	binary.BigEndian.PutUint16(b[1:3], ofs-3)
 
