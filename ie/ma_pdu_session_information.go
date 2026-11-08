@@ -1,23 +1,23 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // MAPDUSessInfo is detailed in 9.11.3.31A MA PDU session information, 24.501
 type MAPDUSessInfo struct {
-	// Name, uint8, Bits, Octet
-	MAPDUSessInfoValue uint8 // 4->1,   1->1
+	MAPDUSessInfoValue uint8
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *MAPDUSessInfo) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "MAPDUSessInfo",
+	if len(b) != 1 {
+		return errors.Errorf("MAPDUSessInfo IE length %d, expected 1", len(b))
 	}
-	return e
+	i.MAPDUSessInfoValue = Get4Bits41(b[0])
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *MAPDUSessInfo) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "MAPDUSessInfo",
+	if i.MAPDUSessInfoValue > 15 {
+		return nil, errors.Errorf("invalid MA PDU session information value %d", i.MAPDUSessInfoValue)
 	}
-	return nil, e
+	return []byte{i.MAPDUSessInfoValue}, nil
 }

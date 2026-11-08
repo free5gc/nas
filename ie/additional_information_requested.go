@@ -1,23 +1,24 @@
 package ie
 
+import "github.com/pkg/errors"
+
 // AdditionalInfoReq is detailed in 9.11.3.12A Additional information requested, 24.501
+// Spare bits and extra octets (24.007 11.4.2) are ignored on decode; spare bits are emitted as zero.
 type AdditionalInfoReq struct {
-	// Name, uint8, Bits, Octet
-	Cipherkey uint8 // 1->1,   3->3
+	Cipherkey uint8
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *AdditionalInfoReq) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "AdditionalInfoReq",
+	if len(b) < 1 {
+		return errors.Errorf("AdditionalInfoReq IE length %d, expected at least 1", len(b))
 	}
-	return e
+	i.Cipherkey = GetBit1(b[0])
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *AdditionalInfoReq) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "AdditionalInfoReq",
+	if i.Cipherkey > 1 {
+		return nil, errors.Errorf("invalid additional information requested CipherKey %d", i.Cipherkey)
 	}
-	return nil, e
+	return []byte{i.Cipherkey}, nil
 }
