@@ -215,6 +215,39 @@ func TestRegReqUnmarshalBinary(t *testing.T) {
 			},
 		},
 		{
+			name: "EPS NAS message container, not interpreted (TS 24.501 7.5.2)",
+			input: []byte{
+				0x7e, 0x00, 0x41, // EPD, SecHdr/Spare, Msg Type
+				// ie.RegType5GS + ie.NASKeySetId, V, 1/2B
+				0x79,
+				// ie.MobileId5GS  LV-E,     6-nB, 9.11.3.4
+				0x00, 0x09,
+				0x07, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+				// EPSNASMsgCntr   : &ie.EPSNASMsgCntr   0x70 TLV-E,     4-nB, 9.11.3.24
+				0x70, 0x00, 0x04,
+				0xde, 0xad, 0xbe, 0xef,
+				// LADNInd         : &ie.LADNInd         0x74 TLV-E,   3-811B, 9.11.3.29
+				0x74, 0x00, 0x05,
+				0x04, 0x03, 0x61, 0x62, 0x63,
+			},
+			expected: &RegReq{
+				RegType5GS: &ie.RegType5GS{FOR_Pending: true, Value: 1},
+				Ngksi:      &ie.NASKeySetId{Tsc: 0, Ksi: 7},
+				MobileId5GS: &ie.MobileId5GS{
+					TypeOfId: ie.IdType_5GS_EUI64,
+					EUI64:    [8]uint8{1, 2, 3, 4, 5, 6, 7, 8},
+				}, // MobileId5GS
+				EPSNASMsgCntr: &ie.EPSNASMsgCntr{
+					Contents: []byte{0xde, 0xad, 0xbe, 0xef},
+				},
+				LADNInd: &ie.LADNInd{
+					DNNs: []ie.DNN{{
+						Value: "abc",
+					}},
+				},
+			},
+		},
+		{
 			name: "case 4 another 5 optional IEs",
 			input: []byte{
 				0x7e, 0x00, 0x41, // EPD, SecHdr/Spare, Msg Type

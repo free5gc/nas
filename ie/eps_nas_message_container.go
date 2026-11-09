@@ -1,23 +1,25 @@
 package ie
 
 // EPSNASMsgCntr is detailed in 9.11.3.24 EPS NAS message container, 24.501
+// The bounded value is preserved without interpreting the inner contents:
+// TS 24.501 7.5.2 allows no diagnosis other than presence and length.
+// Contents excludes the IEI and length octets.
 type EPSNASMsgCntr struct {
-	// Name, uint8, Bits, Octet
-	EPSNASMsgCntr uint8 // 8->1,   4->995
+	// Deprecated: generated placeholder fields were never encoded or decoded.
+	// Use Contents for the complete IE value.
+	EPSNASMsgCntr uint8
+	Contents      []byte
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *EPSNASMsgCntr) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "EPSNASMsgCntr",
+	value, err := copyIEValue("EPSNASMsgCntr", b, 1, 65535)
+	if err != nil {
+		return err
 	}
-	return e
+	i.Contents = value
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *EPSNASMsgCntr) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "EPSNASMsgCntr",
-	}
-	return nil, e
+	return copyIEValue("EPSNASMsgCntr", i.Contents, 1, 65535)
 }
