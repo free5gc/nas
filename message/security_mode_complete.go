@@ -3,6 +3,7 @@ package message
 import (
 	"bytes"
 	"encoding/binary"
+	"io"
 
 	"github.com/pkg/errors"
 
@@ -109,8 +110,14 @@ func (m *SecModeComplete) UnmarshalBinary(b []byte) error {
 				return errors.Wrap(err, "SecModeComplete.NonimeisvPEI.UnmarshalBinary")
 			}
 		default:
-			// Type and Length unknown, unable to parse.
-			return errors.Errorf("SecModeComplete unknown iei[%d]", iei)
+			if err = skipUnknownOptionalIE(reader, ieiByte[0]); err != nil {
+				if errors.Is(err, io.ErrUnexpectedEOF) {
+					// Ignore an incomplete optional tail, keeping decoded IEs.
+					reader.Reset()
+					continue
+				}
+				return errors.Wrap(err, "SecModeComplete")
+			}
 		}
 	}
 	if len(umerr.IEToDoList) > 0 {
