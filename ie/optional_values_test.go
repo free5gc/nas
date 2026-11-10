@@ -28,6 +28,7 @@ func TestOptionalOpaqueValues(t *testing.T) {
 		{"S1 UE security", &S1UESecCapability{}, 2, 5},
 		{"additional information", &AdditionalInfo{}, 1, 255},
 		{"mapped EPS bearers", &MappedEPSBearerCtxs{}, 4, 65535},
+		{"EPS NAS message container", &EPSNASMsgCntr{}, 1, 65535},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.min > 0 {
@@ -103,6 +104,8 @@ func TestOptionalValuesRejectInvalidEncoding(t *testing.T) {
 		&AdditionalInfo{Contents: make([]byte, 256)},
 		&MappedEPSBearerCtxs{Contents: make([]byte, 3)},
 		&MappedEPSBearerCtxs{Contents: make([]byte, 65536)},
+		&EPSNASMsgCntr{Contents: nil},
+		&EPSNASMsgCntr{Contents: make([]byte, 65536)},
 		&NSSAIInclusionMode{NSSAIInclusionMode: 4},
 		&Non3GppNWProvidedPolicies{Value: 2},
 		&AllowedSSCMode{SSC1: 2},
