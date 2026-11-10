@@ -91,9 +91,53 @@ func TestQosRulesUnmarshalBinary(t *testing.T) {
 				}},
 			},
 		}, {
+			name: "Create + Delete case",
+			input: []byte{
+				0x01, 0x00, 0x06, 0x31,
+				0x31, 0x01,
+				0x01,
+				0xff, 0x09,
+				0x02, 0x00, 0x01, 0x40,
+			},
+			expected: &QosRules{
+				Rules: []QosRule{{
+					RuleId:       1,
+					OpCode:       OpCode_CreateNewQosRule,
+					IsDefaultDQR: true,
+					Precedence:   255,
+					Segregation:  false,
+					QFI:          9,
+					PktFilterList: []PacketFilter{{
+						Dir: PFD_BiDir,
+						Id:  1,
+						Contents: PacketFilterContents{
+							MatchAll:   true,
+							RemoteAddr: "any",
+							LocalAddr:  "assigned",
+						},
+					}},
+				}, {
+					RuleId:        2,
+					OpCode:        OpCode_DelExistingQosRule,
+					IsDefaultDQR:  false,
+					Precedence:    0,
+					Segregation:   false,
+					QFI:           0,
+					PktFilterList: nil,
+				}},
+			},
+		}, {
 			name: "Delete Case - Negative",
 			input: []byte{
 				0x03, 0x00, 0x02, 0x40, 0x00,
+			},
+		}, {
+			name: "Create Case - Negative, cut short after the precedence",
+			input: []byte{
+				0x01, 0x00, 0x06, 0x31,
+				0x31, 0x01,
+				0x01,
+				0xff,
 			},
 		}, {
 			name: "Create 1*QoSRule 1*PktFltr 1*Component",
