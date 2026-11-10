@@ -1,19 +1,21 @@
 package ie
 
-type WUSAssistanceInfo struct{}
-
-// UnmarshalBinary handles the value part, not including IEI and length.
-func (i *WUSAssistanceInfo) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "WUSAssistanceInfo",
-	}
-	return e
+// WUSAssistanceInfo is detailed in 9.11.3.71 WUS assistance information, 24.501 (9.9.3.62, 24.301)
+// The bounded value is preserved without interpreting the inner contents.
+// Contents excludes the IEI and length octets.
+type WUSAssistanceInfo struct {
+	Contents []byte
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
-func (i *WUSAssistanceInfo) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "WUSAssistanceInfo",
+func (i *WUSAssistanceInfo) UnmarshalBinary(b []byte) error {
+	value, err := copyIEValue("WUSAssistanceInfo", b, 1, 255)
+	if err != nil {
+		return err
 	}
-	return nil, e
+	i.Contents = value
+	return nil
+}
+
+func (i *WUSAssistanceInfo) MarshalBinary() ([]byte, error) {
+	return copyIEValue("WUSAssistanceInfo", i.Contents, 1, 255)
 }

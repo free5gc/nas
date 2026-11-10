@@ -1,23 +1,21 @@
 package ie
 
 // SvcLvlAACntr is detailed in 9.11.2.10 Service-level-AA container, 24.501
+// The bounded value is preserved without interpreting the inner contents.
+// Contents excludes the IEI and length octets.
 type SvcLvlAACntr struct {
-	// Name, uint8, Bits, Octet
+	Contents []byte
 }
 
-// UnmarshalBinary handles the value part, not including IEI and length.
 func (i *SvcLvlAACntr) UnmarshalBinary(b []byte) error {
-	var e error = &IEToDo{
-		IEName: "SvcLvlAACntr",
+	value, err := copyIEValue("SvcLvlAACntr", b, 1, 65535)
+	if err != nil {
+		return err
 	}
-	return e
+	i.Contents = value
+	return nil
 }
 
-// MarshalBinary returns the value part, not including IEI and length.
 func (i *SvcLvlAACntr) MarshalBinary() ([]byte, error) {
-	var e error = &IEToDo{
-		IEName: "SvcLvlAACntr",
-	}
-
-	return nil, e
+	return copyIEValue("SvcLvlAACntr", i.Contents, 1, 65535)
 }
