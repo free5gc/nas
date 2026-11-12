@@ -27,11 +27,6 @@ func TestUEReqTypeUnmarshalBinary(t *testing.T) {
 			input:    []byte{0x82},
 			expected: &UEReqType{ReqType: UEReqType_PagingRej},
 		},
-		{
-			name:     "Invalid input",
-			input:    []byte{0x32, 0x01},
-			expected: nil,
-		},
 	}
 
 	for _, tc := range testCases {

@@ -31,6 +31,7 @@ const (
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *UpdateType5GS) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("The UpdateType5GS  IE length(%d) is incorrect", len(b))
 	}

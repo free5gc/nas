@@ -18,22 +18,31 @@ func TestOptionalOpaqueValues(t *testing.T) {
 		name     string
 		value    binaryValue
 		min, max int
+		// longer: a value longer than max is read as its first max octets (TS 24.007 11.4.2)
+		longer bool
 	}{
-		{"emergency numbers", &EmergNumList{}, 3, 48},
-		{"extended emergency numbers", &ExtendedEmergNumList{}, 4, 65535},
-		{"SOR", &SORTransparentCntr{}, 17, 65535},
-		{"operator categories", &OperatorDefinedAccessCategoryDefs{}, 0, 8320},
-		{"EPS bearer status", &EPSBearerCtxStatus{}, 2, 2},
-		{"EPS NAS algorithms", &EPSNASSecAlgos{}, 1, 1},
-		{"S1 UE security", &S1UESecCapability{}, 2, 5},
-		{"additional information", &AdditionalInfo{}, 1, 255},
-		{"mapped EPS bearers", &MappedEPSBearerCtxs{}, 4, 65535},
+		{"emergency numbers", &EmergNumList{}, 3, 48, false},
+		{"extended emergency numbers", &ExtendedEmergNumList{}, 4, 65535, false},
+		{"SOR", &SORTransparentCntr{}, 17, 65535, false},
+		{"operator categories", &OperatorDefinedAccessCategoryDefs{}, 0, 8320, false},
+		{"EPS bearer status", &EPSBearerCtxStatus{}, 2, 2, true},
+		{"EPS NAS algorithms", &EPSNASSecAlgos{}, 1, 1, false},
+		{"S1 UE security", &S1UESecCapability{}, 2, 5, true},
+		{"additional information", &AdditionalInfo{}, 1, 255, false},
+		{"mapped EPS bearers", &MappedEPSBearerCtxs{}, 4, 65535, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.min > 0 {
 				require.Error(t, tc.value.UnmarshalBinary(make([]byte, tc.min-1)))
 			}
-			require.Error(t, tc.value.UnmarshalBinary(make([]byte, tc.max+1)))
+			if tc.longer {
+				require.NoError(t, tc.value.UnmarshalBinary(make([]byte, tc.max+1)))
+				wire, err := tc.value.MarshalBinary()
+				require.NoError(t, err)
+				require.Len(t, wire, tc.max)
+			} else {
+				require.Error(t, tc.value.UnmarshalBinary(make([]byte, tc.max+1)))
+			}
 			for _, length := range []int{tc.min, tc.max} {
 				input := make([]byte, length)
 				if length > 0 {

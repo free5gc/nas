@@ -7,7 +7,7 @@ type EPSBearerCtxStatus struct {
 }
 
 func (i *EPSBearerCtxStatus) UnmarshalBinary(b []byte) error {
-	value, err := copyIEValue("EPSBearerCtxStatus", b, 2, 2)
+	value, err := copyIEValue("EPSBearerCtxStatus", valuePart(b, 2), 2, 2)
 	if err != nil {
 		return err
 	}

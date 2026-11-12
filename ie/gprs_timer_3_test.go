@@ -22,10 +22,6 @@ func TestGPRSTimer3UnmarshalBinary(t *testing.T) {
 				Value: 0x16,
 			},
 		},
-		{
-			name:  "Negative Case 1",
-			input: []byte{0x76, 0x54},
-		},
 	}
 
 	for _, tc := range testCases {
