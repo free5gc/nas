@@ -3,6 +3,7 @@ package message
 import (
 	"bytes"
 	"encoding/binary"
+	"io"
 
 	"github.com/pkg/errors"
 
@@ -196,8 +197,14 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 				return errors.Wrap(err, "SvcReq.PagingRestriction.UnmarshalBinary")
 			}
 		default:
-			// Type and Length unknown, unable to parse.
-			return errors.Errorf("SvcReq unknown iei[%d]", iei)
+			if err = skipUnknownOptionalIE(reader, ieiByte[0]); err != nil {
+				if errors.Is(err, io.ErrUnexpectedEOF) {
+					// Ignore an incomplete optional tail, keeping decoded IEs.
+					reader.Reset()
+					continue
+				}
+				return errors.Wrap(err, "SvcReq")
+			}
 		}
 	}
 	if len(umerr.IEToDoList) > 0 {

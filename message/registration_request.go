@@ -3,6 +3,7 @@ package message
 import (
 	"bytes"
 	"encoding/binary"
+	"io"
 
 	"github.com/pkg/errors"
 
@@ -869,8 +870,14 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 				return errors.Wrap(err, "RegReq.ReqT3512Value.UnmarshalBinary")
 			}
 		default:
-			// Type and Length unknown, unable to parse.
-			return errors.Errorf("RegReq unknown iei[%d]", iei)
+			if err = skipUnknownOptionalIE(reader, ieiByte[0]); err != nil {
+				if errors.Is(err, io.ErrUnexpectedEOF) {
+					// Ignore an incomplete optional tail, keeping decoded IEs.
+					reader.Reset()
+					continue
+				}
+				return errors.Wrap(err, "RegReq")
+			}
 		}
 	}
 	if len(umerr.IEToDoList) > 0 {

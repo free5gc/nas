@@ -3,6 +3,7 @@ package message
 import (
 	"bytes"
 	"encoding/binary"
+	"io"
 
 	"github.com/pkg/errors"
 
@@ -99,8 +100,14 @@ func (m *PDUSessRelComplete) UnmarshalBinary(b []byte) error {
 				return errors.Wrap(err, "PDUSessRelComplete.ExtendedProtCfgOpts.UnmarshalFromMs")
 			}
 		default:
-			// Type and Length unknown, unable to parse.
-			return errors.Errorf("PDUSessRelComplete unknown iei[%d]", iei)
+			if err = skipUnknownOptionalIE(reader, ieiByte[0]); err != nil {
+				if errors.Is(err, io.ErrUnexpectedEOF) {
+					// Ignore an incomplete optional tail, keeping decoded IEs.
+					reader.Reset()
+					continue
+				}
+				return errors.Wrap(err, "PDUSessRelComplete")
+			}
 		}
 	}
 	if len(umerr.IEToDoList) > 0 {
