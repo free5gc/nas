@@ -22,6 +22,7 @@ const (
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *GPRSTimer3) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("The GPRSTimer3  IE length(%d) is incorrect", len(b))
 	}

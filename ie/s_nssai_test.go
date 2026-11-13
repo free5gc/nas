@@ -56,10 +56,6 @@ func TestSNSSAIUnmarshalBinary(t *testing.T) {
 				MappedHPLMNSD:  "543210",
 			},
 		},
-		{
-			name:  "ERROR - length too long",
-			input: []byte{0x12, 0x34, 0x56, 0x78, 0x90, 0x54, 0x32, 0x10, 0x00, 0x00},
-		},
 	}
 
 	for _, tc := range testCases {

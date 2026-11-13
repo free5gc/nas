@@ -45,6 +45,7 @@ type UESecCapability struct {
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *UESecCapability) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 8)
 	i.Length = len(b)
 
 	if (i.Length < 2) || (i.Length > 8) || (i.Length%2 != 0) {

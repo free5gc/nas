@@ -11,6 +11,7 @@ type UEStatus struct {
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *UEStatus) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("UEStatus bad IE len(%d)", len(b))
 	}

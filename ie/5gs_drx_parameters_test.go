@@ -28,10 +28,6 @@ func TestDRXParams5GSUnmarshalBinary(t *testing.T) {
 				Value: DRXValueNotSpecified,
 			},
 		},
-		{
-			name:  "Negative Case 1",
-			input: []byte{0x76, 0x54},
-		},
 	}
 
 	for _, tc := range testCases {

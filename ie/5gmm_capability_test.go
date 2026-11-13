@@ -142,13 +142,6 @@ func TestCapability5GMMUnmarshalBinary(t *testing.T) {
 			name:  "Negative Case 1",
 			input: []byte{},
 		},
-		{
-			name: "Negative Case 2",
-			input: []byte{
-				0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-				0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-			},
-		},
 	}
 
 	for _, tc := range testCases {

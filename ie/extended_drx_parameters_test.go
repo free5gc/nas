@@ -70,6 +70,15 @@ func TestExtendedDRXParams_UnmarshalBinary(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:  "valid input with the Extended Paging Time Window of octet 4, which is not modelled",
+			input: []byte{0x65, 0x01}, // PagingTimeWindow=0x06, eDRXValue=0x05, Extended PTW=0x01
+			want: ExtendedDRXParams{
+				PagingTimeWindow: NRPagingTimeWindow8_96s,
+				EDRXValue:        NReDRXValue81_92s,
+			},
+			wantErr: false,
+		},
+		{
 			name:  "invalid eDRX value (greater than max) should default to 2.56s",
 			input: []byte{0x0d}, // PagingTimeWindow=0x00, eDRXValue=0x0d (invalid)
 			want: ExtendedDRXParams{
@@ -81,12 +90,6 @@ func TestExtendedDRXParams_UnmarshalBinary(t *testing.T) {
 		{
 			name:    "invalid buffer length (empty)",
 			input:   []byte{},
-			want:    ExtendedDRXParams{},
-			wantErr: true,
-		},
-		{
-			name:    "invalid buffer length (too long)",
-			input:   []byte{0x00, 0x01},
 			want:    ExtendedDRXParams{},
 			wantErr: true,
 		},

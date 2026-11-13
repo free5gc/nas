@@ -218,6 +218,9 @@ var TeDRXValueMap = map[NReDRXValue]NRTeDRXValue{
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *ExtendedDRXParams) UnmarshalBinary(b []byte) error {
+	// Octet 3 only: the Extended Paging Time Window of octet 4 (TS 24.008 10.5.5.32) is not modelled, and it is
+	// ignored with any further octet.
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("ExtendedDRXParams buffer len(%d) != 1", len(b))
 	}

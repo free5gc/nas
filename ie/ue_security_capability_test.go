@@ -174,10 +174,6 @@ func TestUESecCapabilityUnmarshalBinary(t *testing.T) {
 			name:  "Negative Case 1",
 			input: []byte{0x76, 0x54, 0x32},
 		},
-		{
-			name:  "Negative Case 2",
-			input: []byte{0x76, 0x54, 0x32, 0x76, 0x54, 0x32, 0x76, 0x54, 0x32, 0x76, 0x54, 0x32},
-		},
 	}
 
 	for _, tc := range testCases {

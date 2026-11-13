@@ -143,6 +143,7 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 	}
 
 	// Optional / Conditional IE
+	// TS 24.501 7.7.1: the network treats a syntactically incorrect optional IE as not present
 	for reader.Len() > 0 {
 		ieiByte := reader.Next(1)
 		iei := extractIEI(ieiByte[0])
@@ -159,7 +160,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.NoncurrentNativeNASKeySetId = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.NoncurrentNativeNASKeySetId.UnmarshalBinary")
+				m.NoncurrentNativeNASKeySetId = nil
+				continue
 			}
 		case RegReqIEICapability5GMM: // TLV, 3-15B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -178,7 +180,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.Capability5GMM = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.Capability5GMM.UnmarshalBinary")
+				m.Capability5GMM = nil
+				continue
 			}
 		case RegReqIEIUESecCapability: // TLV, 4-10B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -197,7 +200,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UESecCapability = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UESecCapability.UnmarshalBinary")
+				m.UESecCapability = nil
+				continue
 			}
 		case RegReqIEIReqNSSAI: // TLV, 4-74B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -216,7 +220,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqNSSAI = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqNSSAI.UnmarshalBinary")
+				m.ReqNSSAI = nil
+				continue
 			}
 		case RegReqIEILastVisitedRegisteredTAI: // TV, 7B
 			ieLen = 6
@@ -232,7 +237,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.LastVisitedRegisteredTAI = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.LastVisitedRegisteredTAI.UnmarshalBinary")
+				m.LastVisitedRegisteredTAI = nil
+				continue
 			}
 		case RegReqIEIS1UENwCapability: // TLV, 4-15B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -256,7 +262,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.S1UENwCapability = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.S1UENwCapability.UnmarshalBinary")
+				m.S1UENwCapability = nil
+				continue
 			}
 		case RegReqIEIUplinkDataStatus: // TLV, 4-34B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -275,7 +282,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UplinkDataStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UplinkDataStatus.UnmarshalBinary")
+				m.UplinkDataStatus = nil
+				continue
 			}
 		case RegReqIEIPDUSessStatus: // TLV, 4-34B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -294,7 +302,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.PDUSessStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.PDUSessStatus.UnmarshalBinary")
+				m.PDUSessStatus = nil
+				continue
 			}
 		case RegReqIEIMICOInd: // TV, 1B
 			if m.MICOInd != nil {
@@ -308,7 +317,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.MICOInd = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.MICOInd.UnmarshalBinary")
+				m.MICOInd = nil
+				continue
 			}
 		case RegReqIEIUEStatus: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -327,7 +337,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UEStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UEStatus.UnmarshalBinary")
+				m.UEStatus = nil
+				continue
 			}
 		case RegReqIEIAdditionalGUTI: // TLV-E, 14B
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -346,7 +357,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.AdditionalGUTI = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.AdditionalGUTI.UnmarshalBinary")
+				m.AdditionalGUTI = nil
+				continue
 			}
 		case RegReqIEIAllowedPDUSessStatus: // TLV, 4-34B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -365,7 +377,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.AllowedPDUSessStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.AllowedPDUSessStatus.UnmarshalBinary")
+				m.AllowedPDUSessStatus = nil
+				continue
 			}
 		case RegReqIEIUesUsageSetting: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -384,7 +397,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UesUsageSetting = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UesUsageSetting.UnmarshalBinary")
+				m.UesUsageSetting = nil
+				continue
 			}
 		case RegReqIEIReqDRXParams: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -403,7 +417,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqDRXParams = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqDRXParams.UnmarshalBinary")
+				m.ReqDRXParams = nil
+				continue
 			}
 		case RegReqIEIEPSNASMsgCntr: // TLV-E, 4-nB
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -422,7 +437,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.EPSNASMsgCntr = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.EPSNASMsgCntr.UnmarshalBinary")
+				m.EPSNASMsgCntr = nil
+				continue
 			}
 		case RegReqIEILADNInd: // TLV-E, 3-811B
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -441,7 +457,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.LADNInd = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.LADNInd.UnmarshalBinary")
+				m.LADNInd = nil
+				continue
 			}
 		case RegReqIEIPayloadCntrType: // TV, 1B
 			if m.PayloadCntrType != nil {
@@ -455,7 +472,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.PayloadCntrType = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.PayloadCntrType.UnmarshalBinary")
+				m.PayloadCntrType = nil
+				continue
 			}
 		case RegReqIEIPayloadCntr: // TLV-E, 4-65538B
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -477,7 +495,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.PayloadCntr = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.PayloadCntr.UnmarshalBinary")
+				m.PayloadCntr = nil
+				continue
 			}
 		case RegReqIEINwSlicingInd: // TV, 1B
 			if m.NwSlicingInd != nil {
@@ -491,7 +510,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.NwSlicingInd = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.NwSlicingInd.UnmarshalBinary")
+				m.NwSlicingInd = nil
+				continue
 			}
 		case RegReqIEIUpdateType5GS: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -510,7 +530,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UpdateType5GS = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UpdateType5GS.UnmarshalBinary")
+				m.UpdateType5GS = nil
+				continue
 			}
 		case RegReqIEIMobileStationClassmark2: // TLV, 5B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -529,7 +550,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.MobileStationClassmark2 = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.MobileStationClassmark2.UnmarshalBinary")
+				m.MobileStationClassmark2 = nil
+				continue
 			}
 		case RegReqIEISupportedCodecs: // TLV, 5-nB
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -548,7 +570,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.SupportedCodecs = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.SupportedCodecs.UnmarshalBinary")
+				m.SupportedCodecs = nil
+				continue
 			}
 		case RegReqIEINASMsgCntr: // TLV-E, 4-nB
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -567,7 +590,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.NASMsgCntr = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.NASMsgCntr.UnmarshalBinary")
+				m.NASMsgCntr = nil
+				continue
 			}
 		case RegReqIEIEPSBearerCtxStatus: // TLV, 4B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -586,7 +610,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.EPSBearerCtxStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.EPSBearerCtxStatus.UnmarshalBinary")
+				m.EPSBearerCtxStatus = nil
+				continue
 			}
 		case RegReqIEIReqExtendedDRXParams: // TLV, 3-4B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -605,7 +630,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqExtendedDRXParams = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqExtendedDRXParams.UnmarshalBinary")
+				m.ReqExtendedDRXParams = nil
+				continue
 			}
 		case RegReqIEIT3324Value: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -624,7 +650,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.T3324Value = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.T3324Value.UnmarshalBinary")
+				m.T3324Value = nil
+				continue
 			}
 		case RegReqIEIUERadioCapabilityID: // TLV, 3-nB
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -643,7 +670,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UERadioCapabilityID = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UERadioCapabilityID.UnmarshalBinary")
+				m.UERadioCapabilityID = nil
+				continue
 			}
 		case RegReqIEIReqMappedNSSAI: // TLV, 3-42B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -662,7 +690,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqMappedNSSAI = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqMappedNSSAI.UnmarshalBinary")
+				m.ReqMappedNSSAI = nil
+				continue
 			}
 		case RegReqIEIAdditionalInfoReq: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -681,7 +710,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.AdditionalInfoReq = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.AdditionalInfoReq.UnmarshalBinary")
+				m.AdditionalInfoReq = nil
+				continue
 			}
 		case RegReqIEIReqWUSAssistanceInfo: // TLV, 3-nB
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -700,7 +730,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqWUSAssistanceInfo = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqWUSAssistanceInfo.UnmarshalBinary")
+				m.ReqWUSAssistanceInfo = nil
+				continue
 			}
 		case RegReqIEIN5GCInd: // TV, 1B
 			if m.N5GCInd != nil {
@@ -714,7 +745,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.N5GCInd = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.N5GCInd.UnmarshalBinary")
+				m.N5GCInd = nil
+				continue
 			}
 		case RegReqIEIReqNBN1ModeDRXParams: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -733,7 +765,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqNBN1ModeDRXParams = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqNBN1ModeDRXParams.UnmarshalBinary")
+				m.ReqNBN1ModeDRXParams = nil
+				continue
 			}
 		case RegReqIEIUEReqType: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -752,7 +785,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.UEReqType = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.UEReqType.UnmarshalBinary")
+				m.UEReqType = nil
+				continue
 			}
 		case RegReqIEIPagingRestriction: // TLV, 3-35B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -771,7 +805,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.PagingRestriction = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.PagingRestriction.UnmarshalBinary")
+				m.PagingRestriction = nil
+				continue
 			}
 		case RegReqIEISvcLvlAACntr: // TLV-E, 4-65538B
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -790,7 +825,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.SvcLvlAACntr = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.SvcLvlAACntr.UnmarshalBinary")
+				m.SvcLvlAACntr = nil
+				continue
 			}
 		case RegReqIEINID: // TLV, 8B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -809,7 +845,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.NID = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.NID.UnmarshalBinary")
+				m.NID = nil
+				continue
 			}
 		case RegReqIEIdisasterPlmnMS: // TLV, 5B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -828,7 +865,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.DisasterPlmnMS = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.DisasterPlmnMS.UnmarshalBinary")
+				m.DisasterPlmnMS = nil
+				continue
 			}
 		case RegReqIEIReqPEIPSAssistanceInfo: // TLV, 3-nB
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -847,7 +885,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqPEIPSAssistanceInfo = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqPEIPSAssistanceInfo.UnmarshalBinary")
+				m.ReqPEIPSAssistanceInfo = nil
+				continue
 			}
 		case RegReqIEIReqT3512Value: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -866,7 +905,8 @@ func (m *RegReq) UnmarshalBinary(b []byte) error {
 					m.ReqT3512Value = nil
 					continue
 				}
-				return errors.Wrap(err, "RegReq.ReqT3512Value.UnmarshalBinary")
+				m.ReqT3512Value = nil
+				continue
 			}
 		default:
 			// Type and Length unknown, unable to parse.

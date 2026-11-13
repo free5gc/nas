@@ -77,6 +77,7 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 	}
 
 	// Optional / Conditional IE
+	// TS 24.501 7.7.1: the network treats a syntactically incorrect optional IE as not present
 	for reader.Len() > 0 {
 		ieiByte := reader.Next(1)
 		iei := extractIEI(ieiByte[0])
@@ -98,7 +99,8 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 					m.UplinkDataStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "SvcReq.UplinkDataStatus.UnmarshalBinary")
+				m.UplinkDataStatus = nil
+				continue
 			}
 		case SvcReqIEIPDUSessStatus: // TLV, 4-34B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -117,7 +119,8 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 					m.PDUSessStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "SvcReq.PDUSessStatus.UnmarshalBinary")
+				m.PDUSessStatus = nil
+				continue
 			}
 		case SvcReqIEIAllowedPDUSessStatus: // TLV, 4-34B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -136,7 +139,8 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 					m.AllowedPDUSessStatus = nil
 					continue
 				}
-				return errors.Wrap(err, "SvcReq.AllowedPDUSessStatus.UnmarshalBinary")
+				m.AllowedPDUSessStatus = nil
+				continue
 			}
 		case SvcReqIEINASMsgCntr: // TLV-E, 4-nB
 			ieLen, err = getIeLen(reader, IELen16Bits)
@@ -155,7 +159,8 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 					m.NASMsgCntr = nil
 					continue
 				}
-				return errors.Wrap(err, "SvcReq.NASMsgCntr.UnmarshalBinary")
+				m.NASMsgCntr = nil
+				continue
 			}
 		case SvcReqIEIUEReqType: // TLV, 3B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -174,7 +179,8 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 					m.UEReqType = nil
 					continue
 				}
-				return errors.Wrap(err, "SvcReq.UEReqType.UnmarshalBinary")
+				m.UEReqType = nil
+				continue
 			}
 		case SvcReqIEIPagingRestriction: // TLV, 3-35B
 			ieLen, err = getIeLen(reader, IELen8Bits)
@@ -193,7 +199,8 @@ func (m *SvcReq) UnmarshalBinary(b []byte) error {
 					m.PagingRestriction = nil
 					continue
 				}
-				return errors.Wrap(err, "SvcReq.PagingRestriction.UnmarshalBinary")
+				m.PagingRestriction = nil
+				continue
 			}
 		default:
 			// Type and Length unknown, unable to parse.

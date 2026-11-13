@@ -7,7 +7,7 @@ type S1UESecCapability struct {
 }
 
 func (i *S1UESecCapability) UnmarshalBinary(b []byte) error {
-	value, err := copyIEValue("S1UESecCapability", b, 2, 5)
+	value, err := copyIEValue("S1UESecCapability", valuePart(b, 5), 2, 5)
 	if err != nil {
 		return err
 	}

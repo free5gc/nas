@@ -46,6 +46,7 @@ func (i DRXValue) String() string {
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *DRXParams5GS) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("DRXParams5GS buffer len(%d) != 1", len(b))
 	}

@@ -58,6 +58,7 @@ type Capability5GMM struct {
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *Capability5GMM) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 13)
 	i.Length = len(b)
 
 	// The 5GMM capability is a type 4 information element with a minimum

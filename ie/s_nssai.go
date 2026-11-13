@@ -36,6 +36,7 @@ const (
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *SNSSAI) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 8)
 	switch ConstSNSSAILen(len(b)) {
 	case LenSST:
 		i.SST = b[0]

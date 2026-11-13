@@ -24,6 +24,7 @@ func (i *UEReqType) inRange() bool {
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *UEReqType) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("UEReqType bad IE len(%d)", len(b))
 	}

@@ -17,6 +17,7 @@ const (
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *UesUsageSetting) UnmarshalBinary(b []byte) error {
+	b = valuePart(b, 1)
 	if len(b) != 1 {
 		return errors.Errorf("UesUsageSetting bad IE len(%d)", len(b))
 	}
