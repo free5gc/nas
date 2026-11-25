@@ -26,11 +26,18 @@ type RejectedNSSAI struct {
 
 // UnmarshalBinary handles the value part, not including IEI and length.
 func (i *RejectedNSSAI) UnmarshalBinary(b []byte) error {
-	ttlLen := uint8(len(b))
-	var offset uint8 = 0
+	ttlLen := len(b)
+	var offset int
 
 	for ttlLen > 0 {
-		length := Get4Bits85(b[offset])
+		length := int(Get4Bits85(b[offset]))
+		if length != 1 && length != 4 {
+			return errors.Errorf("RejectedNSSAI: bad length (%d)?", length)
+		}
+		if length+1 > ttlLen {
+			return errors.Errorf(
+				"RejectedNSSAI: truncated IE, length %d but only %d byte(s) left", length, ttlLen)
+		}
 		switch length {
 		case 1:
 			r := rejSNSSAI{cause: Get4Bits41(b[offset]), sst: b[offset+1]}
@@ -38,8 +45,6 @@ func (i *RejectedNSSAI) UnmarshalBinary(b []byte) error {
 		case 4:
 			r := rejSNSSAI{cause: Get4Bits41(b[offset]), sst: b[offset+1], sd: hex.EncodeToString(b[offset+2 : offset+5])}
 			i.RejSnssai = append(i.RejSnssai, r)
-		default:
-			return errors.Errorf("RejectedNSSAI: bad length (%d)?", Get4Bits85(b[offset]))
 		}
 		if len(i.RejSnssai) >= 8 {
 			// The number of rejected S-NSSAI(s) shall not exceed eight.

@@ -64,6 +64,18 @@ func TestRejectedNSSAIUnmarshalBinary(t *testing.T) {
 			name:  "Negative Case 1 - invalid length",
 			input: []byte{0x76, 0x54, 0x32},
 		},
+		{
+			name:  "Negative Case 2 - missing SST octet",
+			input: []byte{0x10},
+		},
+		{
+			name:  "Negative Case 3 - truncated SD octets",
+			input: []byte{0x40, 0x01, 0x01, 0x02},
+		},
+		{
+			name:  "Negative Case 4 - trailing truncated entry",
+			input: []byte{0x10, 0x01, 0x10},
+		},
 	}
 
 	for _, tc := range testCases {
